@@ -1,0 +1,17 @@
+services:
+  glances:
+    image: nicolargo/glances:4.4.1
+    restart: unless-stopped
+    pid: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Uncomment the below line if you want glances to display host OS detail instead of container's
+      - /etc/os-release:/etc/os-release:ro
+      - /etc/hostname:/etc/hostname:ro
+    ports:
+      - ${HOST_IP:-0.0.0.0}:61208:61208
+    environment:
+      - "GLANCES_OPT=-w"
+
+# NOTE: If using this on a host that has a publicly accessible IP address, make sure
+# you specify a non-public IP address to restrict the port to, as HOST_IP!
