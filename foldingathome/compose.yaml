@@ -6,7 +6,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/Los_Angeles
-      - MACHINE_NAME=debian-docker-vm-main
+      - MACHINE_NAME=docker-host-pve3
       - CLI_ARGS= #optional
       # Secrets to set in environment:
       - ACCOUNT_TOKEN=$ACCOUNT_TOKEN
