@@ -49,7 +49,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/containers:/var/lib/docker/containers
       - ./wings-config.yaml:/etc/pterodactyl/config.yml
-      - wings-data:/var/lib/pterodactyl
+      # - wings-data:/var/lib/pterodactyl
+      - /var/lib/pterodactyl:/var/lib/pterodactyl
       - wings-logs:/var/log/pterodactyl
   database:
     image: mariadb:12.1.2
