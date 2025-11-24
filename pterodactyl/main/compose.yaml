@@ -75,8 +75,7 @@ services:
       - panel-data:/app/var/
       - panel-logs:/app/storage/logs
     environment:
-      <<: [*panel-environment]
-      <<: [*mail-environment]
+      <<: [*panel-environment, *mail-environment]
       DB_PASSWORD: *db-password
       APP_ENV: "production"
       APP_ENVIRONMENT_ONLY: "false"
