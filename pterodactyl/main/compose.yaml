@@ -16,6 +16,7 @@ x-common:
     # http://php.net/manual/en/timezones.php
     APP_TIMEZONE: "America/Los_Angeles"
     APP_SERVICE_AUTHOR: "homelab@saphnet.xyz"
+    TRUSTED_PROXIES: "*" # TODO: Replace this with something more permanent
   mail:
     &mail-environment
     MAIL_FROM: "homelab@saphnet.xyz"
@@ -33,7 +34,8 @@ services:
     networks:
       - ptero0
     ports:
-      - "8443:443" # This looks like it's for nginx
+      - "8280:8080"
+      - "443:443" # This looks like it's for nginx
       - "2022:2022" # SFTP port
     tty: true
     environment:

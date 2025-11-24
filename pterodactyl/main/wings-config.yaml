@@ -1,12 +1,12 @@
 debug: false
-uuid: 36a0bd06-9a27-424a-8ff1-352b88b472dc
-token_id: RJ1EQX8El47BwXRP
-token: 5rOYwU7GJwTmkjq4u8jwqOYKbPGfhjbDaPgDjS8VoOZLsObv4D1fDjie4u2CLm76
+uuid: 80726a6e-be01-4f5d-aef9-bea631c39cd9
+token_id: Anm5KFgRbb1L7zWT
+token: C8lK2FH2GtUbZNeBEjSRM4hWzO3RHpkpetCtE7WDidbLmh3OZjLGxfZWkFaYhS0K
 api:
   host: 0.0.0.0
-  port: 8443
+  port: 443
   ssl:
-    enabled: true
+    enabled: false
     cert: /etc/letsencrypt/live/pterodactyl-node-main.int.saphnet.xyz/fullchain.pem
     key: /etc/letsencrypt/live/pterodactyl-node-main.int.saphnet.xyz/privkey.pem
   upload_limit: 100
