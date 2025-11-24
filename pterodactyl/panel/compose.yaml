@@ -7,12 +7,10 @@
 
 # Common variables, declared here
 x-common:
-  database:
-    &db-environment
+  database: &db-environment
     MYSQL_PASSWORD: &db-password "basic_mysql_password"
     MYSQL_ROOT_PASSWORD: "basic_mysql_root_password"
-  panel:
-    &panel-environment
+  panel: &panel-environment
     #This is the URL that your panel will be on after being reverse proxied.
     # set this to "https://yoursubdomain.yourdomain.yourdomainstld"
     APP_URL: "https://pterodactyl.int.saphnet.xyz"
@@ -21,8 +19,7 @@ x-common:
     APP_TIMEZONE: "America/Los_Angeles"
     APP_SERVICE_AUTHOR: "homelab@saphnet.xyz"
     TRUSTED_PROXIES: "nginx-proxy-manager"
-  mail:
-    &mail-environment
+  mail: &mail-environment
     MAIL_FROM: "homelab@saphnet.xyz"
     MAIL_DRIVER: "smtp"
     MAIL_HOST: "mail.privateemail.com"
