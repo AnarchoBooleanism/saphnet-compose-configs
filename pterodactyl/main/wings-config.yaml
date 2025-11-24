@@ -4,7 +4,7 @@ token_id: Anm5KFgRbb1L7zWT
 token: C8lK2FH2GtUbZNeBEjSRM4hWzO3RHpkpetCtE7WDidbLmh3OZjLGxfZWkFaYhS0K
 api:
   host: 0.0.0.0
-  port: 443
+  port: 8443
   ssl:
     enabled: false
     cert: /etc/letsencrypt/live/pterodactyl-node-main.int.saphnet.xyz/fullchain.pem
@@ -16,3 +16,9 @@ system:
     bind_port: 2022
 allowed_mounts: []
 remote: 'https://pterodactyl.int.saphnet.xyz'
+docker:
+  network:
+    interfaces:
+      v4:
+        subnet: "10.55.230.0/24"
+        gateway: 10.55.230.0
