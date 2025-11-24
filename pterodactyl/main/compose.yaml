@@ -35,7 +35,7 @@ services:
       - ptero0
     ports:
       - "8280:8080"
-      - "8443:8443" # This looks like it's for nginx
+      - "8443:443" # This looks like it's for nginx
       - "2022:2022" # SFTP port
     tty: true
     environment:

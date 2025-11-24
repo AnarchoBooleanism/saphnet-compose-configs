@@ -1,10 +1,10 @@
 debug: false
-uuid: 5464a866-5132-4dfe-8a0b-677f9c1cb057
-token_id: IuIXFxt7yp19zL65
-token: ytOjkm5HBIGkSrBt9V2V9l8103LZJgQkdRPWVJVL7PQpQzzTVaDYWC4v94HGr6I8
+uuid: 258a579e-b414-43b4-835a-7d3fd408d276
+token_id: t0ywv6pGcEHESNGG
+token: JDTWmM5qoeHiFVTE8McBrdoRpqIus9lCip2caMd6yNQAYlmE6IFDddx6TVpT0EfN
 api:
   host: 0.0.0.0
-  port: 8443
+  port: 443
   ssl:
     enabled: false
     cert: /etc/letsencrypt/live/pterodactyl-node-main.int.saphnet.xyz/fullchain.pem
