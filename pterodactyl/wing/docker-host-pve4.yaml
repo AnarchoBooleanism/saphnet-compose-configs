@@ -53,10 +53,10 @@ services:
       - ./reverse-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./reverse-proxy/proxies-docker-host-pve4.conf:/etc/nginx/proxies.conf:ro
       # conf.d files
-      - ./reverse-proxy/conf.d/block-explots.conf:/etc/nginx/conf.d/block-exploits.conf:ro
-      - ./reverse-proxy/conf.d/proxy.conf:/etc/nginx/conf.d/proxy.conf:ro
-      - ./reverse-proxy/conf.d/ssl.conf:/etc/nginx/conf.d/ssl.conf:ro
-      - ./reverse-proxy/conf.d/ip-ranges.conf:/etc/nginx/conf.d/ip-ranges.conf:ro
+      - ./reverse-proxy/nginx-conf.d/block-exploits.conf:/etc/nginx/conf.d/block-exploits.conf:ro
+      - ./reverse-proxy/nginx-conf.d/proxy.conf:/etc/nginx/conf.d/proxy.conf:ro
+      - ./reverse-proxy/nginx-conf.d/ssl.conf:/etc/nginx/conf.d/ssl.conf:ro
+      - ./reverse-proxy/nginx-conf.d/ip-ranges.conf:/etc/nginx/conf.d/ip-ranges.conf:ro
       # Certificate files
       - certbot-conf:/etc/letsencrypt:ro
       # Script to autoreload Nginx when certs are renewed
