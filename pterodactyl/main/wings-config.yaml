@@ -1,14 +1,14 @@
 debug: false
-uuid: 316eb14c-65c8-471d-8156-a6909bf179e6
-token_id: 27JKBB9ojYKZ2D4D
-token: WmIQrTmyS9xqHyPRTP3DRq4mKMLCOMetbBLkO6YJs0Th1vdgM77gM7YNHrfb75NV
+uuid: 36a0bd06-9a27-424a-8ff1-352b88b472dc
+token_id: RJ1EQX8El47BwXRP
+token: 5rOYwU7GJwTmkjq4u8jwqOYKbPGfhjbDaPgDjS8VoOZLsObv4D1fDjie4u2CLm76
 api:
   host: 0.0.0.0
-  port: 8080
+  port: 8443
   ssl:
-    enabled: false
-    cert: /etc/letsencrypt/live/pterodactyl-control.int-net.saphnet.xyz/fullchain.pem
-    key: /etc/letsencrypt/live/pterodactyl-control.int-net.saphnet.xyz/privkey.pem
+    enabled: true
+    cert: /etc/letsencrypt/live/pterodactyl-node-main.int.saphnet.xyz/fullchain.pem
+    key: /etc/letsencrypt/live/pterodactyl-node-main.int.saphnet.xyz/privkey.pem
   upload_limit: 100
 system:
   data: /var/lib/pterodactyl/volumes
