@@ -1,3 +1,6 @@
+# Configuration for Pterodactyl panel, to be combined with wings
+# This is intended to be used with nginx-proxy-manager, on docker-host-nginx
+
 # Much of this comes from https://wiki.s5gi.com/guides/linux/pterodactyl_and_wings_dockerized
 #                         https://technotim.live/posts/pterodactyl-game-server/
 #                         https://docs.agamersgrind.com/guides/pterodactyl/creating-a-new-wings-node
@@ -17,7 +20,7 @@ x-common:
     # http://php.net/manual/en/timezones.php
     APP_TIMEZONE: "America/Los_Angeles"
     APP_SERVICE_AUTHOR: "homelab@saphnet.xyz"
-    TRUSTED_PROXIES: "*" # TODO: Replace this with something more permanent
+    TRUSTED_PROXIES: "*" # TODO: Figure out what makes sense for the web_bridge context
   mail:
     &mail-environment
     MAIL_FROM: "homelab@saphnet.xyz"
@@ -29,31 +32,6 @@ x-common:
     MAIL_ENCRYPTION: "true"
 
 services:
-  wings:
-    image: ghcr.io/pterodactyl/wings:v1.11.13
-    restart: unless-stopped
-    networks:
-      - ptero0
-    ports:
-      - "8280:8080"
-      - "8443:443" # This looks like it's for nginx
-      - "2022:2022" # SFTP port
-    tty: true
-    environment:
-      TZ: "America/Los_Angeles"
-      # For ease of setup, this is going to use root user.
-      WINGS_UID: 0
-      WINGS_GID: 0
-      WINGS_USERNAME: root
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /var/lib/docker/containers:/var/lib/docker/containers
-      - ./wings-config.yaml:/etc/pterodactyl/config.yml
-      # - wings-data:/var/lib/pterodactyl
-      # - /var/lib/pterodactyl:/var/lib/pterodactyl
-      - /mnt/pterodactyl-data:/var/lib/pterodactyl
-      - wings-logs:/var/log/pterodactyl
-      - /tmp/pterodactyl:/tmp/pterodactyl
   database:
     image: mariadb:12.1.2
     restart: unless-stopped
@@ -71,8 +49,7 @@ services:
     image: ghcr.io/pterodactyl/panel:v1.11.11
     restart: unless-stopped
     ports:
-      - "802:80" # Web port
-      - "4432:443" # This looks like it's for nginx
+      # - "802:80" # Web port
     # Links these containers together in a docker network.
     links:
       - database
@@ -91,26 +68,14 @@ services:
       REDIS_HOST: "cache"
       DB_HOST: "database"
       DB_PORT: "3306"
+    networks:
+      - web_bridge
 
 volumes:
-  wings-data:
-    # driver_opts:
-    #   type: "nfs"
-    #   o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
-    #   device: ":/mnt/saphnet-nas1a/pterodactyl-data"
-  wings-logs:
   database-data:
   panel-data:
   panel-logs:
 
-# This is Wings' Network. We don't need much depth here, all you need to know, is
-# that it allows the passthrough of the ports from Wings.
 networks:
-  ptero0:
-    name: ptero0
-    driver: bridge
-    # ipam:
-    #   config:
-    #     - subnet: "10.55.231.0/24"
-    driver_opts:
-      com.docker.network.bridge.name: ptero0
+  web_bridge:
+    name: web_bridge

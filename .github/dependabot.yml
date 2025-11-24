@@ -23,5 +23,7 @@ updates:
       - "/nginx-stacks/nginx-proxy-manager/"
       - "/nginx-stacks/openspeedtest/"
       - "/nginx-stacks/vert-sh/"
+      - "/pterodactyl/main/"
+      - "/pterodactyl/wing/"
     schedule:
       interval: "weekly"
