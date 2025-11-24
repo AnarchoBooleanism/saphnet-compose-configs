@@ -105,8 +105,8 @@ networks:
   ptero0:
     name: ptero0
     driver: bridge
-    ipam:
-      config:
-        - subnet: "10.55.231.0/24"
+    # ipam:
+    #   config:
+    #     - subnet: "10.55.231.0/24"
     driver_opts:
       com.docker.network.bridge.name: ptero0
