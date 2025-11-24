@@ -45,7 +45,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/containers:/var/lib/docker/containers
-      - wings-config:/etc/pterodactyl # TODO: Move this to its own space in this repo, once it's generated
+      # - ./wings-config.yml:/etc/pterodactyl/config.yml
       - wings-data:/var/lib/pterodactyl
       - wings-logs:/var/log/pterodactyl
   database:
@@ -87,7 +87,6 @@ services:
       DB_PORT: "3306"
 
 volumes:
-  wings-config:
   wings-data:
     driver_opts:
       type: "nfs"
@@ -104,4 +103,4 @@ networks:
   ptero0:
     ipam:
       config:
-        - subnet: "172.20.0.0/16" # Changed this from the original to be extra safe
+        - subnet: "10.0.1.0/24" # Changed this from the original to be extra safe
