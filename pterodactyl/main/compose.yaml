@@ -52,6 +52,7 @@ services:
       # - wings-data:/var/lib/pterodactyl
       - /var/lib/pterodactyl:/var/lib/pterodactyl
       - wings-logs:/var/log/pterodactyl
+      - /tmp/pterodactyl:/tmp/pterodactyl
   database:
     image: mariadb:12.1.2
     restart: unless-stopped
