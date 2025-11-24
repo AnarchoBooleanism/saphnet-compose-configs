@@ -48,8 +48,8 @@ services:
   panel:
     image: ghcr.io/pterodactyl/panel:v1.11.11
     restart: unless-stopped
-    ports:
-      # - "802:80" # Web port
+    # ports:
+    #   - "802:80" # Web port
     # Links these containers together in a docker network.
     links:
       - database
