@@ -73,11 +73,11 @@ services:
     volumes:
       - certbot-conf:/etc/lets_encrypt
     environment:
-      - TZ: ${TZ}
-      - DNS_NAMECHEAP_USERNAME: ${DNS_NAMECHEAP_USERNAME}
-      - DNS_NAMECHEAP_API_KEY: ${DNS_NAMECHEAP_API_KEY}
-      - CERTBOT_DOMAIN: *instance-domain
-      - CERTBOT_EMAIL: ${CERTBOT_EMAIL}
+      TZ: ${TZ}
+      DNS_NAMECHEAP_USERNAME: ${DNS_NAMECHEAP_USERNAME}
+      DNS_NAMECHEAP_API_KEY: ${DNS_NAMECHEAP_API_KEY}
+      CERTBOT_DOMAIN: *instance-domain
+      CERTBOT_EMAIL: ${CERTBOT_EMAIL}
     healthcheck:
       test: ["CMD", "sh", "-c", "[ -f /etc/lets_encrypt/live/$CERTBOT_DOMAIN/fullchain.pem ]"]
       interval: 20s
