@@ -96,7 +96,7 @@ services:
       --agree-tos --non-interactive -vv
       --no-eff-email
       --email '$CERTBOT_EMAIL'
-      --domains '$CERTBOT_DOMAIN'; fi;
+      --domain '$CERTBOT_DOMAIN' ; fi;
       while :;
       do certbot renew -vv;
       sleep 12h & wait $${!};
