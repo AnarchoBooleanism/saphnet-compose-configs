@@ -1,5 +1,6 @@
 # Much of this comes from https://wiki.s5gi.com/guides/linux/pterodactyl_and_wings_dockerized
-#                         https://www.youtube.com/watch?v=eeLNsNuVBn4
+#                         https://technotim.live/posts/pterodactyl-game-server/
+#                         https://docs.agamersgrind.com/guides/pterodactyl/creating-a-new-wings-node
 
 # Common variables, declared here
 x-common:
@@ -90,10 +91,10 @@ services:
 
 volumes:
   wings-data:
-    driver_opts:
-      type: "nfs"
-      o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
-      device: ":/mnt/saphnet-nas1a/pterodactyl-data"
+    # driver_opts:
+    #   type: "nfs"
+    #   o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
+    #   device: ":/mnt/saphnet-nas1a/pterodactyl-data"
   wings-logs:
   database-data:
   panel-data:
