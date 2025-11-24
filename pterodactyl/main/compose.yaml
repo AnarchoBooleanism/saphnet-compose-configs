@@ -50,7 +50,8 @@ services:
       - /var/lib/docker/containers:/var/lib/docker/containers
       - ./wings-config.yaml:/etc/pterodactyl/config.yml
       # - wings-data:/var/lib/pterodactyl
-      - /var/lib/pterodactyl:/var/lib/pterodactyl
+      # - /var/lib/pterodactyl:/var/lib/pterodactyl
+      - /mnt/pterodactyl-data:/var/lib/pterodactyl
       - wings-logs:/var/log/pterodactyl
       - /tmp/pterodactyl:/tmp/pterodactyl
   database:
