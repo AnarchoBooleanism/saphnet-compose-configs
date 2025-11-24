@@ -1,5 +1,6 @@
 services:
   app:
+    container_name: nginx-proxy-manager # Refer to the panel container this way
     image: jc21/nginx-proxy-manager:2.13.4
     restart: unless-stopped
     ports:
@@ -44,6 +45,7 @@ volumes:
   data:
   letsencrypt:
   mysql:
+
 networks:
   web_bridge:
     name: web_bridge

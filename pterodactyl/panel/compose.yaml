@@ -20,7 +20,7 @@ x-common:
     # http://php.net/manual/en/timezones.php
     APP_TIMEZONE: "America/Los_Angeles"
     APP_SERVICE_AUTHOR: "homelab@saphnet.xyz"
-    TRUSTED_PROXIES: "*" # TODO: Figure out what makes sense for the web_bridge context
+    TRUSTED_PROXIES: "nginx-proxy-manager"
   mail:
     &mail-environment
     MAIL_FROM: "homelab@saphnet.xyz"
@@ -46,6 +46,7 @@ services:
     image: redis:8.4.0-alpine
     restart: unless-stopped
   panel:
+    container_name: pterodactyl-panel # Refer to the panel container this way
     image: ghcr.io/pterodactyl/panel:v1.11.11
     restart: unless-stopped
     # ports:
