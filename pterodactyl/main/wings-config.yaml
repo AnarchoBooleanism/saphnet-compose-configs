@@ -21,4 +21,4 @@ docker:
     interfaces:
       v4:
         subnet: "10.55.230.0/24"
-        gateway: 10.55.230.0
+        gateway: 10.55.230.1
