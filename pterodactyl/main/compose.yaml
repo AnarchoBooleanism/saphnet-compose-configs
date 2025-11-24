@@ -45,7 +45,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/containers:/var/lib/docker/containers
-      # - ./wings-config.yml:/etc/pterodactyl/config.yml
+      - ./wings-config.yaml:/etc/pterodactyl/config.yml
       - wings-data:/var/lib/pterodactyl
       - wings-logs:/var/log/pterodactyl
   database:
