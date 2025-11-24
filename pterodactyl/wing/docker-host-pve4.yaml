@@ -4,6 +4,7 @@
 # Much of this comes from https://wiki.s5gi.com/guides/linux/pterodactyl_and_wings_dockerized
 #                         https://technotim.live/posts/pterodactyl-game-server/
 #                         https://docs.agamersgrind.com/guides/pterodactyl/creating-a-new-wings-node
+#                         https://dev.to/marrouchi/the-challenge-about-ssl-in-docker-containers-no-one-talks-about-32gh
 
 # Be sure to define
 # - DNS_NAMECHEAP_USERNAME
@@ -85,22 +86,27 @@ services:
       start_period: 10s
       timeout: 10s
     # Make sure certbot is run first if not yet, then renew certificates every 12 hours
-    entrypoint: >
-      /bin/sh -c "
-      trap exit TERM;
-      echo 'dns_namecheap_username=$DNS_NAMECHEAP_USERNAME' >> /namecheap.ini;
-      echo 'dns_namecheap_api_key=$DNS_NAMECHEAP_API_KEY' >> /namecheap.ini;
-      if [ ! -f '/etc/lets_encrypt/live/$CERTBOT_DOMAIN/fullchain.pem' ] ; then
-      certbot certonly -a dns-namecheap
-      --dns-namecheap-credentials=/namecheap.ini
-      --agree-tos --non-interactive -vv
-      --no-eff-email
-      --email '$CERTBOT_EMAIL'
-      --domain '$CERTBOT_DOMAIN' ; fi;
-      while :;
-      do certbot renew -vv;
-      sleep 12h & wait $${!};
-      done;"
+    entrypoint: |
+      /bin/sh -c '
+        trap exit TERM
+
+        echo "dns_namecheap_username=$DNS_NAMECHEAP_USERNAME" >> /namecheap.ini
+        echo "dns_namecheap_api_key=$DNS_NAMECHEAP_API_KEY" >> /namecheap.ini
+
+        if [ ! -f "/etc/lets_encrypt/live/$CERTBOT_DOMAIN/fullchain.pem" ] ; then
+          certbot certonly -a dns-namecheap \
+          --dns-namecheap-credentials=/namecheap.ini \
+          --agree-tos --non-interactive -vv \
+          --no-eff-email \
+          --email "$CERTBOT_EMAIL" \
+          --domain "$CERTBOT_DOMAIN"
+        fi
+        
+        while :; do
+          certbot renew -vv
+          sleep 12h & wait $!
+        done
+      '
 
 volumes:
   wings-config:
