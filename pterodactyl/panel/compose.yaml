@@ -42,19 +42,19 @@ services:
       <<: *db-environment
       MYSQL_DATABASE: "panel"
       MYSQL_USER: "pterodactyl"
+    networks:
+      - pterodactyl_panel_internal
   cache:
     image: redis:8.4.0-alpine
     restart: unless-stopped
+    networks:
+      - pterodactyl_panel_internal
   panel:
     container_name: pterodactyl-panel # Refer to the panel container this way
     image: ghcr.io/pterodactyl/panel:v1.11.11
     restart: unless-stopped
     # ports:
     #   - "802:80" # Web port
-    # Links these containers together in a docker network.
-    links:
-      - database
-      - cache
     volumes:
       - panel-data:/app/var/
       - panel-logs:/app/storage/logs
@@ -71,6 +71,7 @@ services:
       DB_PORT: "3306"
     networks:
       - web_bridge
+      - pterodactyl_panel_internal
 
 volumes:
   database-data:
@@ -78,5 +79,6 @@ volumes:
   panel-logs:
 
 networks:
+  pterodactyl_panel_internal:
   web_bridge:
     name: web_bridge
