@@ -31,8 +31,8 @@ services:
   wings:
     image: ghcr.io/pterodactyl/wings:v1.11.13
     restart: unless-stopped
-    # networks:
-    #   - ptero0
+    networks:
+      - ptero0
     ports:
       - "8280:8080"
       - "443:443" # This looks like it's for nginx
@@ -101,8 +101,12 @@ volumes:
 
 # This is Wings' Network. We don't need much depth here, all you need to know, is
 # that it allows the passthrough of the ports from Wings.
-# networks:
-#   ptero0:
-#     ipam:
-#       config:
-#         - subnet: "10.51.23.0/24" # Changed this from the original to be extra safe
+networks:
+  ptero0:
+    name: ptero0
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "192.55.0.0/16"
+    driver_opts:
+      com.docker.network.bridge.name: ptero0
