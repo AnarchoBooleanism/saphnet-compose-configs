@@ -105,4 +105,4 @@ networks:
   ptero0:
     ipam:
       config:
-        - subnet: "10.0.1.0/24" # Changed this from the original to be extra safe
+        - subnet: "10.51.23.0/24" # Changed this from the original to be extra safe
