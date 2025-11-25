@@ -24,7 +24,7 @@ services:
       - 'host.docker.internal:host-gateway'
 
   jackett:
-    image: lscr.io/linuxserver/jackett:0.24.319
+    image: lscr.io/linuxserver/jackett:0.24.340
     container_name: jackett
     environment:
       - PUID=1000
