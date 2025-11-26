@@ -7,7 +7,7 @@ services:
       # These ports are in format <host-port>:<container-port>
       - '80:80' # Public HTTP Port
       - '443:443' # Public HTTPS Port
-      - '{TAILSCALE_IP:-0.0.0.0}:81:81' # Admin Web Port, restrict this to Tailscale IP if public-facing
+      - '${TAILSCALE_IP:-0.0.0.0}:81:81' # Admin Web Port, restrict this to Tailscale IP if public-facing
       # Add any other Stream port you want to expose
       # - '21:21' # FTP
     environment:
