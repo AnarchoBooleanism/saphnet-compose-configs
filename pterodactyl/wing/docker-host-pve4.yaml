@@ -1,5 +1,5 @@
 # Configuration for Pterodactyl wings, to be paired with the panel
-# This is intended to be used on docker-host-pve4, though it still relies on the reverse proxy
+# This is intended to be used on docker-host-pve4
 
 # Much of this comes from https://wiki.s5gi.com/guides/linux/pterodactyl_and_wings_dockerized
 #                         https://technotim.live/posts/pterodactyl-game-server/

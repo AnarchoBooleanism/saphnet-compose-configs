@@ -1,0 +1,56 @@
+# Configuration for Pterodactyl wings, to be paired with the panel
+# This is intended to be used on vps1, with an external reverse proxy
+
+# Much of this comes from https://wiki.s5gi.com/guides/linux/pterodactyl_and_wings_dockerized
+#                         https://technotim.live/posts/pterodactyl-game-server/
+#                         https://docs.agamersgrind.com/guides/pterodactyl/creating-a-new-wings-node
+#                         https://dev.to/marrouchi/the-challenge-about-ssl-in-docker-containers-no-one-talks-about-32gh
+
+# Be sure to define
+# - DNS_NAMECHEAP_USERNAME
+# - DNS_NAMECHEAP_API_KEY
+# - CERTBOT_EMAIL
+# - TAILSCALE_IP
+
+x-common:
+  INSTANCE_DOMAIN: &instance-domain "pterodactyl-node-public.saphnet.xyz" # Maps to Tailscale IP, vps1-ts.saphnet.xyz
+
+services:
+  wing: # TODO: Create automatic backup script
+    container_name: pterodactyl-wing # Refer to the panel container this way
+    image: ghcr.io/pterodactyl/wings:v1.11.13
+    restart: unless-stopped
+    networks:
+      - ptero0
+    ports:
+      # - "8443:443" # Is port 8443 on this IP, but 443 on the inside and 443 on the reverse proxy
+      - "${TAILSCALE_IP:-0.0.0.0}:2022:2022" # SFTP port
+    tty: true
+    environment:
+      TZ: "America/Los_Angeles"
+      # For ease of setup, this is going to use root user.
+      WINGS_UID: 0
+      WINGS_GID: 0
+      WINGS_USERNAME: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers:/var/lib/docker/containers
+      - wings-config:/etc/pterodactyl
+      - /var/lib/pterodactyl:/var/lib/pterodactyl
+      - wings-logs:/var/log/pterodactyl
+      - /tmp/pterodactyl:/tmp/pterodactyl
+
+volumes:
+  wings-config:
+  wings-logs:
+
+# This is Wings' Network. We don't need much depth here, all you need to know, is
+# that it allows the passthrough of the ports from Wings.
+networks:
+  web_bridge:
+    name: web_bridge
+  ptero0:
+    name: ptero0
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: ptero0
