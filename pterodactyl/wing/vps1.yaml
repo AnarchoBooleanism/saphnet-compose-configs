@@ -21,6 +21,7 @@ services:
     image: ghcr.io/pterodactyl/wings:v1.11.13
     restart: unless-stopped
     networks:
+      - web_bridge
       - ptero0
     ports:
       # - "8443:443" # Is port 8443 on this IP, but 443 on the inside and 443 on the reverse proxy
