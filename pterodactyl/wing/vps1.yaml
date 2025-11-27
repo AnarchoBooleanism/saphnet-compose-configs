@@ -11,11 +11,6 @@
 # - DNS_NAMECHEAP_API_KEY
 # - CERTBOT_EMAIL
 # - TAILSCALE_IP
-# - AWS_DEFAULT_REGION
-# - AWS_ACCESS_KEY_ID
-# - AWS_SECRET_ACCESS_KEY
-# - AWS_BACKUPS_BUCKET
-# - AWS_ENDPOINT
 
 x-common:
   INSTANCE_DOMAIN: &instance-domain "pterodactyl-node-public.saphnet.xyz" # Maps to Tailscale IP, vps1-ts.saphnet.xyz
@@ -38,13 +33,6 @@ services:
       WINGS_UID: 0
       WINGS_GID: 0
       WINGS_USERNAME: root
-      # S3-based backup
-      APP_BACKUP_DRIVER: s3
-      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_BACKUPS_BUCKET: ${AWS_BACKUPS_BUCKET}
-      AWS_ENDPOINT: ${AWS_ENDPOINT}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/containers:/var/lib/docker/containers
