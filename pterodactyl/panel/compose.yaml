@@ -5,6 +5,14 @@
 #                         https://technotim.live/posts/pterodactyl-game-server/
 #                         https://docs.agamersgrind.com/guides/pterodactyl/creating-a-new-wings-node
 
+# Environment variables to set:
+# - MAIL_PASSWORD
+# - AWS_DEFAULT_REGION
+# - AWS_ACCESS_KEY_ID
+# - AWS_SECRET_ACCESS_KEY
+# - AWS_BACKUPS_BUCKET
+# - AWS_ENDPOINT (include "https://"!)
+
 # Common variables, declared here
 x-common:
   database: &db-environment
