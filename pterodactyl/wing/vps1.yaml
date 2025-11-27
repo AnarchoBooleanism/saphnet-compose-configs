@@ -11,6 +11,11 @@
 # - DNS_NAMECHEAP_API_KEY
 # - CERTBOT_EMAIL
 # - TAILSCALE_IP
+# - AWS_DEFAULT_REGION
+# - AWS_ACCESS_KEY_ID
+# - AWS_SECRET_ACCESS_KEY
+# - AWS_BACKUPS_BUCKET
+# - AWS_ENDPOINT
 
 x-common:
   INSTANCE_DOMAIN: &instance-domain "pterodactyl-node-public.saphnet.xyz" # Maps to Tailscale IP, vps1-ts.saphnet.xyz
