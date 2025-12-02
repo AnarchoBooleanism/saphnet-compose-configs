@@ -13,8 +13,8 @@ registries:
     replaces-base: true
   dockerhub:
     type: docker-registry
-    url: https://registry.hub.docker.com
-    username: AnarchoBooleanism
+    url: https://hub.docker.com
+    username: anarchobooleanism
     password: ${{secrets.DOCKERHUB_TOKEN}}
     replaces-base: true
 updates:
