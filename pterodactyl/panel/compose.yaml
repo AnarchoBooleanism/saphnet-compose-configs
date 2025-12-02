@@ -12,6 +12,7 @@
 # - AWS_SECRET_ACCESS_KEY
 # - AWS_BACKUPS_BUCKET
 # - AWS_ENDPOINT (include "https://"!)
+# - HASHIDS_SALT (should be 20 characters, to generate this, run "head -c20 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9/.' | head -c20")
 
 # Common variables, declared here
 x-common:
@@ -27,6 +28,8 @@ x-common:
     APP_TIMEZONE: "America/Los_Angeles"
     APP_SERVICE_AUTHOR: "homelab@saphnet.xyz"
     TRUSTED_PROXIES: "nginx-proxy-manager"
+    HASHIDS_SALT: ${HASHIDS_SALT}
+    HASHIDS_LENGTH: "8"
   mail: &mail-environment
     MAIL_FROM: "homelab@saphnet.xyz"
     MAIL_DRIVER: "smtp"
