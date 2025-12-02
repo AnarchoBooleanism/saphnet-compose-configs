@@ -11,6 +11,12 @@ registries:
     username: AnarchoBooleanism
     password: ${{secrets.GHCR_TOKEN}}
     replaces-base: true
+  dockerhub:
+    type: docker-registry
+    url: https://registry.hub.docker.com
+    username: AnarchoBooleanism
+    password: ${{secrets.DOCKERHUB_TOKEN}}
+    replaces-base: true
 updates:
   - package-ecosystem: "github-actions" # See documentation for possible values
     directory: "/" # Location of package manifests
