@@ -16,7 +16,7 @@ services:
       - web_bridge
 
   homepage:
-    image: ghcr.io/anarchobooleanism/saphnet-homepage@sha256:0b50d51369258894fbb12bfcb99afb2e8401143e56a706617830c061bc2ce0dd
+    image: ghcr.io/anarchobooleanism/saphnet-homepage@sha256:a44b046a301da9115e77e2bb47dd5409b5816bd6ffbf7b1af88c24d24f679dc6
     container_name: homepage
     environment:
       - HOMEPAGE_ALLOWED_HOSTS=homepage.int.saphnet.xyz
@@ -34,6 +34,7 @@ services:
       - HOMEPAGE_VAR_DELUGE_PASSWORD=$HOMEPAGE_VAR_DELUGE_PASSWORD
       - HOMEPAGE_VAR_NPM_INT_USERNAME=$HOMEPAGE_VAR_NPM_INT_USERNAME
       - HOMEPAGE_VAR_NPM_INT_PASSWORD=$HOMEPAGE_VAR_NPM_INT_PASSWORD
+      - HOMEPAGE_VAR_PTERODACTYL_API_KEY=$HOMEPAGE_VAR_PTERODACTYL_API_KEY
 #    ports:
 #      - 3000:3000
     volumes:
