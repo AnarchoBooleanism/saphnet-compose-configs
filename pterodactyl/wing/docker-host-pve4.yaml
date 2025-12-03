@@ -40,7 +40,7 @@ services:
       - wings-logs:/var/log/pterodactyl
       - /tmp/pterodactyl:/tmp/pterodactyl
   nginx:
-    image: nginx:1.29.3
+    image: ghcr.io/anarchobooleanism/saphnet-nginx:v0.1.0
     restart: unless-stopped
     depends_on:
       certbot:
@@ -50,24 +50,13 @@ services:
       - 443:443
     volumes:
       # Main conf file
-      - ./reverse-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./reverse-proxy/proxies-docker-host-pve4.conf:/etc/nginx/proxies.conf:ro
-      # conf.d files
-      - ./reverse-proxy/nginx-conf.d/block-exploits.conf:/etc/nginx/conf.d/block-exploits.conf:ro
-      - ./reverse-proxy/nginx-conf.d/proxy.conf:/etc/nginx/conf.d/proxy.conf:ro
-      - ./reverse-proxy/nginx-conf.d/ssl.conf:/etc/nginx/conf.d/ssl.conf:ro
-      - ./reverse-proxy/nginx-conf.d/ip-ranges.conf:/etc/nginx/conf.d/ip-ranges.conf:ro
       # Certificate files
       - certbot-conf:/etc/letsencrypt:ro
-      # Script to autoreload Nginx when certs are renewed
-      - ./reverse-proxy/99-autoreload.sh:/docker-entrypoint.d/99-autoreload.sh:ro
     environment:
       - TZ=${TZ}
     networks:
       - pterodactyl_wing_internal
-    # Nginx fails trying to create these directories for some reason, so we just do it ourselves here
-    entrypoint: |
-      /bin/sh -c 'mkdir -p /var/cache/nginx/client_temp /var/lib/nginx/cache/public /var/lib/nginx/cache/private && exec /docker-entrypoint.sh nginx -g "daemon off;"'
   certbot:
     image: ghcr.io/anarchobooleanism/certbot-dns-namecheap:v1.0.0-certbotv5.1.0-3
     restart: unless-stopped
