@@ -53,4 +53,10 @@ For adding Velocity support to Pterodactyl, this egg is what you need: https://p
 
 When allocating ports to nodes (and servers), be sure to allocate it to the IP address of `0.0.0.0`.
 
+For servers involving heavy use, make sure to use Aikar's flags in your set of startup flags; make sure the container has no set memory limit. This is what it looks like, generated with [this tool provided by Paper](https://docs.papermc.io/misc/tools/start-script-gen/):
+```
+java -Xms4096M -Xmx4096M -XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+ParallelRefProcEnabled -XX:+PerfDisableSharedMem -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1HeapRegionSize=8M -XX:G1HeapWastePercent=5 -XX:G1MaxNewSizePercent=40 -XX:G1MixedGCCountTarget=4 -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1NewSizePercent=30 -XX:G1RSetUpdatingPauseTimePercent=5 -XX:G1ReservePercent=20 -XX:InitiatingHeapOccupancyPercent=15 -XX:MaxGCPauseMillis=200 -XX:MaxTenuringThreshold=1 -XX:SurvivorRatio=32 -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true -Dterminal.jline=false -Dterminal.ansi=true -jar {{SERVER_JARFILE}}
+```
+Note that memory usage is set in the `-Xms####M` and `-Xmx####M`, which respectively set a minimum and a maximum limit for RAM allocation. These generally should be set to the same value.
+
 **REMINDER**: When creating servers, make sure the database and backup limits are above 0!
