@@ -18,6 +18,7 @@ if missing_domains:
     subprocess.call([
         "certbot", "certonly",
         "-a", "dns-namecheap",
+        "--dns-namecheap-credentials=/namecheap.ini",
         "--agree-tos", "--non-interactive", "-vv",
         "--no-eff-email", "--email", os.environ["CERTBOT_EMAIL"],
         "--domains", ",".join(missing_domains)
