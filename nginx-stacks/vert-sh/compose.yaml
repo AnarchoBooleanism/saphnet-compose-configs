@@ -7,7 +7,7 @@ services:
       - PUB_PLAUSIBLE_URL=${PUB_PLAUSIBLE_URL:-https://plausible.example.com}
       - PUB_ENV=${PUB_ENV:-production}
       - PORT=${PORT:-3000}
-      - PUB_VERTD_URL=${PUB_VERTD_URL:-https://vertd.int.saphnet.xyz}
+      - PUB_VERTD_URL=https://vertd.int.saphnet.xyz
     restart: unless-stopped
     networks:
       - web_bridge
