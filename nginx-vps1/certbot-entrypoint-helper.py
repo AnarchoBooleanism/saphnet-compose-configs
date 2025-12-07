@@ -1,5 +1,6 @@
 # Helper script for Certbot entrypoint
 import os, subprocess
+from collections import defaultdict
 
 # Create /namecheap.ini
 with open("/namecheap.ini", "a") as file:
@@ -17,15 +18,17 @@ for domain in domain_array:
     if not os.path.exists(f"/etc/letsencrypt/live/{domain}/fullchain.pem"):
         missing_domains.append(domain)
 
-if missing_domains:
-    print("Running Certbot to create certificates for " + ",".join(missing_domains) + "...")
+# Since certificates only work for one root domain
+for domain in missing_domains:
+    print(f"Running Certbot to create certificates for \"{domain}\"...")
     subprocess.call([
         "certbot", "certonly",
         "-a", "dns-namecheap",
         "--dns-namecheap-credentials=/namecheap.ini",
         "--agree-tos", "--non-interactive", "-vv",
         "--no-eff-email", "--email", os.environ["CERTBOT_EMAIL"],
-        "--domains", ",".join(missing_domains)
+        "--domain", domain
     ])
-else:
+
+if not missing_domains:
     print("No domains without certificates exist. Continuing...")
