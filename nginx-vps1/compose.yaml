@@ -43,6 +43,7 @@ services:
     volumes:
       - certbot-conf:/etc/letsencrypt
       - ./certbot-entrypoint.sh:/certbot-entrypoint.sh:ro
+      - ./certbot-entrypoint-helper.sh:/certbot-entrypoint-helper.sh:ro
     environment:
       TZ: ${TZ}
       DNS_NAMECHEAP_USERNAME: ${DNS_NAMECHEAP_USERNAME}
