@@ -4,7 +4,6 @@
 # - CERTBOT_EMAIL
 
 x-common:
-  TEST_DOMAIN: &test_domain saphnet.xyz
   # Try to keep the order of this consistent, for Certbot's sake
   DOMAINS: &domains >-
     saphnet.xyz
@@ -48,9 +47,8 @@ services:
       DNS_NAMECHEAP_API_KEY: ${DNS_NAMECHEAP_API_KEY}
       CERTBOT_DOMAINS: *domains
       CERTBOT_EMAIL: ${CERTBOT_EMAIL}
-      TEST_DOMAIN: *test_domain
     healthcheck:
-      test: ["CMD", "sh", "-c", "[ -f /etc/letsencrypt/live/$TEST_DOMAIN/fullchain.pem ]"]
+      test: ["CMD", "sh", "-c", "[ -f /etc/letsencrypt/live/saphnet.xyz/fullchain.pem ]"]
       interval: 20s
       retries: 12
       start_period: 10s
