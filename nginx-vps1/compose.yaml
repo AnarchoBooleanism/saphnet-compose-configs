@@ -2,6 +2,7 @@
 # - DNS_NAMECHEAP_USERNAME
 # - DNS_NAMECHEAP_API_KEY
 # - CERTBOT_EMAIL
+# - ED25519_PRIVATE_KEY_HEX
 
 x-common:
   # Try to keep the order of this consistent, for Certbot's sake
