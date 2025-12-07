@@ -14,7 +14,7 @@ missing_domains = []
 
 print("Checking domains " + ",".join(domain_array))
 for domain in domain_array:
-    if not os.path.exists(f"/etc/lets_encrypt/live/{domain}/fullchain.pem"):
+    if not os.path.exists(f"/etc/letsencrypt/live/{domain}/fullchain.pem"):
         missing_domains.append(domain)
 
 if missing_domains:
