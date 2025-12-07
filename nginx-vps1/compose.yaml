@@ -76,7 +76,7 @@ services:
   #   networks:
   #     - web_bridge
   anubis-thevoidpact-map:
-    container-name: anubis-thevoidpact-map
+    container_name: anubis-thevoidpact-map
     image: ghcr.io/techarohq/anubis:v1.24.0-pre1
     environment:
       <<: *anubis-environment
