@@ -12,6 +12,7 @@ x-common:
     pterodactyl-node-public.saphnet.xyz
   ANUBIS: &anubis-environment # Default bind is 8923
     DIFFICULTY: "4"
+    ED25519_PRIVATE_KEY_HEX: ${ED25519_PRIVATE_KEY_HEX}
     OG_PASSTHROUGH: "true"
     WEBMASTER_EMAIL: "homelab@saphnet.xyz"
 
