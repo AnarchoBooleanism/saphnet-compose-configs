@@ -51,15 +51,16 @@ services:
       - /dev/net/tun:/dev/net/tun
     environment:
       - VPN_SERVICE_PROVIDER=nordvpn
-      - VPN_TYPE=wireguard
-      # To get private key, run docker run --rm --cap-add=NET_ADMIN -e TOKEN=<TOKEN_HERE> ghcr.io/bubuntux/nordvpn:get_private_key
-      - WIREGUARD_PRIVATE_KEY=${PRIVATE_KEY}
+      - VPN_TYPE=openvpn
+      # Get credentials from https://my.nordaccount.com/dashboard/nordvpn/manual-configuration/service-credentials/
+      - OPENVPN_USER=${OPENVPN_USER}
+      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
       - SERVER_HOSTNAMES=${CONNECT}.nordvpn.com
     ports:
       - 8112:8112
       - 58846:58846
     sysctls:
-      - net.ipv6.conf.all.disable_ipv6=1  # Recomended if using ipv4 only
+      - net.ipv6.conf.all.disable_ipv6=1 # Recomended if using ipv4 only
     restart: unless-stopped
 
   deluge:
