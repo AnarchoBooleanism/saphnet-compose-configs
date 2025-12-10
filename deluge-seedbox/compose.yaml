@@ -18,27 +18,45 @@ services:
   #   cap_add:
   #     - net_admin
   #   restart: unless-stopped
+  # vpn:
+  #   image: ghcr.io/bubuntux/nordvpn@sha256:ac521b5a8d1387780d812a0ed46dd23aa3ee5e47d6d9f9eace39213ea1f56509
+  #   container_name: vpn
+  #   cap_add:
+  #     - NET_ADMIN               # Required
+  #     - NET_RAW                 # Required
+  #   environment:                # Review https://github.com/bubuntux/nordvpn#environment-variables
+  #     - TECHNOLOGY=NordLynx
+  #     - NETWORK=192.168.0.0/16  # So it can be accessed within the local network
+  #     # Secrets to set in environment:
+  #     - TOKEN=$TOKEN
+  #     - CONNECT=$CONNECT
+  #   ports:
+  #     - 8112:8112
+  #     - 58846:58846
+  #   healthcheck: # Make sure it can access the internet
+  #     test: ["CMD", "curl", "-f", "https://www.google.com"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 15s # Give the VPN time to establish the initial connection
+  #   sysctls:
+  #     - net.ipv6.conf.all.disable_ipv6=1  # Recomended if using ipv4 only
+  #   restart: unless-stopped
   vpn:
-    image: ghcr.io/bubuntux/nordvpn@sha256:ac521b5a8d1387780d812a0ed46dd23aa3ee5e47d6d9f9eace39213ea1f56509
+    image: qmcgaw/gluetun:v3.40.3
     container_name: vpn
     cap_add:
-      - NET_ADMIN               # Required
-      - NET_RAW                 # Required
-    environment:                # Review https://github.com/bubuntux/nordvpn#environment-variables
-      - TECHNOLOGY=NordLynx
-      - NETWORK=192.168.0.0/16  # So it can be accessed within the local network
-      # Secrets to set in environment:
-      - TOKEN=$TOKEN
-      - CONNECT=$CONNECT
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - VPN_SERVICE_PROVIDER=nordvpn
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=${TOKEN}
+      - SERVER_HOSTNAMES=${CONNECT}.nordvpn.com
     ports:
       - 8112:8112
       - 58846:58846
-    healthcheck: # Make sure it can access the internet
-      test: ["CMD", "curl", "-f", "https://www.google.com"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 15s # Give the VPN time to establish the initial connection
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=1  # Recomended if using ipv4 only
     restart: unless-stopped
