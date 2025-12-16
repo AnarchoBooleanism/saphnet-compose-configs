@@ -29,6 +29,7 @@ updates:
       - "/docker-proxy/"
       - "/docker-volume-rclone/"
       - "/foldingathome/"
+      - "/glances/"
       - "/media-server/"
       - "/netbootxyz/"
       - "/nginx-stacks/filestash/"
@@ -37,7 +38,9 @@ updates:
       - "/nginx-stacks/nginx-proxy-manager/"
       - "/nginx-stacks/openspeedtest/"
       - "/nginx-stacks/vert-sh/"
-      - "/pterodactyl/main/"
+      - "/nginx-vps1/"
+      - "/pterodactyl/panel/"
       - "/pterodactyl/wing/"
+      - "/vertd/"
     schedule:
       interval: "weekly"
