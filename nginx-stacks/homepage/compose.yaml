@@ -16,7 +16,7 @@ services:
       - web_bridge
 
   homepage:
-    image: ghcr.io/anarchobooleanism/saphnet-homepage@sha256:a33f6d1a0861cdfb923eb64f8114821a010cccd650df1ffcb46d2a351cc34c46
+    image: ghcr.io/anarchobooleanism/saphnet-homepage:latest
     container_name: homepage
     environment:
       - HOMEPAGE_ALLOWED_HOSTS=homepage.int.saphnet.xyz
