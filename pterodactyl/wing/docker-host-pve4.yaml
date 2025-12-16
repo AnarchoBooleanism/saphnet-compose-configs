@@ -58,7 +58,7 @@ services:
     networks:
       - pterodactyl_wing_internal
   certbot:
-    image: ghcr.io/anarchobooleanism/certbot-dns-namecheap:v1.0.0-certbotv5.1.0-3
+    image: ghcr.io/anarchobooleanism/certbot-dns-namecheap:v1.0.0-certbotv5.2.2-1
     restart: unless-stopped
     volumes:
       - certbot-conf:/etc/letsencrypt
