@@ -1,7 +1,7 @@
 services:
   app:
     container_name: filestash
-    image: machines/filestash@sha256:77c9dd02cfba17aea2b018fb334edcb2df3a20afbc19ec8218c46e324de87271
+    image: machines/filestash@sha256:8f7a4c4706e383e1adc10e8e82c48797df233621656fa22b9fbbedd737b48350
     restart: unless-stopped
     environment:
     - APPLICATION_URL=filestash.int.saphnet.xyz
