@@ -1,6 +1,6 @@
 services: # To be connected to by Homepage
   docker-proxy:
-    image: ghcr.io/tecnativa/docker-socket-proxy:v0.4.1
+    image: ghcr.io/tecnativa/docker-socket-proxy:v0.4.2
     container_name: docker-proxy
     environment:
       - CONTAINERS=1 # Allow access to viewing containers
