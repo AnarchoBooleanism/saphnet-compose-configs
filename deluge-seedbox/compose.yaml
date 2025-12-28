@@ -43,7 +43,7 @@ services:
   #     - net.ipv6.conf.all.disable_ipv6=1  # Recomended if using ipv4 only
   #   restart: unless-stopped
   vpn:
-    image: qmcgaw/gluetun:v3.40.3
+    image: qmcgaw/gluetun:v3.41.0
     container_name: vpn
     cap_add:
       - NET_ADMIN
