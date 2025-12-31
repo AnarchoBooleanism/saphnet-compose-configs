@@ -2,6 +2,7 @@ services:
   vertd:
     container_name: vertd
     image: ghcr.io/vert-sh/vertd:sha-8abb761
+    restart: unless-stopped
     environment:
       - WEBHOOK_URL=${WEBHOOK_URL}
       - WEBHOOK_PINGS=${WEBHOOK_PINGS}
