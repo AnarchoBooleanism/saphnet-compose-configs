@@ -16,9 +16,9 @@ x-common:
   INSTANCE_DOMAIN: &instance-domain "pterodactyl-node-public.saphnet.xyz" # Maps to Tailscale IP, vps1-ts.saphnet.xyz
 
 services:
-  wing: # TODO: Create automatic backup script
+  wing:
     container_name: pterodactyl-wing # Refer to the panel container this way
-    image: ghcr.io/pterodactyl/wings:v1.11.13
+    image: ghcr.io/pyrohost/elytra:1.3.0
     restart: unless-stopped
     networks:
       - web_bridge
