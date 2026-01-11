@@ -70,3 +70,5 @@ java -Xms4096M -Xmx4096M -XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+Paralle
 Note that memory usage is set in the `-Xms####M` and `-Xmx####M`, which respectively set a minimum and a maximum limit for RAM allocation. These generally should be set to the same value.
 
 **REMINDER**: When creating servers, make sure the database and backup limits are above 0!
+
+When using reverse proxies (e.g. Velocity) on the same host as the upstream server, make sure to use the IP address of the Docker container (of the upstream server) in the context of the internal Pterodactyl bridge, as connecting to the host IP will not work (due to firewall issues, most likely).
