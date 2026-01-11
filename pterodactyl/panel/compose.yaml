@@ -42,6 +42,7 @@ x-common:
   backup: &backup-environment
     APP_BACKUP_DRIVER: rustic_s3
     RUSTIC_S3_FORCE_PATH_STYLE: 'true'
+    RUSTIC_REPOSITORY_BASE_PATH: /var/lib/elytra/rustic-repos # For some reason, the default is /var/lib/pterodactyl...
     RUSTIC_S3_REGION: ${RUSTIC_S3_REGION}
     RUSTIC_S3_ACCESS_KEY_ID: ${RUSTIC_S3_ACCESS_KEY_ID}
     RUSTIC_S3_SECRET_ACCESS_KEY: ${RUSTIC_S3_SECRET_ACCESS_KEY}

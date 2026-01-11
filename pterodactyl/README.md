@@ -37,8 +37,18 @@ system:
   data: /var/lib/pterodactyl/volumes
   sftp:
     bind_port: 2022
+  backups:
+    rustic:
+      binary_path: rustic
+      repository_version: 2
+      tree_pack_size_mb: 4
+      data_pack_size_mb: 32
+      local: { enabled: true, repository_path: /var/lib/elytra/rustic-repos, use_cold_storage: false, hot_repository_path: '' }
+      s3: { enabled: true, endpoint: 'https://s3.nas1.int.saphnet.xyz', region: garage, bucket: pterodactyl-backups, use_cold_storage: false, hot_bucket: '', cold_storage_class: GLACIER, force_path_style: true, disable_ssl: false, ca_cert_path: '' }
 allowed_mounts: []
 remote: 'https://pterodactyl.int.saphnet.xyz'
+allowed_origins:
+  - 'https://pterodactyl.int.saphnet.xyz'
 docker:
   network:
     interfaces:
