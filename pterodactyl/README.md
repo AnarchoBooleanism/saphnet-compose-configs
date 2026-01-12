@@ -71,4 +71,4 @@ Note that memory usage is set in the `-Xms####M` and `-Xmx####M`, which respecti
 
 **REMINDER**: When creating servers, make sure the database and backup limits are above 0!
 
-When using reverse proxies (e.g. Velocity) on the same host as the upstream server, make sure to use the IP address of the Docker container (of the upstream server) in the context of the internal Pterodactyl bridge, as connecting to the host IP will not work (due to firewall issues, most likely).
+When using reverse proxies (e.g. Velocity) on the same host as the upstream server, make sure to use the server UUID (in the context of Pterodactyl, Docker DNS will resolve this) of the Docker container (of the upstream server) in the context of the internal Pterodactyl bridge, as connecting to the host IP will not work (due to firewall issues, most likely).
