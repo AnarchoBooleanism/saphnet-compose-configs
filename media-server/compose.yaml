@@ -93,10 +93,10 @@ services:
       TZ: *timezone
     volumes:
       - sonarr-anime-config:/config
-      - media-server-anime:/tv
+      - media-server-anime:/anime
       - seedbox-torrent-downloads:/downloads
     ports:
-      - 8990:8990
+      - 8990:8989
     restart: unless-stopped
   
   bazarr: # For subtitles
@@ -109,6 +109,7 @@ services:
     volumes:
       - bazarr-config:/config
       - media-server-movies:/movies
+      - media-server-tv:/tv
       - media-server-tv:/tv
     ports:
       - 6767:6767
