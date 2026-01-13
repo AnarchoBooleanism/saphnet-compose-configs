@@ -93,7 +93,7 @@ services:
       TZ: *timezone
     volumes:
       - sonarr-anime-config:/config
-      - media-server-anime:/anime
+      - media-server-anime:/tv
       - seedbox-torrent-downloads:/downloads
     ports:
       - 8990:8990
