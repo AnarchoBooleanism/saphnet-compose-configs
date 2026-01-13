@@ -96,7 +96,7 @@ services:
       - media-server-anime:/anime
       - seedbox-torrent-downloads:/downloads
     ports:
-      - 8989:8989
+      - 8990:8990
     restart: unless-stopped
   
   bazarr: # For subtitles
