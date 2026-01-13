@@ -24,6 +24,21 @@ services:
     # Optional - may be necessary for docker healthcheck to pass if running in host network mode
     extra_hosts:
       - 'host.docker.internal:host-gateway'
+
+  flaresolverr: # Handles CloudFlare prompts for Prowlarr
+    image: ghcr.io/flaresolverr/flaresolverr:v3.4.6
+    container_name: flaresolverr
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FILE: ${LOG_FILE:-none}
+      LOG_HTML: ${LOG_HTML:-false}
+      CAPTCHA_SOLVER: ${CAPTCHA_SOLVER:-none}
+      TZ: *timezone
+    ports:
+      - 8191:8191
+    volumes:
+      - flaresolverr-config:/config
+    restart: unless-stopped
   
   prowlarr: # Handles trackers
     image: lscr.io/linuxserver/prowlarr:2.3.0
@@ -87,6 +102,7 @@ volumes:
   seedbox-files:
   jellyfin-config:
   jellyfin-cache:
+  flaresolverr-config:
   prowlarr-config:
   radarr-config:
   sonarr-config:
