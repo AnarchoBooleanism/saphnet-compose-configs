@@ -15,6 +15,7 @@ services:
       - jellyfin-cache:/cache
       - media-server-movies:/media/movies
       - media-server-tv:/media/tv
+      - media-server-anime:/media/anime
     restart: unless-stopped
     # Optional - alternative address used for autodiscovery
     environment:
@@ -83,6 +84,21 @@ services:
       - 8989:8989
     restart: unless-stopped
   
+  sonarr-anime: # For anime
+    image: lscr.io/linuxserver/sonarr:4.0.16
+    container_name: sonarr-anime
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: *timezone
+    volumes:
+      - sonarr-anime-config:/config
+      - media-server-anime:/anime
+      - seedbox-torrent-downloads:/downloads
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+  
   bazarr: # For subtitles
     image: lscr.io/linuxserver/bazarr:1.5.4
     container_name: bazarr
@@ -106,6 +122,7 @@ volumes:
   prowlarr-config:
   radarr-config:
   sonarr-config:
+  sonarr-anime-config:
   bazarr-config:
   media-server-movies:
     driver_opts:
@@ -117,6 +134,11 @@ volumes:
       type: "nfs"
       o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
       device: ":/mnt/saphnet-nas1b/media-server/jellyfin/tv"
+  media-server-anime:
+    driver_opts:
+      type: "nfs"
+      o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
+      device: ":/mnt/saphnet-nas1b/media-server/jellyfin/anime"
   seedbox-torrent-files:
     driver_opts:
       type: "nfs"
