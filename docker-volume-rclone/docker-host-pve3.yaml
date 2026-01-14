@@ -8,9 +8,17 @@ services:
         deluge-seedbox_sftp-config
         deluge-seedbox_tailscale-config
         foldingathome_foldingathome
-        media-server_jackett-config
+        media-server_bazarr-config
+        media-server_flaresolverr-config
         media-server_jellyfin-config
+        media-server_jellyseerr-config
         media-server_radarr-config
+        media-server_prowlarr-config
+        media-server_radarr-anime-config
+        media-server_radarr-config
+        media-server_recyclarr-config
+        media-server_sonarr-anime-config
+        media-server_sonarr-config
       RUN_ON_STARTUP: "false"
       CRON_ARGUMENTS: 0 */4 * * * # At minute 0, every 4 hours
       # RCLONE_OPTIONS:
