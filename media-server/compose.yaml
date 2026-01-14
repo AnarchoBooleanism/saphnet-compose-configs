@@ -189,6 +189,7 @@ volumes:
   prowlarr-config:
   recyclarr-config:
   radarr-config:
+  radarr-anime-config:
   sonarr-config:
   sonarr-anime-config:
   bazarr-config:
