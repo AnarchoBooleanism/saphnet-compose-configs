@@ -17,6 +17,7 @@ services:
       - media-server-movies:/media/movies
       - media-server-tv:/media/tv
       - media-server-anime:/media/anime
+      - media-server-anime-movies:/media/anime-movies
     # Optional - alternative address used for autodiscovery
     environment:
       JELLYFIN_PublishedServerUrl: https://jellyfin.int.saphnet.xyz
