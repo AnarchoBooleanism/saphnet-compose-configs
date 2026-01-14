@@ -28,6 +28,27 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
 
+  jellyseerr:
+    image: ghcr.io/fallenbagel/jellyseerr:2.7.3
+    container_name: jellyseerr
+    restart: unless-stopped
+    init: true
+    environment:
+      LOG_LEVEL: debug
+      TZ: *timezone
+    ports:
+      - 5055:5055
+    volumes:
+      - jellyseerr-config:/app/config
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    networks:
+      - media-server
+
   flaresolverr: # Handles CloudFlare prompts for Prowlarr
     image: ghcr.io/flaresolverr/flaresolverr:v3.4.6
     container_name: flaresolverr
@@ -59,6 +80,19 @@ services:
       - 9696:9696
     networks:
       - media-server
+
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr:7.5.2
+    container_name: recyclarr
+    restart: unless-stopped
+    user: 1000:1000
+    environment:
+      TZ: *timezone
+      RECYCLARR_CREATE_CONFIG: "true"
+    volumes:
+      - recyclarr-config:/config
+    networks:
+      - media-server
     
   radarr: # For movies
     image: lscr.io/linuxserver/radarr:6.0.4
@@ -74,6 +108,23 @@ services:
       - seedbox-torrent-downloads:/downloads # Deluge complete downloads folder
     ports:
       - 7878:7878
+    networks:
+      - media-server
+  
+  radarr-anime: # For anime movies
+    image: lscr.io/linuxserver/radarr:6.0.4
+    container_name: radarr-anime
+    restart: unless-stopped
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: *timezone
+    volumes:
+      - radarr-anime-config:/config
+      - media-server-anime-movies:/anime-movies # Jellyfin movies folder
+      - seedbox-torrent-downloads:/downloads # Deluge complete downloads folder
+    ports:
+      - 7879:7878
     networks:
       - media-server
 
@@ -133,8 +184,10 @@ volumes:
   seedbox-files:
   jellyfin-config:
   jellyfin-cache:
+  jellyseerr-config:
   flaresolverr-config:
   prowlarr-config:
+  recyclarr-config:
   radarr-config:
   sonarr-config:
   sonarr-anime-config:
@@ -154,6 +207,11 @@ volumes:
       type: "nfs"
       o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
       device: ":/mnt/saphnet-nas1b/media-server/jellyfin/anime"
+  media-server-anime-movies:
+    driver_opts:
+      type: "nfs"
+      o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
+      device: ":/mnt/saphnet-nas1b/media-server/jellyfin/anime-movies"
   seedbox-torrent-files:
     driver_opts:
       type: "nfs"
