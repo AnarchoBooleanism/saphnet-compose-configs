@@ -19,4 +19,4 @@ volumes:
     driver_opts:
       type: "nfs"
       o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
-      device: ":/mnt/saphnet-nas1b/docker-volume-backups"
+      device: ":/mnt/saphnet-nas1a/docker-volume-backups"
