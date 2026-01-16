@@ -190,8 +190,8 @@ services:
       TZ: *timezone
     volumes:
       - bazarr-anime-config:/config
-      - media-server-anime-movies:/movies
-      - media-server-anime:/tv
+      - media-server-anime-movies:/anime-movies
+      - media-server-anime:/anime
     ports:
       - 6768:6767
     networks:
