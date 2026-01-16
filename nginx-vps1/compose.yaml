@@ -84,7 +84,7 @@ services:
       COOKIE_DOMAIN: "thevoidpact.xyz"
       PUBLIC_URL: "https://map.thevoidpact.xyz"
       REDIRECT_DOMAINS: "map.thevoidpact.xyz"
-      TARGET: "http://docker-host-pve3.tail0a9ee5.ts.net:63624" # http://pterodactyl-node-main.int-net.saphnet.xyz:63624
+      TARGET: "http://docker-host-pve4:63624" # http://pterodactyl-node-main.int-net.saphnet.xyz:63624
     healthcheck:
       test: ["CMD", "anubis", "--healthcheck"]
       interval: 5s
