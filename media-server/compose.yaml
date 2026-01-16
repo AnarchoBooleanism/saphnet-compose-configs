@@ -175,9 +175,25 @@ services:
       - bazarr-config:/config
       - media-server-movies:/movies
       - media-server-tv:/tv
-      - media-server-tv:/tv
     ports:
       - 6767:6767
+    networks:
+      - media-server
+  
+  bazarr-anime: # For anime subtitles
+    image: lscr.io/linuxserver/bazarr:1.5.4
+    container_name: bazarr-anime
+    restart: unless-stopped
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: *timezone
+    volumes:
+      - bazarr-anime-config:/config
+      - media-server-anime-movies:/movies
+      - media-server-anime:/tv
+    ports:
+      - 6768:6767
     networks:
       - media-server
 
@@ -194,6 +210,7 @@ volumes:
   sonarr-config:
   sonarr-anime-config:
   bazarr-config:
+  bazarr-anime-config:
   media-server-movies:
     driver_opts:
       type: "nfs"
