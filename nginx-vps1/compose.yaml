@@ -11,6 +11,7 @@ x-common:
     www.saphnet.xyz
     map.thevoidpact.xyz
     pterodactyl-node-public.saphnet.xyz
+    jellyfin.saphnet.xyz
   ANUBIS: &anubis-environment # Default bind is 8923
     DIFFICULTY: "4"
     ED25519_PRIVATE_KEY_HEX: ${ED25519_PRIVATE_KEY_HEX}
@@ -78,13 +79,30 @@ services:
   #     - web_bridge
   anubis-thevoidpact-map:
     container_name: anubis-thevoidpact-map
-    image: ghcr.io/techarohq/anubis:v1.24.0-pre1
+    image: ghcr.io/techarohq/anubis:v1.24.0
     environment:
       <<: *anubis-environment
       COOKIE_DOMAIN: "thevoidpact.xyz"
       PUBLIC_URL: "https://map.thevoidpact.xyz"
       REDIRECT_DOMAINS: "map.thevoidpact.xyz"
-      TARGET: "http://docker-host-pve4:63624" # http://pterodactyl-node-main.int-net.saphnet.xyz:63624
+      TARGET: "http://docker-host-pve4:63624"
+    healthcheck:
+      test: ["CMD", "anubis", "--healthcheck"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 500ms
+    networks:
+      - web_bridge
+  anubis-jellyfin:
+    container_name: anubis-jellyfin
+    image: ghcr.io/techarohq/anubis:v1.24.0
+    environment:
+      <<: *anubis-environment
+      COOKIE_DOMAIN: "saphnet.xyz"
+      PUBLIC_URL: "https://jellyfin.saphnet.xyz"
+      REDIRECT_DOMAINS: "jellyfin.saphnet.xyz"
+      TARGET: "https://docker-host-pve3:8920"
     healthcheck:
       test: ["CMD", "anubis", "--healthcheck"]
       interval: 5s
