@@ -102,7 +102,7 @@ services:
       COOKIE_DOMAIN: "jellyfin.saphnet.xyz"
       # PUBLIC_URL: "https://jellyfin.saphnet.xyz" # Leaving unset since we get redirect issues otherwise
       REDIRECT_DOMAINS: "jellyfin.saphnet.xyz"
-      TARGET: "http://docker-host-pve3:8096"
+      TARGET: "https://docker-host-pve3:8920"
     healthcheck:
       test: ["CMD", "anubis", "--healthcheck"]
       interval: 5s
