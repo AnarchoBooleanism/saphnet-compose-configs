@@ -1,5 +1,6 @@
 # Be sure to define
 # - VELOCITY_FORWARDING_SECRET
+# - RCON_PASSWORD
 # - SFTP_PASSWORD
 # - TAILSCALE_IP
 # Note: The actual environment variable, in the Velocity container, should be prefixed with "CFG_"
@@ -17,19 +18,26 @@ services:
     environment:
       # For secrets
       REPLACE_ENV_VARIABLES: "TRUE"
-      CFG_VELOCITY_FORWARDING_SECRET: "${VELOCITY_FORWARDING_SECRET}"
+      ENV_VARIABLE_PREFIX: "CFG_"
+      VELOCITY_FORWARDING_SECRET: "${VELOCITY_FORWARDING_SECRET}" # We will handle this ourselves
       # Velocity configuration
       TYPE: VELOCITY
       MEMORY: 512m
       VELOCITY_VERSION: *velocity-version
       VELOCITY_BUILD_ID: latest
       ENABLE_RCON: "true"
+      RCON_PORT: 25575
+      RCON_PASSWORD: ${RCON_PASSWORD}
     ports:
       - 25565:25565
+      - ${TAILSCALE_IP:-0.0.0.0}:25575:25575
     volumes:
       - ./velocity-config/velocity.toml:/config/velocity.toml:ro
-      - ./velocity-config/forwarding.secret:/config/forwarding.secret:ro
       - velocity-data:/server
+    # As mc-proxy can only fill in certain types of files, we will set forwarding.secret ourselves
+    # For last command, see: https://github.com/itzg/docker-mc-proxy/blob/master/Dockerfile
+    command: >-
+      { echo "${VELOCITY_FORWARDING_SECRET}" | tee "/config/forwarding.secret" } && /usr/bin/run-bungeecord.sh
   velocity-sftp: 
     image: emberstack/sftp:build-5.1.72
     container_name: velocity-sftp
