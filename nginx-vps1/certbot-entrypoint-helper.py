@@ -14,16 +14,16 @@ domain_groups = [domain_list.split(",") for domain_list in os.environ["CERTBOT_D
 missing_domain_groups = []
 
 for domain_group in domain_groups:
-    print("Checking domains " + ", ".join(domain_group) + "...")
+    print("Checking domains \"" + ",".join(domain_group) + "\"...")
     if not os.path.exists(f"/etc/letsencrypt/live/{domain_group[0]}/fullchain.pem"):
         missing_domain_groups.append(domain_group)
-        print(f"Certificate file does not exist for first domain {domain_group[0]}...")
+        print(f"Certificate file does not exist for first domain \"{domain_group[0]}\"...")
 
 # Since certificates only work for one root domain
 for domain_group in missing_domain_groups:
-    print("Running Certbot to create certificates for " + \
-          ", ".join(domain_group) + " " \
-          f"(the certificate's name will be {domain_group[0]})"
+    print("Running Certbot to create certificates for \"" + \
+          ",".join(domain_group) + "\" " \
+          f"(the certificate's name will be \"{domain_group[0]}\")"
     )
     command_arguments = [
         "certbot", "certonly",
