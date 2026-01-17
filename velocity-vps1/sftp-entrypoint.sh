@@ -22,4 +22,5 @@ cat > /app/config/sftp.json <<EOF
 }
 EOF
 
+# Entrypoint from original image
 tini -- dotnet ES.SFTP.dll
