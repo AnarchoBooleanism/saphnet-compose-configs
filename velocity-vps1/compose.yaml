@@ -5,12 +5,12 @@
 
 # Variables you'll want to frequently change
 x-common:
-  MINECRAFT_VERSION: &minecraft-version "1.21.11"
-  VELOCITY_IMAGE_NAME: &velocity-image-name "itzg/mc-proxy:java21" # Set this to the Java version used by the Minecraft version
+  VELOCITY_VERSION: &velocity-version "3.4.0-SNAPSHOT" # See: https://papermc.io/downloads/velocity
+  IMAGE_NAME: &image-name "itzg/mc-proxy:java21" # Set this to the Java version used by the Velocity version
 
 services:
   velocity:
-    image: *velocity-image-name
+    image: *image-name
     container_name: velocity
     restart: unless-stopped
     environment:
@@ -20,7 +20,8 @@ services:
       # Velocity configuration
       TYPE: VELOCITY
       MEMORY: 512m
-      VELOCITY_VERSION: *minecraft-version
+      VELOCITY_VERSION: *velocity-version
+      VELOCITY_BUILD_ID: latest
     ports:
       - 25565:25565
     volumes:
@@ -37,9 +38,11 @@ services:
     volumes:
       - ./sftp-entrypoint.sh:/sftp-entrypoint.sh:ro
       - velocity-data:/home/velocity-user/sftp
+      - sftp-data:/app/config # For persistence of state and settings
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:2222:22"
     entrypoint: [ "/sftp-entrypoint.sh" ]
 
 volumes:
   velocity-data:
+  sftp-data:

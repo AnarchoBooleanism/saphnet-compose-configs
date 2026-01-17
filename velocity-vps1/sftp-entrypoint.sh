@@ -23,4 +23,5 @@ cat > /app/config/sftp.json <<EOF
 EOF
 
 # Entrypoint from original image
+export TINI_KILL_PROCESS_GROUP=1
 tini -- dotnet ES.SFTP.dll
