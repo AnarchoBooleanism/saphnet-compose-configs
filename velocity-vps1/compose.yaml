@@ -2,6 +2,7 @@
 # - VELOCITY_FORWARDING_SECRET
 # - SFTP_PASSWORD
 # - TAILSCALE_IP
+# Note: The actual environment variable, in the Velocity container, should be prefixed with "CFG_"
 
 # Variables you'll want to frequently change
 x-common:
@@ -16,12 +17,13 @@ services:
     environment:
       # For secrets
       REPLACE_ENV_VARIABLES: "TRUE"
-      VELOCITY_FORWARDING_SECRET: "${VELOCITY_FORWARDING_SECRET}"
+      CFG_VELOCITY_FORWARDING_SECRET: "${VELOCITY_FORWARDING_SECRET}"
       # Velocity configuration
       TYPE: VELOCITY
       MEMORY: 512m
       VELOCITY_VERSION: *velocity-version
       VELOCITY_BUILD_ID: latest
+      ENABLE_RCON: "true"
     ports:
       - 25565:25565
     volumes:
@@ -40,7 +42,7 @@ services:
       - velocity-data:/home/velocity-user/sftp
       - sftp-ssh-data:/etc/ssh # For persistence of keys
     ports:
-      - "${TAILSCALE_IP:-0.0.0.0}:2222:22"
+      - "${TAILSCALE_IP:-0.0.0.0}:2022:22"
     entrypoint: [ "/sftp-entrypoint.sh" ]
 
 volumes:
