@@ -6,12 +6,12 @@
 
 x-common:
   # Try to keep the order of this consistent, for Certbot's sake
+  # Each line is a separate certificate, being a comma-separated list, where the first domain is the name of the certificate
+  # Note that we currently don't have the ability to check whether the certificate has all the domains for the group, so
+  # delete the certificate file for the group if any new domain is added to a certificate (TODO)
   DOMAINS: &domains >-
-    saphnet.xyz
-    www.saphnet.xyz
-    map.thevoidpact.xyz
+    saphnet.xyz,www.saphnet.xyz,jellyfin.saphnet.xyz,map.thevoidpact.xyz
     pterodactyl-node-public.saphnet.xyz
-    jellyfin.saphnet.xyz
   ANUBIS: &anubis-environment # Default bind is 8923
     DIFFICULTY: "4"
     ED25519_PRIVATE_KEY_HEX: ${ED25519_PRIVATE_KEY_HEX}
