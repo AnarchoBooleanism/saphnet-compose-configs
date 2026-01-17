@@ -38,11 +38,11 @@ services:
     volumes:
       - ./sftp-entrypoint.sh:/sftp-entrypoint.sh:ro
       - velocity-data:/home/velocity-user/sftp
-      - sftp-data:/app/config # For persistence of state and settings
+      - sftp-ssh-data:/etc/ssh # For persistence of keys
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:2222:22"
     entrypoint: [ "/sftp-entrypoint.sh" ]
 
 volumes:
   velocity-data:
-  sftp-data:
+  sftp-ssh-data:

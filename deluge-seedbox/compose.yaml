@@ -85,6 +85,7 @@ services:
     container_name: deluge-sftp
     volumes:
       - sftp-config:/app/config
+      - sftp-ssh-data:/etc/ssh # For persistence of keys
       - seedbox-files:/home/seedbox/sftp
     ports:
       - "2222:22"
@@ -94,6 +95,7 @@ volumes:
   # tailscale-config:
   deluge-config:
   sftp-config:
+  sftp-ssh-data:
   seedbox-files:
     driver_opts:
       type: "nfs"
