@@ -36,8 +36,12 @@ services:
       - velocity-data:/server
     # As mc-proxy can only fill in certain types of files, we will set forwarding.secret ourselves
     # For last command, see: https://github.com/itzg/docker-mc-proxy/blob/master/Dockerfile
-    command: >-
-      sh -c "echo '${VELOCITY_FORWARDING_SECRET}'' > '/config/forwarding.secret' && /usr/bin/run-bungeecord.sh"
+    command:
+      - /bin/sh
+      - -c
+      - |
+        echo '${VELOCITY_FORWARDING_SECRET}' > '/config/forwarding.secret'
+        exec /usr/bin/run-bungeecord.sh
   velocity-sftp: 
     image: emberstack/sftp:build-5.1.72
     container_name: velocity-sftp
