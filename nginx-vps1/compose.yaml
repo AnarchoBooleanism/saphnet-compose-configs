@@ -82,7 +82,7 @@ services:
     image: ghcr.io/techarohq/anubis:v1.24.0
     environment:
       <<: *anubis-environment
-      COOKIE_DOMAIN: "thevoidpact.xyz"
+      COOKIE_DOMAIN: "map.thevoidpact.xyz"
       PUBLIC_URL: "https://map.thevoidpact.xyz"
       REDIRECT_DOMAINS: "map.thevoidpact.xyz"
       TARGET: "http://docker-host-pve4:63624"
@@ -99,7 +99,7 @@ services:
     image: ghcr.io/techarohq/anubis:v1.24.0
     environment:
       <<: *anubis-environment
-      COOKIE_DOMAIN: "saphnet.xyz"
+      COOKIE_DOMAIN: "jellyfin.saphnet.xyz"
       PUBLIC_URL: "https://jellyfin.saphnet.xyz"
       REDIRECT_DOMAINS: "jellyfin.saphnet.xyz"
       TARGET: "http://docker-host-pve3:8096"
