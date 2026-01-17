@@ -102,7 +102,7 @@ services:
       COOKIE_DOMAIN: "saphnet.xyz"
       PUBLIC_URL: "https://jellyfin.saphnet.xyz"
       REDIRECT_DOMAINS: "jellyfin.saphnet.xyz"
-      TARGET: "https://docker-host-pve3:8920"
+      TARGET: "http://docker-host-pve3:8096"
     healthcheck:
       test: ["CMD", "anubis", "--healthcheck"]
       interval: 5s
