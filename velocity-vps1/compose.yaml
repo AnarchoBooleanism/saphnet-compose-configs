@@ -1,0 +1,45 @@
+# Be sure to define
+# - VELOCITY_FORWARDING_SECRET
+# - SFTP_PASSWORD
+# - TAILSCALE_IP
+
+# Variables you'll want to frequently change
+x-common:
+  MINECRAFT_VERSION: &minecraft-version "1.21.11"
+  VELOCITY_IMAGE_NAME: &velocity-image-name "itzg/mc-proxy:java21" # Set this to the Java version used by the Minecraft version
+
+services:
+  velocity:
+    image: *velocity-image-name
+    container_name: velocity
+    restart: unless-stopped
+    environment:
+      # For secrets
+      REPLACE_ENV_VARIABLES: "TRUE"
+      VELOCITY_FORWARDING_SECRET: "${VELOCITY_FORWARDING_SECRET}"
+      # Velocity configuration
+      TYPE: VELOCITY
+      MEMORY: 512m
+      VELOCITY_VERSION: *minecraft-version
+    ports:
+      - 25565:25565
+    volumes:
+      - ./velocity-config/velocity.toml:/config/velocity.toml:ro
+      - ./velocity-config/forwarding.secret:/config/forwarding.secret:ro
+      - velocity-data:/server
+  velocity-sftp: 
+    image: emberstack/sftp:build-5.1.72
+    container_name: velocity-sftp
+    restart: unless-stopped
+    environment:
+      SFTP_USERNAME: velocity-user
+      SFTP_PASSWORD: ${SFTP_PASSWORD}
+    volumes:
+      - ./sftp-entrypoint.sh:/sftp-entrypoint.sh:ro
+      - velocity-data:/home/velocity-user/sftp
+    ports:
+      - "${TAILSCALE_IP:-0.0.0.0}:2222:22"
+    entrypoint: [ "/sftp-entrypoint.sh" ]
+
+volumes:
+  velocity-data:

@@ -41,6 +41,7 @@ updates:
       - "/nginx-vps1/"
       - "/pterodactyl/panel/"
       - "/pterodactyl/wing/"
+      - "/velocity-vps1/"
       - "/vertd/"
     schedule:
       interval: "weekly"
