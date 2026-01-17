@@ -40,7 +40,7 @@ services:
       - /bin/sh
       - -c
       - |
-        echo '${VELOCITY_FORWARDING_SECRET}' > '/config/forwarding.secret'
+        echo -n '${VELOCITY_FORWARDING_SECRET}' > '/config/forwarding.secret'
         exec /usr/bin/run-bungeecord.sh
   velocity-sftp: 
     image: emberstack/sftp:build-5.1.72
