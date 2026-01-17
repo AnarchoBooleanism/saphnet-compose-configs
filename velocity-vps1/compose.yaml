@@ -1,6 +1,6 @@
 # Be sure to define
 # - VELOCITY_FORWARDING_SECRET
-# - RCON_PASSWORD
+# - RCON_PASSWORD # IMPORTANT: Avoid "#" in your password!!
 # - SFTP_PASSWORD
 # - TAILSCALE_IP
 # Note: The actual environment variable, in the Velocity container, should be prefixed with "CFG_"

@@ -3,7 +3,7 @@ A modern reverse proxy for Minecraft servers, intended for public-facing vps1
 
 When deploying, make sure to set these environment variables with your secrets:
 - `VELOCITY_FORWARDING_SECRET` - The forwarding secret to use with Velocity, for the purposes of authentication
-- `RCON_PASSWORD` - The password to login into Velocity's RCON server with
+- `RCON_PASSWORD` - The password to login into Velocity's RCON server with (**IMPORTANT**: avoid using `#` in your password!)
 - `SFTP_PASSWORD` - The password to login into the SFTP server as `velocity-user` with
 - `TAILSCALE_IP` - For the SFTP and RCON servers, set this if you want to restrict the interfaces from which it can be reached (e.g. restricting from public access)
 
