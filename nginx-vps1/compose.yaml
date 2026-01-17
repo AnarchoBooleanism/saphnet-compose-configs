@@ -83,7 +83,7 @@ services:
     environment:
       <<: *anubis-environment
       COOKIE_DOMAIN: "map.thevoidpact.xyz"
-      # PUBLIC_URL: "https://map.thevoidpact.xyz"
+      # PUBLIC_URL: "https://map.thevoidpact.xyz" # Leaving unset since we get redirect issues otherwise
       REDIRECT_DOMAINS: "map.thevoidpact.xyz"
       TARGET: "http://docker-host-pve4:63624"
     healthcheck:
@@ -100,7 +100,7 @@ services:
     environment:
       <<: *anubis-environment
       COOKIE_DOMAIN: "jellyfin.saphnet.xyz"
-      # PUBLIC_URL: "https://jellyfin.saphnet.xyz"
+      # PUBLIC_URL: "https://jellyfin.saphnet.xyz" # Leaving unset since we get redirect issues otherwise
       REDIRECT_DOMAINS: "jellyfin.saphnet.xyz"
       TARGET: "http://docker-host-pve3:8096"
     healthcheck:
