@@ -43,7 +43,7 @@ services:
         echo -n '${VELOCITY_FORWARDING_SECRET}' > '/config/forwarding.secret'
         exec /usr/bin/run-bungeecord.sh
   velocity-sftp: 
-    image: ghcr.io/AnarchoBooleanism/saphnet-sftp:v0.1.1
+    image: ghcr.io/anarchobooleanism/saphnet-sftp:v0.1.1
     container_name: velocity-sftp
     restart: unless-stopped
     environment:
