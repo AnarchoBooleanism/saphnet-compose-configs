@@ -43,19 +43,17 @@ services:
         echo -n '${VELOCITY_FORWARDING_SECRET}' > '/config/forwarding.secret'
         exec /usr/bin/run-bungeecord.sh
   velocity-sftp: 
-    image: emberstack/sftp:build-5.1.72
+    image: ghcr.io/AnarchoBooleanism/saphnet-sftp:v0.1.0
     container_name: velocity-sftp
     restart: unless-stopped
     environment:
       SFTP_USERNAME: velocity-user
       SFTP_PASSWORD: ${SFTP_PASSWORD}
     volumes:
-      - ./sftp-entrypoint.sh:/sftp-entrypoint.sh:ro
       - velocity-data:/home/velocity-user/sftp
       - sftp-ssh-data:/etc/ssh # For persistence of keys
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:2022:22"
-    entrypoint: [ "/sftp-entrypoint.sh" ]
 
 volumes:
   velocity-data:
