@@ -81,7 +81,7 @@ services:
         condition: service_healthy
 
   deluge-sftp:
-    image: ghcr.io/anarchobooleanism/saphnet-sftp:v0.1.0
+    image: ghcr.io/anarchobooleanism/saphnet-sftp:v0.1.1
     container_name: deluge-sftp
     environment:
       SFTP_USERNAME: seedbox
