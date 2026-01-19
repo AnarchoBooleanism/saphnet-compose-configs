@@ -32,5 +32,5 @@ NOTE: This host has an Intel Arc A310 for GPU acceleration.
 
 ### vps1 (vps1.saphnet.xyz)
 - `glances`
-- `nginx-stacks/nginx-proxy-manager`
-- `pterodactyl/wing`
+- `nginx-vps1`
+- `velocity-vps1`

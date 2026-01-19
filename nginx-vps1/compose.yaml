@@ -11,7 +11,6 @@ x-common:
   # delete the certificate file for the group if any new domain is added to a certificate (TODO)
   DOMAINS: &domains >-
     saphnet.xyz,www.saphnet.xyz,jellyfin.saphnet.xyz,map.thevoidpact.xyz
-    pterodactyl-node-public.saphnet.xyz
   ANUBIS: &anubis-environment # Default bind is 8923
     DIFFICULTY: "4"
     ED25519_PRIVATE_KEY_HEX: ${ED25519_PRIVATE_KEY_HEX}
