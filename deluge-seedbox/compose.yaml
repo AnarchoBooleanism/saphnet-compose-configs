@@ -81,10 +81,12 @@ services:
         condition: service_healthy
 
   deluge-sftp:
-    image: emberstack/sftp:build-5.1.72
+    image: ghcr.io/anarchobooleanism/saphnet-nginx:v0.1.0
     container_name: deluge-sftp
+    environment:
+      SFTP_USERNAME: seedbox
+      SFTP_PASSWORD: ${SFTP_PASSWORD}
     volumes:
-      - sftp-config:/app/config
       - sftp-ssh-data:/etc/ssh # For persistence of keys
       - seedbox-files:/home/seedbox/sftp
     ports:
@@ -94,7 +96,6 @@ services:
 volumes:
   # tailscale-config:
   deluge-config:
-  sftp-config:
   sftp-ssh-data:
   seedbox-files:
     driver_opts:
