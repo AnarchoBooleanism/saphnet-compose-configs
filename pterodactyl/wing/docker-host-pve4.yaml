@@ -41,7 +41,7 @@ services:
       - wings-logs:/var/log/elytra
       - /tmp/pterodactyl:/tmp/elytra
   nginx:
-    image: ghcr.io/anarchobooleanism/saphnet-nginx:v0.1.0
+    image: ghcr.io/anarchobooleanism/saphnet-nginx:v0.1.1
     restart: unless-stopped
     depends_on:
       certbot:
