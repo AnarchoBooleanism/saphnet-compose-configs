@@ -69,7 +69,7 @@ services:
       - pterodactyl_panel_internal
   panel:
     container_name: pterodactyl-panel # Refer to the panel container this way
-    image: ghcr.io/pyrodactyl-oss/pyrodactyl:v4.5.2
+    image: ghcr.io/pyrodactyl-oss/pyrodactyl:v5.0.0
     restart: unless-stopped
     # ports:
     #   - "802:80" # Web port
