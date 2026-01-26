@@ -7,7 +7,7 @@
 
 # Variables you'll want to frequently change
 x-common:
-  VELOCITY_VERSION: &velocity-version "3.4.0-SNAPSHOT" # See: https://papermc.io/downloads/velocity
+  VELOCITY_VERSION: &velocity-version "3.4.0" # See: https://papermc.io/downloads/velocity
   IMAGE_NAME: &image-name "itzg/mc-proxy:java21" # Set this to the Java version used by the Velocity version
 
 services:
