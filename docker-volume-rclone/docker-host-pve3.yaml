@@ -1,11 +1,9 @@
-include:
-  - ./base.yaml
-
 services:
   docker-volume-rclone:
-    <<: *docker-volume-rclone
+    extends:
+      file: ./base.yaml
+      service: docker-volume-rclone
     environment:
-      <<: *environment
       TARGET_SUBDIR_NAME: docker-host-pve3
       VOLUME_NAMES: >-
         deluge-seedbox_deluge-config

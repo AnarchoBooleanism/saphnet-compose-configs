@@ -1,7 +1,7 @@
 x-common:
   TIMEZONE: &timezone "America/Los_Angeles"
 
-x-services:
+services:
   docker-volume-rclone: &docker-volume-rclone # Is base service
     image: ghcr.io/anarchobooleanism/docker-volume-rclone:v0.1.0
     environment: &environment

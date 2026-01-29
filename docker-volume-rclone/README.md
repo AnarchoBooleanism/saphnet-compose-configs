@@ -5,14 +5,12 @@ Should be customized for each system, with each system's volumes specified in th
 
 To set up an instance for a host, use this template:
 ```yaml
-include:
-  - ./base.yaml
-
 services:
   docker-volume-rclone:
-    <<: *docker-volume-rclone
+    extends:
+      file: ./base.yaml
+      service: docker-volume-rclone
     environment:
-      <<: *environment
       TARGET_SUBDIR_NAME: SETME_HOSTNAME
       VOLUME_NAMES: >-
         EXAMPLE_VOLUME_1
