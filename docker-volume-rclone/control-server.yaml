@@ -1,22 +1,12 @@
+include:
+  - ./base.yaml
+
 services:
   docker-volume-rclone:
-    image: ghcr.io/anarchobooleanism/docker-volume-rclone:v0.1.0
+    <<: *docker-volume-rclone
     environment:
+      <<: *environment
       TARGET_SUBDIR_NAME: control-server
       VOLUME_NAMES: >-
         komodo_mongo-config
         komodo_mongo-data
-      RUN_ON_STARTUP: "false"
-      CRON_ARGUMENTS: 0 */4 * * * # At minute 0, every 4 hours
-      # RCLONE_OPTIONS:
-      TZ: America/Los_Angeles
-    volumes:
-      - /var/lib/docker/volumes:/volumes:ro
-      - nfs-target:/volumes-clone
-
-volumes:
-  nfs-target:
-    driver_opts:
-      type: "nfs"
-      o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
-      device: ":/mnt/saphnet-nas1a/docker-volume-backups"

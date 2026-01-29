@@ -16,6 +16,7 @@
 
 # Common variables, declared here
 x-common:
+  TIMEZONE: &timezone "America/Los_Angeles"
   database: &db-environment
     MYSQL_PASSWORD: &db-password "basic_mysql_password"
     MYSQL_ROOT_PASSWORD: "basic_mysql_root_password"
@@ -25,10 +26,10 @@ x-common:
     APP_URL: "https://pterodactyl.int.saphnet.xyz"
     # A list of valid timezones can be found here:
     # http://php.net/manual/en/timezones.php
-    APP_TIMEZONE: "America/Los_Angeles"
+    APP_TIMEZONE: *timezone
     APP_SERVICE_AUTHOR: "homelab@saphnet.xyz"
     TRUSTED_PROXIES: "nginx-proxy-manager"
-    HASHIDS_SALT: ${HASHIDS_SALT}
+    HASHIDS_SALT: "${HASHIDS_SALT}"
     HASHIDS_LENGTH: "8"
   mail: &mail-environment
     MAIL_FROM: "homelab@saphnet.xyz"
@@ -36,46 +37,44 @@ x-common:
     MAIL_HOST: "mail.privateemail.com"
     MAIL_PORT: "465"
     MAIL_USERNAME: "homelab@saphnet.xyz"
-    MAIL_PASSWORD: ${MAIL_PASSWORD}
+    MAIL_PASSWORD: "${MAIL_PASSWORD}"
     MAIL_ENCRYPTION: "true"
   # S3-based backup
   backup: &backup-environment
     APP_BACKUP_DRIVER: rustic_s3
-    RUSTIC_S3_FORCE_PATH_STYLE: 'true'
+    RUSTIC_S3_FORCE_PATH_STYLE: "true"
     RUSTIC_REPOSITORY_BASE_PATH: /var/lib/elytra/rustic-repos # For some reason, the default is /var/lib/pterodactyl...
-    RUSTIC_S3_REGION: ${RUSTIC_S3_REGION}
-    RUSTIC_S3_ACCESS_KEY_ID: ${RUSTIC_S3_ACCESS_KEY_ID}
-    RUSTIC_S3_SECRET_ACCESS_KEY: ${RUSTIC_S3_SECRET_ACCESS_KEY}
-    RUSTIC_S3_BUCKET: ${RUSTIC_S3_BUCKET}
-    RUSTIC_S3_ENDPOINT: ${RUSTIC_S3_ENDPOINT}
+    RUSTIC_S3_REGION: "${RUSTIC_S3_REGION}"
+    RUSTIC_S3_ACCESS_KEY_ID: "${RUSTIC_S3_ACCESS_KEY_ID}"
+    RUSTIC_S3_SECRET_ACCESS_KEY: "${RUSTIC_S3_SECRET_ACCESS_KEY}"
+    RUSTIC_S3_BUCKET: "${RUSTIC_S3_BUCKET}"
+    RUSTIC_S3_ENDPOINT: "${RUSTIC_S3_ENDPOINT}"
 
 services:
   database:
     image: mariadb:12.1.2
-    restart: unless-stopped
     command: --default-authentication-plugin=mysql_native_password
-    volumes:
-      - database-data:/var/lib/mysql
     environment:
       <<: *db-environment
       MYSQL_DATABASE: "panel"
       MYSQL_USER: "pterodactyl"
+    volumes:
+      - database-data:/var/lib/mysql
     networks:
       - pterodactyl_panel_internal
+    restart: unless-stopped
+  
   cache:
     image: redis:8.4.0-alpine
-    restart: unless-stopped
     networks:
       - pterodactyl_panel_internal
-  panel:
-    container_name: pterodactyl-panel # Refer to the panel container this way
-    image: ghcr.io/pyrodactyl-oss/pyrodactyl:v5.0.0
     restart: unless-stopped
+  
+  panel:
+    image: ghcr.io/pyrodactyl-oss/pyrodactyl:v5.0.0
+    container_name: pterodactyl-panel # Refer to the panel container this way
     # ports:
     #   - "802:80" # Web port
-    volumes:
-      - panel-data:/app/var/
-      - panel-logs:/app/storage/logs
     environment:
       <<: [*panel-environment, *mail-environment, *backup-environment]
       DB_PASSWORD: *db-password
@@ -87,9 +86,13 @@ services:
       REDIS_HOST: "cache"
       DB_HOST: "database"
       DB_PORT: "3306"
+    volumes:
+      - panel-data:/app/var/
+      - panel-logs:/app/storage/logs
     networks:
       - web_bridge
       - pterodactyl_panel_internal
+    restart: unless-stopped
 
 volumes:
   database-data:
@@ -100,3 +103,4 @@ networks:
   pterodactyl_panel_internal:
   web_bridge:
     name: web_bridge
+    external: true

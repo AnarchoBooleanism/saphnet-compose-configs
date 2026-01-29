@@ -1,16 +1,66 @@
 x-common:
   TIMEZONE: &timezone "America/Los_Angeles"
+  NAS_NFS_DRIVER_OPTS: &nas_nfs_driver_opts
+    type: "nfs"
+    o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
+    # Set device here, e.g. ":/mnt/saphnet-nas1b/media-server/deluge/torrent_downloads"
+
+x-services: # Base instances of services to customize
+  radarr: &radarr # For movies
+    image: lscr.io/linuxserver/radarr:6.0.4
+    # Set a unique container_name here
+    # For ports, link host port to container port's 7878
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: *timezone
+    # For volumes, have volume mounted to /config, volume mounted to media folder (e.g. /movies),
+    # and volume mounted to /downloads (for Deluge downloads)
+    networks:
+      - media-server
+    restart: unless-stopped
+  
+  sonarr: &sonarr # For shows
+    image: lscr.io/linuxserver/sonarr:4.0.16
+    # Set a unique container_name here
+    # For ports, link host port to container port's 8989
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: *timezone
+    # For volumes, have volume mounted to /config, volume mounted to media folder (e.g. /tv),
+    # and volume mounted to /downloads (for Deluge downloads)
+    networks:
+      - media-server
+    restart: unless-stopped
+  
+  bazarr: &bazarr # For subtitles
+    image: lscr.io/linuxserver/bazarr:1.5.4
+    # Set a unique container_name here
+    # For ports, link host port to container port's 6767
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: *timezone
+    # For volumes, have volume mounted to /config, volume mounted to /movies, and volume
+    # mounted to /tv
+    networks:
+      - media-server
+    restart: unless-stopped
 
 services:
   jellyfin: # Media streaming
     image: jellyfin/jellyfin:10.11.6
     container_name: jellyfin
-    restart: unless-stopped
+    devices:
+      - /dev/dri:/dev/dri
     ports:
-      - 8096:8096
-      - 8920:8920
-      - 1900:1900
-      - 7359:7359
+      - "8096:8096"
+      - "8920:8920"
+      - "1900:1900"
+      - "7359:7359"
+    environment:
+      JELLYFIN_PublishedServerUrl: https://jellyfin.int.saphnet.xyz
     volumes:
       - jellyfin-config:/config # Also, self-signed cert files in here
       - jellyfin-cache:/cache
@@ -19,74 +69,70 @@ services:
       - media-server-anime:/media/anime
       - media-server-anime-movies:/media/anime-movies
     # Optional - alternative address used for autodiscovery
-    environment:
-      JELLYFIN_PublishedServerUrl: https://jellyfin.int.saphnet.xyz
-    devices:
-      - /dev/dri:/dev/dri
     networks:
       - media-server
     # Optional - may be necessary for docker healthcheck to pass if running in host network mode
     extra_hosts:
       - 'host.docker.internal:host-gateway'
+    restart: unless-stopped
 
   jellyseerr:
     image: ghcr.io/fallenbagel/jellyseerr:2.7.3
     container_name: jellyseerr
-    restart: unless-stopped
     init: true
+    ports:
+      - "5055:5055"
     environment:
       LOG_LEVEL: debug
       TZ: *timezone
-    ports:
-      - 5055:5055
     volumes:
       - jellyseerr-config:/app/config
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
-      start_period: 20s
-      timeout: 3s
-      interval: 15s
+      start_period: "20s"
+      timeout: "3s"
+      interval: "15s"
       retries: 3
     networks:
       - media-server
+    restart: unless-stopped
 
   flaresolverr: # Handles CloudFlare prompts for Prowlarr
     image: ghcr.io/flaresolverr/flaresolverr:v3.4.6
     container_name: flaresolverr
-    restart: unless-stopped
-    environment:
-      LOG_LEVEL: ${LOG_LEVEL:-info}
-      LOG_FILE: ${LOG_FILE:-none}
-      LOG_HTML: ${LOG_HTML:-false}
-      CAPTCHA_SOLVER: ${CAPTCHA_SOLVER:-none}
-      TZ: *timezone
     ports:
-      - 8191:8191
+      - "8191:8191"
+    environment:
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      LOG_FILE: "${LOG_FILE:-none}"
+      LOG_HTML: "${LOG_HTML:-false}"
+      CAPTCHA_SOLVER: "${CAPTCHA_SOLVER:-none}"
+      TZ: *timezone
     volumes:
       - flaresolverr-config:/config
     networks:
       - media-server
+    restart: unless-stopped
   
   prowlarr: # Handles trackers
     image: lscr.io/linuxserver/prowlarr:2.3.0
     container_name: prowlarr
-    restart: unless-stopped
+    ports:
+      - "9696:9696"
     environment:
-      PUID: 1000
-      PGID: 1000
+      PUID: "1000"
+      PGID: "1000"
       TZ: *timezone
     volumes:
       - prowlarr-config:/config
-    ports:
-      - 9696:9696
     networks:
       - media-server
+    restart: unless-stopped
 
   recyclarr:
     image: ghcr.io/recyclarr/recyclarr:7.5.2
     container_name: recyclarr
-    restart: unless-stopped
-    user: 1000:1000
+    user: "1000:1000"
     environment:
       TZ: *timezone
       RECYCLARR_CREATE_CONFIG: "true"
@@ -94,108 +140,67 @@ services:
       - recyclarr-config:/config
     networks:
       - media-server
+    restart: unless-stopped
     
   radarr: # For movies
-    image: lscr.io/linuxserver/radarr:6.0.4
+    <<: *radarr
     container_name: radarr
-    restart: unless-stopped
-    environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: *timezone
+    ports:
+      - "7878:7878"
     volumes:
       - radarr-config:/config
       - media-server-movies:/movies # Jellyfin movies folder
       - seedbox-torrent-downloads:/downloads # Deluge complete downloads folder
-    ports:
-      - 7878:7878
-    networks:
-      - media-server
   
   radarr-anime: # For anime movies
-    image: lscr.io/linuxserver/radarr:6.0.4
+    <<: *radarr
     container_name: radarr-anime
-    restart: unless-stopped
-    environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: *timezone
+    ports:
+      - "7879:7878"
     volumes:
       - radarr-anime-config:/config
       - media-server-anime-movies:/anime-movies # Jellyfin movies folder
       - seedbox-torrent-downloads:/downloads # Deluge complete downloads folder
-    ports:
-      - 7879:7878
-    networks:
-      - media-server
 
   sonarr: # For shows
-    image: lscr.io/linuxserver/sonarr:4.0.16
+    <<: *sonarr
     container_name: sonarr
-    restart: unless-stopped
-    environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: *timezone
+    ports:
+      - "8989:8989"
     volumes:
       - sonarr-config:/config
       - media-server-tv:/tv
       - seedbox-torrent-downloads:/downloads
-    ports:
-      - 8989:8989
-    networks:
-      - media-server
   
   sonarr-anime: # For anime
-    image: lscr.io/linuxserver/sonarr:4.0.16
+    <<: *sonarr
     container_name: sonarr-anime
-    restart: unless-stopped
-    environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: *timezone
+    ports:
+      - "8990:8989"
     volumes:
       - sonarr-anime-config:/config
       - media-server-anime:/anime
       - seedbox-torrent-downloads:/downloads
-    ports:
-      - 8990:8989
-    networks:
-      - media-server
   
   bazarr: # For subtitles
-    image: lscr.io/linuxserver/bazarr:1.5.4
+    <<: *bazarr
     container_name: bazarr
-    restart: unless-stopped
-    environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: *timezone
+    ports:
+      - "6767:6767"
     volumes:
       - bazarr-config:/config
       - media-server-movies:/movies
       - media-server-tv:/tv
-    ports:
-      - 6767:6767
-    networks:
-      - media-server
   
   bazarr-anime: # For anime subtitles
-    image: lscr.io/linuxserver/bazarr:1.5.4
+    <<: *bazarr
     container_name: bazarr-anime
-    restart: unless-stopped
-    environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: *timezone
+    ports:
+      - "6768:6767"
     volumes:
       - bazarr-anime-config:/config
       - media-server-anime-movies:/anime-movies
       - media-server-anime:/anime
-    ports:
-      - 6768:6767
-    networks:
-      - media-server
 
 volumes:
   seedbox-files:
@@ -213,33 +218,27 @@ volumes:
   bazarr-anime-config:
   media-server-movies:
     driver_opts:
-      type: "nfs"
-      o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
+      <<: *nas_nfs_driver_opts
       device: ":/mnt/saphnet-nas1b/media-server/jellyfin/movies"
   media-server-tv:
     driver_opts:
-      type: "nfs"
-      o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
+      <<: *nas_nfs_driver_opts
       device: ":/mnt/saphnet-nas1b/media-server/jellyfin/tv"
   media-server-anime:
     driver_opts:
-      type: "nfs"
-      o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
+      <<: *nas_nfs_driver_opts
       device: ":/mnt/saphnet-nas1b/media-server/jellyfin/anime"
   media-server-anime-movies:
     driver_opts:
-      type: "nfs"
-      o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
+      <<: *nas_nfs_driver_opts
       device: ":/mnt/saphnet-nas1b/media-server/jellyfin/anime-movies"
   seedbox-torrent-files:
     driver_opts:
-      type: "nfs"
-      o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
+      <<: *nas_nfs_driver_opts
       device: ":/mnt/saphnet-nas1b/media-server/deluge/torrent_files"
   seedbox-torrent-downloads:
     driver_opts:
-      type: "nfs"
-      o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
+      <<: *nas_nfs_driver_opts
       device: ":/mnt/saphnet-nas1b/media-server/deluge/torrent_downloads"
 
 networks:

@@ -1,14 +1,15 @@
 services:
   speedtest:
-    restart: unless-stopped
+    image: openspeedtest/latest:v2.0.6
     container_name: openspeedtest
     ports:
-      - '3000:3000'
-      - '3001:3001'
-    image: openspeedtest/latest:v2.0.6
+      - "3000:3000"
+      - "3001:3001"
     networks:
       - web_bridge
+    restart: unless-stopped
 
 networks:
   web_bridge:
     name: web_bridge
+    external: true

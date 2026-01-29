@@ -1,17 +1,18 @@
 services:
   vert:
-    container_name: vert
     image: ghcr.io/vert-sh/vert:sha-69ba2ff
+    container_name: vert
     environment:
-      - PUB_HOSTNAME=${PUB_HOSTNAME:-vert.int.saphnet.xyz}
-      - PUB_PLAUSIBLE_URL=${PUB_PLAUSIBLE_URL:-https://plausible.example.com}
-      - PUB_ENV=${PUB_ENV:-production}
-      - PORT=${PORT:-3000}
-      - PUB_VERTD_URL=https://vertd.int.saphnet.xyz
-    restart: unless-stopped
+      PUB_HOSTNAME: "${PUB_HOSTNAME:-vert.int.saphnet.xyz}"
+      PUB_PLAUSIBLE_URL: "${PUB_PLAUSIBLE_URL:-https://plausible.example.com}"
+      PUB_ENV: "${PUB_ENV:-production}"
+      PORT: "${PORT:-3000}"
+      PUB_VERTD_URL: https://vertd.int.saphnet.xyz
     networks:
       - web_bridge
+    restart: unless-stopped
 
 networks:
   web_bridge:
     name: web_bridge
+    external: true

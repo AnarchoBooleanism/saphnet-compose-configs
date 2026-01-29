@@ -2,42 +2,42 @@ services:
   guacdb:
     container_name: guacamoledb
     image: mariadb:12.1.2
-    restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=MariaDBRootPass
-      - MYSQL_DATABASE=guacamole_db
-      - MYSQL_USER=guacamole_user
-      - MYSQL_PASSWORD=MariaDBUserPass
+      MYSQL_ROOT_PASSWORD: MariaDBRootPass
+      MYSQL_DATABASE: guacamole_db
+      MYSQL_USER: guacamole_user
+      MYSQL_PASSWORD: MariaDBUserPass
     volumes:
       - guac-db-data:/var/lib/mysql
     networks:
       - web_bridge
+    restart: unless-stopped
 
   guacd:
     container_name: guacd
     image: guacamole/guacd:1.6.0
-    restart: unless-stopped
     networks:
       - web_bridge
+    restart: unless-stopped
 
   guacamole:
     container_name: guacamole
     image: guacamole/guacamole:1.6.0
-    restart: unless-stopped
-    networks:
-      - web_bridge
-    ports:
-      - 8080:8080
-    environment:
-      - GUACD_HOSTNAME=guacd
-      - MYSQL_HOSTNAME=guacdb
-      - MYSQL_DATABASE=guacamole_db
-      - MYSQL_USER=guacamole_user
-      - MYSQL_PASSWORD=MariaDBUserPass
-      # - TOTP_ENABLE=true
     depends_on:
       - guacdb
       - guacd
+    ports:
+      - "8080:8080"
+    environment:
+      GUACD_HOSTNAME: guacd
+      MYSQL_HOSTNAME: guacdb
+      MYSQL_DATABASE: guacamole_db
+      MYSQL_USER: guacamole_user
+      MYSQL_PASSWORD: MariaDBUserPass
+      # TOTP_ENABLE: true
+    networks:
+      - web_bridge
+    restart: unless-stopped
 
 volumes:
   guac-db-data:
@@ -45,3 +45,4 @@ volumes:
 networks:
   web_bridge:
     name: web_bridge
+    external: true

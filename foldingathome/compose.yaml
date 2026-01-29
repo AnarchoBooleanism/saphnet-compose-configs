@@ -1,25 +1,28 @@
+x-common:
+  TIMEZONE: &timezone "America/Los_Angeles"
+
 services:
   foldingathome:
     image: lscr.io/linuxserver/foldingathome:8.5.5
     container_name: foldingathome
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Los_Angeles
-      - MACHINE_NAME=docker-host-pve3
-      - CLI_ARGS= #optional
-      # Secrets to set in environment:
-      - ACCOUNT_TOKEN=$ACCOUNT_TOKEN
-    volumes:
-      - foldingathome:/config
-    ports:
-      - 7396:7396 #optional
-    devices:
-      - /dev/dri/:/dev/dri/
     deploy:
       resources:
         limits:
-          cpus: '3.2'
+          cpus: "3.2"
+    devices:
+      - /dev/dri/:/dev/dri/
+    ports:
+      - "7396:7396"
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: *timezone
+      MACHINE_NAME: docker-host-pve3
+      CLI_ARGS:  #optional
+      # Secrets to set in environment:
+      ACCOUNT_TOKEN: "$ACCOUNT_TOKEN"
+    volumes:
+      - foldingathome:/config
     restart: unless-stopped
 
 volumes:

@@ -2,57 +2,54 @@ services:
   docker-proxy:
     image: ghcr.io/tecnativa/docker-socket-proxy:v0.4.2
     container_name: docker-proxy
-    environment:
-      - CONTAINERS=1 # Allow access to viewing containers
-      - SERVICES=1 # Allow access to viewing services (necessary when using Docker Swarm)
-      - TASKS=1 # Allow access to viewing tasks (necessary when using Docker Swarm)
-      - POST=0 # Disallow any POST operations (effectively read-only)
     ports:
-      - 0.0.0.0:2375:2375
+      - "0.0.0.0:2375:2375"
+    environment:
+      CONTAINERS: "1" # Allow access to viewing containers
+      SERVICES: "1" # Allow access to viewing services (necessary when using Docker Swarm)
+      TASKS: "1" # Allow access to viewing tasks (necessary when using Docker Swarm)
+      POST: "0" # Disallow any POST operations (effectively read-only)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
-    restart: unless-stopped
     networks:
       - web_bridge
+    restart: unless-stopped
 
   homepage:
     image: ghcr.io/anarchobooleanism/saphnet-homepage:latest
     container_name: homepage
-    environment:
-      - HOMEPAGE_ALLOWED_HOSTS=homepage.int.saphnet.xyz
-      # Secrets to set in environment:
-      - HOMEPAGE_VAR_PROXMOX_USERNAME=${HOMEPAGE_VAR_PROXMOX_USERNAME}
-      - HOMEPAGE_VAR_PROXMOX_PASSWORD=${HOMEPAGE_VAR_PROXMOX_PASSWORD}
-      - HOMEPAGE_VAR_TRUENAS_API_KEY=${HOMEPAGE_VAR_TRUENAS_API_KEY}
-      - HOMEPAGE_VAR_KOMODO_API_KEY=${HOMEPAGE_VAR_KOMODO_API_KEY}
-      - HOMEPAGE_VAR_KOMODO_SECRET=${HOMEPAGE_VAR_KOMODO_SECRET}
-      - HOMEPAGE_VAR_HA_API_KEY=${HOMEPAGE_VAR_HA_API_KEY}
-      - HOMEPAGE_VAR_FAH_USERNAME=${HOMEPAGE_VAR_FAH_USERNAME}
-      - HOMEPAGE_VAR_JELLYFIN_API_KEY=${HOMEPAGE_VAR_JELLYFIN_API_KEY}
-      - HOMEPAGE_VAR_JELLYSEERR_API_KEY=${HOMEPAGE_VAR_JELLYSEERR_API_KEY}
-      - HOMEPAGE_VAR_PROWLARR_API_KEY=${HOMEPAGE_VAR_PROWLARR_API_KEY}
-      - HOMEPAGE_VAR_RADARR_API_KEY=${HOMEPAGE_VAR_RADARR_API_KEY}
-      - HOMEPAGE_VAR_RADARR_ANIME_API_KEY=${HOMEPAGE_VAR_RADARR_ANIME_API_KEY}
-      - HOMEPAGE_VAR_SONARR_API_KEY=${HOMEPAGE_VAR_SONARR_API_KEY}
-      - HOMEPAGE_VAR_SONARR_ANIME_API_KEY=${HOMEPAGE_VAR_SONARR_ANIME_API_KEY}
-      - HOMEPAGE_VAR_DELUGE_PASSWORD=${HOMEPAGE_VAR_DELUGE_PASSWORD}
-      - HOMEPAGE_VAR_NPM_INT_USERNAME=${HOMEPAGE_VAR_NPM_INT_USERNAME}
-      - HOMEPAGE_VAR_NPM_INT_PASSWORD=${HOMEPAGE_VAR_NPM_INT_PASSWORD}
-      - HOMEPAGE_VAR_PTERODACTYL_API_KEY=${HOMEPAGE_VAR_PTERODACTYL_API_KEY}
-#    ports:
-#      - 3000:3000
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
     depends_on:
       - docker-proxy
+#    ports:
+#      - "3000:3000"
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: homepage.int.saphnet.xyz
+      # Secrets to set in environment:
+      HOMEPAGE_VAR_PROXMOX_USERNAME: "${HOMEPAGE_VAR_PROXMOX_USERNAME}"
+      HOMEPAGE_VAR_PROXMOX_PASSWORD: "${HOMEPAGE_VAR_PROXMOX_PASSWORD}"
+      HOMEPAGE_VAR_TRUENAS_API_KEY: "${HOMEPAGE_VAR_TRUENAS_API_KEY}"
+      HOMEPAGE_VAR_KOMODO_API_KEY: "${HOMEPAGE_VAR_KOMODO_API_KEY}"
+      HOMEPAGE_VAR_KOMODO_SECRET: "${HOMEPAGE_VAR_KOMODO_SECRET}"
+      HOMEPAGE_VAR_HA_API_KEY: "${HOMEPAGE_VAR_HA_API_KEY}"
+      HOMEPAGE_VAR_FAH_USERNAME: "${HOMEPAGE_VAR_FAH_USERNAME}"
+      HOMEPAGE_VAR_JELLYFIN_API_KEY: "${HOMEPAGE_VAR_JELLYFIN_API_KEY}"
+      HOMEPAGE_VAR_JELLYSEERR_API_KEY: "${HOMEPAGE_VAR_JELLYSEERR_API_KEY}"
+      HOMEPAGE_VAR_PROWLARR_API_KEY: "${HOMEPAGE_VAR_PROWLARR_API_KEY}"
+      HOMEPAGE_VAR_RADARR_API_KEY: "${HOMEPAGE_VAR_RADARR_API_KEY}"
+      HOMEPAGE_VAR_RADARR_ANIME_API_KEY: "${HOMEPAGE_VAR_RADARR_ANIME_API_KEY}"
+      HOMEPAGE_VAR_SONARR_API_KEY: "${HOMEPAGE_VAR_SONARR_API_KEY}"
+      HOMEPAGE_VAR_SONARR_ANIME_API_KEY: "${HOMEPAGE_VAR_SONARR_ANIME_API_KEY}"
+      HOMEPAGE_VAR_DELUGE_PASSWORD: "${HOMEPAGE_VAR_DELUGE_PASSWORD}"
+      HOMEPAGE_VAR_NPM_INT_USERNAME: "${HOMEPAGE_VAR_NPM_INT_USERNAME}"
+      HOMEPAGE_VAR_NPM_INT_PASSWORD: "${HOMEPAGE_VAR_NPM_INT_PASSWORD}"
+      HOMEPAGE_VAR_PTERODACTYL_API_KEY: "${HOMEPAGE_VAR_PTERODACTYL_API_KEY}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
     networks:
       - web_bridge
     restart: unless-stopped
 
-volumes:
-  config:
-  icons:
-
 networks:
   web_bridge:
     name: web_bridge
+    external: true

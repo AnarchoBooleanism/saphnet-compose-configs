@@ -14,7 +14,15 @@ services:
   velocity:
     image: *image-name
     container_name: velocity
-    restart: unless-stopped
+    command:
+      - /bin/sh
+      - -c
+      - |
+        echo -n '${VELOCITY_FORWARDING_SECRET}' > '/config/forwarding.secret'
+        exec /usr/bin/run-bungeecord.sh
+    ports:
+      - "25565:25565"
+      - "${TAILSCALE_IP:-0.0.0.0}:25575:25575"
     environment:
       # For secrets
       REPLACE_ENV_VARIABLES: "TRUE"
@@ -28,32 +36,25 @@ services:
       ENABLE_RCON: "true"
       RCON_PORT: "25575"
       RCON_PASSWORD: "${RCON_PASSWORD}"
-    ports:
-      - 25565:25565
-      - ${TAILSCALE_IP:-0.0.0.0}:25575:25575
     volumes:
       - ./velocity-config/velocity.toml:/config/velocity.toml:ro
       - velocity-data:/server
     # As mc-proxy can only fill in certain types of files, we will set forwarding.secret ourselves
     # For last command, see: https://github.com/itzg/docker-mc-proxy/blob/master/Dockerfile
-    command:
-      - /bin/sh
-      - -c
-      - |
-        echo -n '${VELOCITY_FORWARDING_SECRET}' > '/config/forwarding.secret'
-        exec /usr/bin/run-bungeecord.sh
+    restart: unless-stopped
+  
   velocity-sftp: 
     image: ghcr.io/anarchobooleanism/saphnet-sftp:v0.1.1
     container_name: velocity-sftp
-    restart: unless-stopped
+    ports:
+      - "${TAILSCALE_IP:-0.0.0.0}:2022:22"
     environment:
       SFTP_USERNAME: velocity-user
-      SFTP_PASSWORD: ${SFTP_PASSWORD}
+      SFTP_PASSWORD: "${SFTP_PASSWORD}"
     volumes:
       - velocity-data:/home/velocity-user/sftp
       - sftp-ssh-data:/etc/ssh # For persistence of keys
-    ports:
-      - "${TAILSCALE_IP:-0.0.0.0}:2022:22"
+    restart: unless-stopped
 
 volumes:
   velocity-data:
