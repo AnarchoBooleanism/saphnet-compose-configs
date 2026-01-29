@@ -1,8 +1,5 @@
 services:
   docker-volume-rclone:
-    extends:
-      file: ./base.yaml
-      service: docker-volume-rclone
     environment:
       TARGET_SUBDIR_NAME: docker-host-nginx
       VOLUME_NAMES: >-

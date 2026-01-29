@@ -7,9 +7,6 @@ To set up an instance for a host, use this template:
 ```yaml
 services:
   docker-volume-rclone:
-    extends:
-      file: ./base.yaml
-      service: docker-volume-rclone
     environment:
       TARGET_SUBDIR_NAME: SETME_HOSTNAME
       VOLUME_NAMES: >-
@@ -17,6 +14,8 @@ services:
         EXAMPLE_VOLUME_2
 ```
 
-In this setup, `base.yaml`, which includes extensions and fragments with default values to create the `docker-volume-rclone` service with, as well as the NFS volume being mounted. The main environment variables to set here are `TARGET_SUBDIR_NAME`, which is the (unique) hostname of the host running the service, and `VOLUME_NAMES`, which is a space-delimited list of Docker volumes on the host to back up.
+To run this, use this file and `base.yaml` together, so that `base.yaml`'s structure, with the default configuration settings, is merged with your instance-specific structure; an example would be with `docker compose -f base.yaml -f control-server.yaml up`
+
+The main environment variables to set here are `TARGET_SUBDIR_NAME`, which is the (unique) hostname of the host running the service, and `VOLUME_NAMES`, which is a space-delimited list of Docker volumes on the host to back up.
 
 For more details, make sure to refer to [the documentation of the image repo](https://github.com/AnarchoBooleanism/docker-volume-rclone).
