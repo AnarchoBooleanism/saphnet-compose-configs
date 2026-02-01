@@ -73,6 +73,8 @@ services:
       # Redirect media.int.saphnet.xyz to jellyfun.media.int.saphnet.xyz
       traefik.http.routers.media.rule: "Host(`media.int.saphnet.xyz`)"
       traefik.http.routers.media.middlewares: "media-redirectregex"
+      traefik.http.routers.media.tls: true
+      traefik.http.routers.media.tls.certresolver: letsencrypt
       traefik.http.routers.media.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.media.tls.domains[0].sans: "*.media.int.saphnet.xyz"
       traefik.http.middlewares.media-redirectregex.redirectregex.regex: "^https://media\\.int\\.saphnet\\.xyz/(.*)"
