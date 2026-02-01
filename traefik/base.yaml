@@ -30,13 +30,13 @@ services:
       - "--api.insecure=false"
 
       # Observability 
-      - "--log.level=INFO"
+      - "--log.level=DEBUG"
       - "--accesslog=true"
       - "--metrics.prometheus=true"
 
       # SSL certificates
-      - "--certificatesresolvers.myresolver.acme.dnsChallenge=true"
-      - "--certificatesresolvers.myresolver.acme.dnsChallenge.provider=namecheap"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=namecheap"
       - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
 
