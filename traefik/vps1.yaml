@@ -46,8 +46,8 @@ services:
       traefik.http.middlewares.dashboard-ipallowlist.ipallowlist.sourcerange: "100.64.0.0/10, fd7a:115c:a1e0::/48"
 
       # Anubis middleware
-      traefik.http.middlewares.anubis-thevoidpact.forwardauth.address: http://anubis-thevoidpact:8080/.within.website/x/cmd/anubis/api/check
-      traefik.http.middlewares.anubis-saphnet.forwardauth.address: http://anubis-saphnet:8080/.within.website/x/cmd/anubis/api/check
+      traefik.http.middlewares.anubis-thevoidpact.forwardauth.address: http://anubis-thevoidpact:8923/.within.website/x/cmd/anubis/api/check
+      traefik.http.middlewares.anubis-saphnet.forwardauth.address: http://anubis-saphnet:8923/.within.website/x/cmd/anubis/api/check
 
       # map.thevoidpact.xyz
       traefik.http.routers.thevoidpact-map.rule: Host(`map.thevoidpact.xyz`)
