@@ -42,10 +42,9 @@ services:
 
       # Miscellaneous
       - "--global.sendAnonymousUsage=true"
-    ports:
+    ports: # Port 8080 is for dashboard, but it should be through HTTPS anyway
       - "80:80"
       - "443:443"
-      - "8080:8080"
     environment:
       NAMECHEAP_API_USER: "${NAMECHEAP_API_USER}"
       NAMECHEAP_API_KEY: "${NAMECHEAP_API_KEY}"
