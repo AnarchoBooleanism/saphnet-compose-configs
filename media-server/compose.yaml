@@ -70,6 +70,9 @@ services:
       traefik.http.routers.jellyfin.tls.certresolver: letsencrypt
       traefik.http.routers.jellyfin.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.jellyfin.tls.domains[0].sans: "*.media.int.saphnet.xyz"
+      # Redirect media.int.saphnet.xyz to jellyfun.media.int.saphnet.xyz
+      traefik.http.middlewares.media-redirectregex.redirectregex.regex=^https://media.int.saphnet.xyz/(.*)
+      traefik.http.middlewares.media-redirectregex.redirectregex.replacement=https://jellyfin.media.int.saphnet.xyz/$${1}
       # Many of these come from https://jellyfin.org/docs/general/post-install/networking/reverse-proxy/traefik/
       ## Middleware
       traefik.http.routers.jellyfin.middlewares: jellyfin-mw
