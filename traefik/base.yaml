@@ -39,6 +39,9 @@ services:
       - "--certificatesresolvers.myresolver.acme.dnsChallenge.provider=namecheap"
       - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+
+      # Miscellaneous
+      - "--global.sendAnonymousUsage=true"
     ports:
       - "80:80"
       - "443:443"
