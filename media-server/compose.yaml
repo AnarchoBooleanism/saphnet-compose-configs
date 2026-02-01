@@ -159,8 +159,8 @@ services:
   flaresolverr: # Handles CloudFlare prompts for Prowlarr
     image: ghcr.io/flaresolverr/flaresolverr:v3.4.6
     container_name: flaresolverr
-    ports:
-      - "8191:8191"
+    # ports:
+    #   - "8191:8191"
     environment:
       LOG_LEVEL: "${LOG_LEVEL:-info}"
       LOG_FILE: "${LOG_FILE:-none}"
@@ -176,8 +176,8 @@ services:
   prowlarr: # Handles trackers
     image: lscr.io/linuxserver/prowlarr:2.3.0
     container_name: prowlarr
-    ports:
-      - "9696:9696"
+    # ports:
+    #   - "9696:9696"
     labels:
       traefik.enable: true
       traefik.http.routers.prowlarr.rule: Host(`prowlarr.media.int.saphnet.xyz`)
@@ -215,8 +215,8 @@ services:
   radarr: # For movies
     <<: *radarr
     container_name: radarr
-    ports:
-      - "7878:7878"
+    # ports:
+    #   - "7878:7878"
     labels:
       traefik.enable: true
       traefik.http.routers.radarr.rule: Host(`radarr.media.int.saphnet.xyz`)
@@ -235,8 +235,8 @@ services:
   radarr-anime: # For anime movies
     <<: *radarr
     container_name: radarr-anime
-    ports:
-      - "7879:7878"
+    # ports:
+    #   - "7879:7878"
     labels:
       traefik.enable: true
       traefik.http.routers.radarr-anime.rule: Host(`radarr-anime.media.int.saphnet.xyz`)
@@ -255,8 +255,8 @@ services:
   sonarr: # For shows
     <<: *sonarr
     container_name: sonarr
-    ports:
-      - "8989:8989"
+    # ports:
+    #   - "8989:8989"
     labels:
       traefik.enable: true
       traefik.http.routers.sonarr.rule: Host(`sonarr.media.int.saphnet.xyz`)
@@ -275,8 +275,8 @@ services:
   sonarr-anime: # For anime
     <<: *sonarr
     container_name: sonarr-anime
-    ports:
-      - "8990:8989"
+    # ports:
+    #   - "8990:8989"
     labels:
       traefik.enable: true
       traefik.http.routers.sonarr-anime.rule: Host(`sonarr-anime.media.int.saphnet.xyz`)
@@ -295,8 +295,8 @@ services:
   bazarr: # For subtitles
     <<: *bazarr
     container_name: bazarr
-    ports:
-      - "6767:6767"
+    # ports:
+    #   - "6767:6767"
     labels:
       traefik.enable: true
       traefik.http.routers.bazarr.rule: Host(`bazarr.media.int.saphnet.xyz`)
@@ -315,8 +315,8 @@ services:
   bazarr-anime: # For anime subtitles
     <<: *bazarr
     container_name: bazarr-anime
-    ports:
-      - "6768:6767"
+    # ports:
+    #   - "6768:6767"
     labels:
       traefik.enable: true
       traefik.http.routers.bazarr-anime.rule: Host(`bazarr-anime.media.int.saphnet.xyz`)

@@ -6,10 +6,17 @@ x-common:
   DASHBOARD_HOST: &dashboard_host "Host(`traefik-vps1.saphnet.xyz`)" # Domain name for dashboard
   ANUBIS: &anubis-environment # Default bind is 8923
     DIFFICULTY: "4"
-    ED25519_PRIVATE_KEY_HEX: ${ED25519_PRIVATE_KEY_HEX}
+    ED25519_PRIVATE_KEY_HEX: "${ED25519_PRIVATE_KEY_HEX}"
     OG_PASSTHROUGH: "true"
     WEBMASTER_EMAIL: "homelab@saphnet.xyz"
     TARGET: " " # This is HIGHLY important!!!! Prevents redirect loops (do NOT remove)
+  certificate_groups:
+    THEVOIDPACT_DOMAINS_MAIN: &thevoidpact_domains_main "map.thevoidpact.xyz"
+    THEVOIDPACT_DOMAINS_SANS: &thevoidpact_domains_sans "anubis.thevoidpact.xyz"
+    SAPHNET_DOMAINS_MAIN: &saphnet_domains_main "saphnet.xyz"
+    SAPHNET_DOMAINS_SANS: &saphnet_domains_sans "www.saphnet.xyz,anubis.saphnet.xyz"
+    SAPHNET_MEDIA_DOMAINS_MAIN: &saphnet_media_domains_main "media.saphnet.xyz"
+    SAPHNET_MEDIA_DOMAINS_SANS: &saphnet_media_domains_sans "*.media.saphnet.xyz"
 
 x-services:
   anubis: &anubis
@@ -40,7 +47,7 @@ services:
       traefik.http.routers.dashboard.service: api@internal
       traefik.http.routers.dashboard.tls: "true"
       traefik.http.routers.dashboard.tls.certresolver: letsencrypt
-      traefik.http.routers.dashboard.middlewares: dashboard-ipallowlist@docker, dashboard-auth@docker
+      traefik.http.routers.dashboard.middlewares: dashboard-ipallowlist, dashboard-auth
       traefik.http.middlewares.dashboard-auth.basicauth.users: "${DASHBOARD_LOGIN}"
       traefik.http.middlewares.dashboard-ipallowlist.ipallowlist.sourcerange: "100.64.0.0/10, fd7a:115c:a1e0::/48"
 
@@ -53,8 +60,8 @@ services:
       traefik.http.routers.thevoidpact-map.entrypoints: websecure
       traefik.http.routers.thevoidpact-map.tls: "true"
       traefik.http.routers.thevoidpact-map.tls.certresolver: letsencrypt
-      traefik.http.routers.thevoidpact-map.tls.domains[0].main: map.thevoidpact.xyz
-      traefik.http.routers.thevoidpact-map.tls.domains[0].sans: "anubis.thevoidpact.xyz"
+      traefik.http.routers.thevoidpact-map.tls.domains[0].main: *thevoidpact_domains_main
+      traefik.http.routers.thevoidpact-map.tls.domains[0].sans: *thevoidpact_domains_sans
       traefik.http.routers.thevoidpact-map.middlewares: anubis-thevoidpact@docker
       traefik.http.routers.thevoidpact-map.service: thevoidpact-map-svc
       traefik.http.services.thevoidpact-map-svc.loadbalancer.server.url: http://docker-host-pve4:63624
@@ -64,8 +71,8 @@ services:
       traefik.http.routers.jellyfin.entrypoints: websecure
       traefik.http.routers.jellyfin.tls: "true"
       traefik.http.routers.jellyfin.tls.certresolver: letsencrypt
-      traefik.http.routers.jellyfin.tls.domains[0].main: media.saphnet.xyz
-      traefik.http.routers.jellyfin.tls.domains[0].sans: "*.media.saphnet.xyz"
+      traefik.http.routers.jellyfin.tls.domains[0].main: *saphnet_media_domains_main
+      traefik.http.routers.jellyfin.tls.domains[0].sans: *saphnet_media_domains_sans
       traefik.http.routers.jellyfin.middlewares: anubis-saphnet@docker
       traefik.http.routers.jellyfin.service: jellyfin-svc
       traefik.http.services.jellyfin-svc.loadbalancer.server.url: http://docker-host-pve3:8096
@@ -74,8 +81,8 @@ services:
       traefik.http.routers.saphnet-media.middlewares: "saphnet-media-redirectregex"
       traefik.http.routers.saphnet-media.tls: true
       traefik.http.routers.saphnet-media.tls.certresolver: letsencrypt
-      traefik.http.routers.saphnet-media.tls.domains[0].main: media.saphnet.xyz
-      traefik.http.routers.saphnet-media.tls.domains[0].sans: "*.media.saphnet.xyz"
+      traefik.http.routers.saphnet-media.tls.domains[0].main: *saphnet_media_domains_main
+      traefik.http.routers.saphnet-media.tls.domains[0].sans: *saphnet_media_domains_sans
       traefik.http.routers.saphnet-media.service: jellyfin-svc
       traefik.http.middlewares.saphnet-media-redirectregex.redirectregex.regex: "^https://media\\.saphnet\\.xyz/(.*)"
       traefik.http.middlewares.saphnet-media-redirectregex.redirectregex.replacement: "https://jellyfin.media.saphnet.xyz/$${1}"
@@ -84,8 +91,8 @@ services:
       traefik.http.routers.jellyseerr.entrypoints: websecure
       traefik.http.routers.jellyseerr.tls: "true"
       traefik.http.routers.jellyseerr.tls.certresolver: letsencrypt
-      traefik.http.routers.jellyseerr.tls.domains[0].main: media.saphnet.xyz
-      traefik.http.routers.jellyseerr.tls.domains[0].sans: "*.media.saphnet.xyz"
+      traefik.http.routers.jellyseerr.tls.domains[0].main: *saphnet_media_domains_main
+      traefik.http.routers.jellyseerr.tls.domains[0].sans: *saphnet_media_domains_sans
       traefik.http.routers.jellyseerr.middlewares: anubis-saphnet@docker
       traefik.http.routers.jellyseerr.service: jellyseerr-svc
       traefik.http.services.jellyseerr-svc.loadbalancer.server.url: http://docker-host-pve3:5055
@@ -101,8 +108,8 @@ services:
       traefik.http.routers.saphnet.entrypoints: websecure
       traefik.http.routers.saphnet.tls: "true"
       traefik.http.routers.saphnet.tls.certresolver: letsencrypt
-      traefik.http.routers.saphnet.tls.domains[0].main: saphnet.xyz
-      traefik.http.routers.saphnet.tls.domains[0].sans: "www.saphnet.xyz,anubis.saphnet.xyz"
+      traefik.http.routers.saphnet.tls.domains[0].main: *saphnet_domains_main
+      traefik.http.routers.saphnet.tls.domains[0].sans: *saphnet_domains_sans
       traefik.http.routers.saphnet.middlewares: anubis-saphnet@docker
       traefik.http.routers.saphnet.service: under-construction-svc
       # www.saphnet.xyz
@@ -110,8 +117,8 @@ services:
       traefik.http.routers.saphnet-www.middlewares: "saphnet-www-redirectregex"
       traefik.http.routers.saphnet-www.tls: true
       traefik.http.routers.saphnet-www.tls.certresolver: letsencrypt
-      traefik.http.routers.saphnet-www.tls.domains[0].main: saphnet.xyz
-      traefik.http.routers.saphnet-www.tls.domains[0].sans: "www.saphnet.xyz,anubis.saphnet.xyz"
+      traefik.http.routers.saphnet-www.tls.domains[0].main: *saphnet_domains_main
+      traefik.http.routers.saphnet-www.tls.domains[0].sans: *saphnet_domains_sans
       traefik.http.routers.saphnet-www.service: under-construction-svc
       traefik.http.middlewares.saphnet-www-redirectregex.redirectregex.regex: "^https://www\\.saphnet\\.xyz/(.*)"
       traefik.http.middlewares.saphnet-www-redirectregex.redirectregex.replacement: "https://saphnet.xyz/$${1}"
@@ -128,8 +135,8 @@ services:
       traefik.http.routers.anubis-thevoidpact.entrypoints: websecure
       traefik.http.routers.anubis-thevoidpact.tls: "true"
       traefik.http.routers.anubis-thevoidpact.tls.certresolver: letsencrypt
-      traefik.http.routers.anubis-thevoidpact.tls.domains[0].main: map.thevoidpact.xyz
-      traefik.http.routers.anubis-thevoidpact.tls.domains[0].sans: "anubis.thevoidpact.xyz"
+      traefik.http.routers.anubis-thevoidpact.tls.domains[0].main: *thevoidpact_domains_main
+      traefik.http.routers.anubis-thevoidpact.tls.domains[0].sans: *thevoidpact_domains_sans
       traefik.http.routers.anubis-thevoidpact.service: anubis-thevoidpact-svc
       traefik.http.services.anubis-thevoidpact-svc.loadbalancer.server.port: "8923"
     environment:
