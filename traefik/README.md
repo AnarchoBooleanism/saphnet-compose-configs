@@ -20,7 +20,6 @@ traefik.http.routers.dashboard.entrypoints: websecure
 traefik.http.routers.dashboard.service: api@internal
 traefik.http.routers.dashboard.tls: "true"
 traefik.http.routers.dashboard.tls.certresolver: letsencrypt
-traefik.http.routers.my-https-router.tls.options: modern-tls
 
 # Basic‑auth middleware
 traefik.http.middlewares.dashboard-auth.basicauth.users: "${DASHBOARD_LOGIN}"
