@@ -23,7 +23,7 @@ services:
       # Providers 
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=proxy"
+      - "--providers.docker.network=web_bridge" # Make sure this is the name of your Docker network!
 
       # API & Dashboard 
       - "--api.dashboard=true"
