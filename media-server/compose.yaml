@@ -18,6 +18,7 @@ x-services: # Base instances of services to customize
     # and volume mounted to /downloads (for Deluge downloads)
     networks:
       - media-server
+      - web_bridge
     restart: unless-stopped
   
   sonarr: &sonarr # For shows
@@ -32,6 +33,7 @@ x-services: # Base instances of services to customize
     # and volume mounted to /downloads (for Deluge downloads)
     networks:
       - media-server
+      - web_bridge
     restart: unless-stopped
   
   bazarr: &bazarr # For subtitles
@@ -46,6 +48,7 @@ x-services: # Base instances of services to customize
     # mounted to /tv
     networks:
       - media-server
+      - web_bridge
     restart: unless-stopped
 
 services:
@@ -112,6 +115,7 @@ services:
     # Optional - alternative address used for autodiscovery
     networks:
       - media-server
+      - web_bridge
     # Optional - may be necessary for docker healthcheck to pass if running in host network mode
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -136,6 +140,7 @@ services:
       retries: 3
     networks:
       - media-server
+      - web_bridge
     restart: unless-stopped
 
   flaresolverr: # Handles CloudFlare prompts for Prowlarr
@@ -168,6 +173,7 @@ services:
       - prowlarr-config:/config
     networks:
       - media-server
+      - web_bridge
     restart: unless-stopped
 
   recyclarr:
@@ -285,3 +291,6 @@ volumes:
 networks:
   media-server: # Should be externally available
     name: media-server
+  web_bridge:
+    name: web_bridge
+    external: true
