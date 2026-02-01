@@ -73,14 +73,6 @@ services:
       traefik.http.routers.jellyfin.middlewares: jellyfin-mw
       #### The customResponseHeaders option lists the Header names and values to apply to the response.
       traefik.http.middlewares.jellyfin-mw.headers.customResponseHeaders.X-Robots-Tag: noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
-      #### The sslRedirect is set to true, then only allow https requests.
-      traefik.http.middlewares.jellyfin-mw.headers.SSLRedirect: "true"
-      #### The sslHost option is the host name that is used to redirect http requests to https.
-      #### This is the exact URL that will be redirected to, so you can remove the :9999 port if using default SSL port
-      traefik.http.middlewares.jellyfin-mw.headers.SSLHost: jellyfin.media.int.saphnet.xyz
-      #### Set sslForceHost to true and set SSLHost to forced requests to use SSLHost even the ones that are already using SSL.
-      #### Note that this uses SSLHost verbatim, so add the port to SSLHost if you are using an alternate port.
-      traefik.http.middlewares.jellyfin-mw.headers.SSLForceHost: "true"
       #### The stsSeconds is the max-age of the Strict-Transport-Security header. If set to 0, would NOT include the header.
       traefik.http.middlewares.jellyfin-mw.headers.STSSeconds: "315360000"
       #### The stsIncludeSubdomains is set to true, the includeSubDomains directive will be
@@ -127,6 +119,14 @@ services:
     init: true
     ports:
       - "5055:5055"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.jellyseerr.rule: Host(`jellyseerr.media.int.saphnet.xyz`)
+      traefik.http.routers.jellyseerr.entrypoints: websecure
+      traefik.http.routers.jellyseerr.tls: true
+      traefik.http.routers.jellyseerr.tls.certresolver: letsencrypt
+      traefik.http.routers.jellyseerr.service: jellyseerr-svc
+      traefik.http.services.jellyseerr-svc.loadBalancer.server.port: "5055"
     environment:
       LOG_LEVEL: debug
       TZ: *timezone
@@ -165,6 +165,14 @@ services:
     container_name: prowlarr
     ports:
       - "9696:9696"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.prowlarr.rule: Host(`prowlarr.media.int.saphnet.xyz`)
+      traefik.http.routers.prowlarr.entrypoints: websecure
+      traefik.http.routers.prowlarr.tls: true
+      traefik.http.routers.prowlarr.tls.certresolver: letsencrypt
+      traefik.http.routers.prowlarr.service: prowlarr-svc
+      traefik.http.services.prowlarr-svc.loadBalancer.server.port: "9696"
     environment:
       PUID: "1000"
       PGID: "1000"
@@ -194,6 +202,14 @@ services:
     container_name: radarr
     ports:
       - "7878:7878"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.radarr.rule: Host(`radarr.media.int.saphnet.xyz`)
+      traefik.http.routers.radarr.entrypoints: websecure
+      traefik.http.routers.radarr.tls: true
+      traefik.http.routers.radarr.tls.certresolver: letsencrypt
+      traefik.http.routers.radarr.service: radarr-svc
+      traefik.http.services.radarr-svc.loadBalancer.server.port: "7878"
     volumes:
       - radarr-config:/config
       - media-server-movies:/movies # Jellyfin movies folder
@@ -204,6 +220,14 @@ services:
     container_name: radarr-anime
     ports:
       - "7879:7878"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.radarr-anime.rule: Host(`radarr-anime.media.int.saphnet.xyz`)
+      traefik.http.routers.radarr-anime.entrypoints: websecure
+      traefik.http.routers.radarr-anime.tls: true
+      traefik.http.routers.radarr-anime.tls.certresolver: letsencrypt
+      traefik.http.routers.radarr-anime.service: radarr-anime-svc
+      traefik.http.services.radarr-anime-svc.loadBalancer.server.port: "7878"
     volumes:
       - radarr-anime-config:/config
       - media-server-anime-movies:/anime-movies # Jellyfin movies folder
@@ -214,6 +238,14 @@ services:
     container_name: sonarr
     ports:
       - "8989:8989"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.sonarr.rule: Host(`sonarr.media.int.saphnet.xyz`)
+      traefik.http.routers.sonarr.entrypoints: websecure
+      traefik.http.routers.sonarr.tls: true
+      traefik.http.routers.sonarr.tls.certresolver: letsencrypt
+      traefik.http.routers.sonarr.service: sonarr-svc
+      traefik.http.services.sonarr-svc.loadBalancer.server.port: "8989"
     volumes:
       - sonarr-config:/config
       - media-server-tv:/tv
@@ -224,6 +256,14 @@ services:
     container_name: sonarr-anime
     ports:
       - "8990:8989"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.sonarr-anime.rule: Host(`sonarr-anime.media.int.saphnet.xyz`)
+      traefik.http.routers.sonarr-anime.entrypoints: websecure
+      traefik.http.routers.sonarr-anime.tls: true
+      traefik.http.routers.sonarr-anime.tls.certresolver: letsencrypt
+      traefik.http.routers.sonarr-anime.service: sonarr-svc
+      traefik.http.services.sonarr-anime-svc.loadBalancer.server.port: "8989"
     volumes:
       - sonarr-anime-config:/config
       - media-server-anime:/anime
@@ -234,6 +274,14 @@ services:
     container_name: bazarr
     ports:
       - "6767:6767"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.bazarr.rule: Host(`bazarr.media.int.saphnet.xyz`)
+      traefik.http.routers.bazarr.entrypoints: websecure
+      traefik.http.routers.bazarr.tls: true
+      traefik.http.routers.bazarr.tls.certresolver: letsencrypt
+      traefik.http.routers.bazarr.service: bazarr-svc
+      traefik.http.services.bazarr-svc.loadBalancer.server.port: "6767"
     volumes:
       - bazarr-config:/config
       - media-server-movies:/movies
@@ -244,6 +292,14 @@ services:
     container_name: bazarr-anime
     ports:
       - "6768:6767"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.bazarr-anime.rule: Host(`bazarr-anime.media.int.saphnet.xyz`)
+      traefik.http.routers.bazarr-anime.entrypoints: websecure
+      traefik.http.routers.bazarr-anime.tls: true
+      traefik.http.routers.bazarr-anime.tls.certresolver: letsencrypt
+      traefik.http.routers.bazarr-anime.service: bazarr-anime-svc
+      traefik.http.services.bazarr-anime-svc.loadBalancer.server.port: "6767"
     volumes:
       - bazarr-anime-config:/config
       - media-server-anime-movies:/anime-movies
