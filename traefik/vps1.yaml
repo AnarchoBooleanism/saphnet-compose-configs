@@ -86,7 +86,7 @@ services:
       traefik.http.routers.jellyseerr.tls.certresolver: letsencrypt
       traefik.http.routers.jellyseerr.tls.domains[0].main: media.saphnet.xyz
       traefik.http.routers.jellyseerr.tls.domains[0].sans: "*.media.saphnet.xyz"
-      traefik.http.routers.target.middlewares: anubis-saphnet@docker
+      traefik.http.routers.jellyseerr.middlewares: anubis-saphnet@docker
       traefik.http.routers.jellyseerr.service: jellyseerr-svc
       traefik.http.services.jellyseerr-svc.loadbalancer.server.url: https://jellyseerr.media.int.saphnet.xyz
     extra_hosts:
