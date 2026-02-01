@@ -11,6 +11,7 @@ x-common:
     ED25519_PRIVATE_KEY_HEX: ${ED25519_PRIVATE_KEY_HEX}
     OG_PASSTHROUGH: "true"
     WEBMASTER_EMAIL: "homelab@saphnet.xyz"
+    TARGET: " "
 
 x-services:
   anubis: &anubis
