@@ -1,8 +1,6 @@
 # Extra environment variables to set (in addition to in base.yaml):
 # - ED25519_PRIVATE_KEY_HEX (create with "openssl rand -hex 32")
 # - DASHBOARD_LOGIN (create with htpasswd, is in format of username:passwordhash)
-# - DOCKER_HOST_PVE3_TAILSCALE_IP - Tailscale IP address of docker-host-pve3, for
-# direct connections, skipping the 192.168.8.0/23 network
 
 x-common:
   DASHBOARD_HOST: &dashboard_host "Host(`traefik-vps1.saphnet.xyz`)" # Domain name for dashboard
@@ -11,7 +9,7 @@ x-common:
     ED25519_PRIVATE_KEY_HEX: ${ED25519_PRIVATE_KEY_HEX}
     OG_PASSTHROUGH: "true"
     WEBMASTER_EMAIL: "homelab@saphnet.xyz"
-    TARGET: " "
+    TARGET: " " # This is HIGHLY important!!!! Prevents redirect loops (do NOT remove)
 
 x-services:
   anubis: &anubis
@@ -70,7 +68,7 @@ services:
       traefik.http.routers.jellyfin.tls.domains[0].sans: "*.media.saphnet.xyz"
       traefik.http.routers.jellyfin.middlewares: anubis-saphnet@docker
       traefik.http.routers.jellyfin.service: jellyfin-svc
-      traefik.http.services.jellyfin-svc.loadbalancer.server.url: https://jellyfin.media.int.saphnet.xyz
+      traefik.http.services.jellyfin-svc.loadbalancer.server.url: http://docker-host-pve3:8096
       ## Redirect from media.saphnet.xyz
       traefik.http.routers.saphnet-media.rule: "Host(`media.saphnet.xyz`)"
       traefik.http.routers.saphnet-media.middlewares: "saphnet-media-redirectregex"
@@ -78,6 +76,7 @@ services:
       traefik.http.routers.saphnet-media.tls.certresolver: letsencrypt
       traefik.http.routers.saphnet-media.tls.domains[0].main: media.saphnet.xyz
       traefik.http.routers.saphnet-media.tls.domains[0].sans: "*.media.saphnet.xyz"
+      traefik.http.routers.saphnet-media.service: jellyfin-svc
       traefik.http.middlewares.saphnet-media-redirectregex.redirectregex.regex: "^https://media\\.saphnet\\.xyz/(.*)"
       traefik.http.middlewares.saphnet-media-redirectregex.redirectregex.replacement: "https://jellyfin.media.saphnet.xyz/$${1}"
       # jellyseerr.media.saphnet.xyz
@@ -89,10 +88,7 @@ services:
       traefik.http.routers.jellyseerr.tls.domains[0].sans: "*.media.saphnet.xyz"
       traefik.http.routers.jellyseerr.middlewares: anubis-saphnet@docker
       traefik.http.routers.jellyseerr.service: jellyseerr-svc
-      traefik.http.services.jellyseerr-svc.loadbalancer.server.url: https://jellyseerr.media.int.saphnet.xyz
-    extra_hosts:
-      jellyfin.media.int.saphnet.xyz: "${DOCKER_HOST_PVE3_TAILSCALE_IP}"
-      jellyseerr.media.int.saphnet.xyz: "${DOCKER_HOST_PVE3_TAILSCALE_IP}"
+      traefik.http.services.jellyseerr-svc.loadbalancer.server.url: http://docker-host-pve3:5055
 
   under-construction: # Serving "under construction" pages
     image: ghcr.io/palmergw/under-construction-page:0c76870ebebca03d451e3de2a074fbf21ecf3893
@@ -116,6 +112,7 @@ services:
       traefik.http.routers.saphnet-www.tls.certresolver: letsencrypt
       traefik.http.routers.saphnet-www.tls.domains[0].main: saphnet.xyz
       traefik.http.routers.saphnet-www.tls.domains[0].sans: "www.saphnet.xyz,anubis.saphnet.xyz"
+      traefik.http.routers.saphnet-www.service: under-construction-svc
       traefik.http.middlewares.saphnet-www-redirectregex.redirectregex.regex: "^https://www\\.saphnet\\.xyz/(.*)"
       traefik.http.middlewares.saphnet-www-redirectregex.redirectregex.replacement: "https://saphnet.xyz/$${1}"
     networks:

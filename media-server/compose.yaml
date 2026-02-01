@@ -70,6 +70,7 @@ services:
       traefik.http.routers.jellyfin.tls.certresolver: letsencrypt
       traefik.http.routers.jellyfin.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.jellyfin.tls.domains[0].sans: "*.media.int.saphnet.xyz"
+      traefik.http.routers.jellyfin.service: jellyfin-svc
       # Redirect media.int.saphnet.xyz to jellyfun.media.int.saphnet.xyz
       traefik.http.routers.media.rule: "Host(`media.int.saphnet.xyz`)"
       traefik.http.routers.media.middlewares: "media-redirectregex"
@@ -77,6 +78,7 @@ services:
       traefik.http.routers.media.tls.certresolver: letsencrypt
       traefik.http.routers.media.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.media.tls.domains[0].sans: "*.media.int.saphnet.xyz"
+      traefik.http.routers.media.service: jellyfin-svc
       traefik.http.middlewares.media-redirectregex.redirectregex.regex: "^https://media\\.int\\.saphnet\\.xyz/(.*)"
       traefik.http.middlewares.media-redirectregex.redirectregex.replacement: "https://jellyfin.media.int.saphnet.xyz/$${1}"
       # Many of these come from https://jellyfin.org/docs/general/post-install/networking/reverse-proxy/traefik/
@@ -103,9 +105,7 @@ services:
       #### overrides the FrameDeny option.
       traefik.http.middlewares.jellyfin-mw.headers.customFrameOptionsValue: "'allow-from https://jellyfin.media.int.saphnet.xyz'"
       ## HTTP Service
-      traefik.http.routers.jellyfin.service: jellyfin-svc
       traefik.http.services.jellyfin-svc.loadBalancer.server.port: "8096"
-      traefik.http.services.jellyfin-svc.loadBalancer.passHostHeader: "true"
     environment:
       JELLYFIN_PublishedServerUrl: https://jellyfin.media.int.saphnet.xyz
     volumes:
