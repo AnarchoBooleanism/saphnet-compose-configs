@@ -110,7 +110,7 @@ services:
       traefik.http.routers.saphnet.service: under-construction-svc
       # www.saphnet.xyz
       traefik.http.routers.saphnet-www.rule: "Host(`www.saphnet.xyz`)"
-      traefik.http.routers.saphnet-www.middlewares: "media-redirectregex"
+      traefik.http.routers.saphnet-www.middlewares: "saphnet-www-redirectregex"
       traefik.http.routers.saphnet-www.tls: true
       traefik.http.routers.saphnet-www.tls.certresolver: letsencrypt
       traefik.http.routers.saphnet-www.tls.domains[0].main: saphnet.xyz
