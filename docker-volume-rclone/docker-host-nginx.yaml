@@ -1,3 +1,7 @@
+# To be run, and merged, with the base file
+# Example command:
+# docker compose -f base.yaml -f docker-host-nginx.yaml up
+
 services:
   docker-volume-rclone:
     environment:

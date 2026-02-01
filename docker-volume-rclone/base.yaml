@@ -1,3 +1,7 @@
+# To be run, and merged, with another host-specific file (e.g. control-server.yaml)
+# Example command:
+# docker compose -f base.yaml -f control-server.yaml up
+
 x-common:
   TIMEZONE: &timezone "America/Los_Angeles"
 
