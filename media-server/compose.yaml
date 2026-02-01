@@ -107,7 +107,7 @@ services:
       traefik.http.services.jellyfin-svc.loadBalancer.server.port: "8096"
       traefik.http.services.jellyfin-svc.loadBalancer.passHostHeader: "true"
     environment:
-      JELLYFIN_PublishedServerUrl: https://jellyfin.int.saphnet.xyz
+      JELLYFIN_PublishedServerUrl: https://jellyfin.media.int.saphnet.xyz
     volumes:
       - jellyfin-config:/config # Also, self-signed cert files in here
       - jellyfin-cache:/cache
