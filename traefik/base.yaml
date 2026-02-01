@@ -1,0 +1,64 @@
+# To be run, and merged, with another host-specific file (e.g. docker-host-pve3.yaml)
+# Example command:
+# docker compose -f base.yaml -f docker-host-pve3.yaml up
+
+# Environment variables to set:
+# - NAMECHEAP_API_USER
+# - NAMECHEAP_API_KEY
+# - ACME_EMAIL
+
+services:
+  traefik: # Reverse proxy, with dashboard enabled
+    image: traefik:v3.6.7
+    container_name: traefik
+    command:
+      # Entrypoints
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+
+      # Providers 
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=proxy"
+
+      # API & Dashboard 
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+
+      # Observability 
+      - "--log.level=INFO"
+      - "--accesslog=true"
+      - "--metrics.prometheus=true"
+
+      # SSL certificates
+      - "--certificatesresolvers.myresolver.acme.dnsChallenge=true"
+      - "--certificatesresolvers.myresolver.acme.dnsChallenge.provider=namecheap"
+      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    environment:
+      NAMECHEAP_API_USER: "${NAMECHEAP_API_USER}"
+      NAMECHEAP_API_KEY: "${NAMECHEAP_API_KEY}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certs:/letsencrypt
+    networks:
+      - web_bridge
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+volumes:
+  traefik-certs:
+
+networks:
+  web_bridge:
+    name: web_bridge
+    attachable: true
