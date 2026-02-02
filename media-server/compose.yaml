@@ -285,7 +285,7 @@ services:
       traefik.http.routers.sonarr-anime.tls.certresolver: letsencrypt
       traefik.http.routers.sonarr-anime.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.sonarr-anime.tls.domains[0].sans: "*.media.int.saphnet.xyz"
-      traefik.http.routers.sonarr-anime.service: sonarr-svc
+      traefik.http.routers.sonarr-anime.service: sonarr-anime-svc
       traefik.http.services.sonarr-anime-svc.loadBalancer.server.port: "8989"
     volumes:
       - sonarr-anime-config:/config
