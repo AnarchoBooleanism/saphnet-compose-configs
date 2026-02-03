@@ -13,6 +13,8 @@ x-common:
 
 services:
   traefik:
+    command:
+      - "--serversTransport.insecureSkipVerify=true" # Needed for Proxmox, router
     labels:
       # Enable self‑routing
       traefik.enable: "true"
