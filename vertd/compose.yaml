@@ -18,11 +18,27 @@ services:
     #         - driver: nvidia
     #           count: all
     #           capabilities: [ gpu ]
-    ports:
-      - "${PORT:-24153}:24153"
+    # ports:
+    #   - "${PORT:-24153}:24153"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.vertd.rule: Host(`vertd.int.saphnet.xyz`)
+      traefik.http.routers.vertd.entrypoints: websecure
+      traefik.http.routers.vertd.tls: true
+      traefik.http.routers.vertd.tls.certresolver: letsencrypt
+      traefik.http.routers.vertd.tls.domains[0].main: vertd.int.saphnet.xyz
+      traefik.http.routers.vertd.service: vertd-svc
+      traefik.http.services.vertd-svc.loadBalancer.server.port: "24153"
     environment:
       WEBHOOK_URL: "${WEBHOOK_URL}"
       WEBHOOK_PINGS: "${WEBHOOK_PINGS}"
       ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
       PUBLIC_URL: "${PUBLIC_URL}"
+    networks:
+      - web_bridge
     restart: unless-stopped
+
+networks:
+  web_bridge:
+    name: web_bridge
+    external: true

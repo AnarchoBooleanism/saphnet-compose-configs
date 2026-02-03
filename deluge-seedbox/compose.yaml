@@ -59,6 +59,8 @@ services:
     ports:
       # - "8112:8112"
       - "58846:58846"
+    expose:
+      - "8112"
     labels:
       traefik.enable: true
       traefik.http.routers.seedbox.rule: Host(`seedbox.int.saphnet.xyz`)
