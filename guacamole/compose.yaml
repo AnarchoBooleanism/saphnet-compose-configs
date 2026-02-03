@@ -45,7 +45,7 @@ services:
       traefik.http.routers.guacamole-root.tls.certresolver: letsencrypt
       traefik.http.routers.guacamole-root.tls.domains[0].main: int.saphnet.xyz
       traefik.http.routers.guacamole-root.tls.domains[0].sans: "*.int.saphnet.xyz"
-      traefik.http.routers.app-websecure-redir.middlewares: guacamole-root-redirect
+      traefik.http.routers.guacamole-root.middlewares: guacamole-root-redirect
       traefik.http.middlewares.guacamole-root-redirect.redirectregex.regex: "^https?://(.*)/$"
       traefik.http.middlewares.guacamole-root-redirect.redirectregex.replacement: "https://$${1}/guacamole/"
       traefik.http.middlewares.guacamole-root-redirect.redirectregex.permanent: "true"
