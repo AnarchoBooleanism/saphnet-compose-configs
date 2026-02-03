@@ -1,3 +1,6 @@
+# Environment variables to set:
+# - NETBOOT_LOGIN (create with htpasswd, is in format of username:passwordhash)
+
 services:
   netbootxyz:
     image: ghcr.io/netbootxyz/netbootxyz:0.7.6-nbxyz10
@@ -6,6 +9,19 @@ services:
       # - "3000:3000"  # optional, destination should match ${WEB_APP_PORT} variable above.
       - "69:69/udp"
       - "8080:80"  # optional, destination should match ${NGINX_PORT} variable above.
+    labels:
+      traefik.enable: true
+      traefik.http.routers.netboot.rule: Host(`netboot.int.saphnet.xyz`)
+      traefik.http.routers.netboot.entrypoints: websecure
+      traefik.http.routers.netboot.tls: true
+      traefik.http.routers.netboot.tls.certresolver: letsencrypt
+      traefik.http.routers.netboot.tls.domains[0].main: int.saphnet.xyz
+      traefik.http.routers.netboot.tls.domains[0].sans: "*.int.saphnet.xyz"
+      traefik.http.routers.netboot.service: netboot-svc
+      traefik.http.services.netboot-svc.loadBalancer.server.port: "3000"
+      # Basic‑auth middleware
+      traefik.http.routers.netboot.middlewares: netboot-auth
+      traefik.http.middlewares.netboot-auth.basicauth.users: "${NETBOOT_LOGIN}"
     environment:
       NGINX_PORT: "80" # optional
       WEB_APP_PORT: "3000" # optional
@@ -17,8 +33,6 @@ services:
     networks:
       - web_bridge
     restart: unless-stopped
-
-# TODO for Traefik: Have auth middleware
 
 volumes:
   netboot-config: # Boot menu files, web application config

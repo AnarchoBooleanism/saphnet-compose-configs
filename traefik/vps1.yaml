@@ -65,6 +65,7 @@ services:
       traefik.http.routers.thevoidpact-map.middlewares: anubis-thevoidpact@docker
       traefik.http.routers.thevoidpact-map.service: thevoidpact-map-svc
       traefik.http.services.thevoidpact-map-svc.loadbalancer.server.url: http://docker-host-pve4:63624
+      
       # Media stack
       # jellyfin.media.saphnet.xyz
       traefik.http.routers.jellyfin.rule: Host(`jellyfin.media.saphnet.xyz`)
@@ -97,6 +98,7 @@ services:
       #### The customFrameOptionsValue allows the X-Frame-Options header value to be set with a custom value. This
       #### overrides the FrameDeny option.
       traefik.http.middlewares.jellyfin-mw.headers.customFrameOptionsValue: "'allow-from https://jellyfin.media.saphnet.xyz'"
+
       ## Redirect from media.saphnet.xyz
       traefik.http.routers.saphnet-media.rule: "Host(`media.saphnet.xyz`)"
       traefik.http.routers.saphnet-media.middlewares: "saphnet-media-redirectregex"
@@ -107,6 +109,7 @@ services:
       traefik.http.routers.saphnet-media.service: jellyfin-svc
       traefik.http.middlewares.saphnet-media-redirectregex.redirectregex.regex: "^https://media\\.saphnet\\.xyz/(.*)"
       traefik.http.middlewares.saphnet-media-redirectregex.redirectregex.replacement: "https://jellyfin.media.saphnet.xyz/$${1}"
+
       # jellyseerr.media.saphnet.xyz
       traefik.http.routers.jellyseerr.rule: Host(`jellyseerr.media.saphnet.xyz`)
       traefik.http.routers.jellyseerr.entrypoints: websecure
@@ -124,6 +127,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.http.services.under-construction-svc.loadbalancer.server.port: "80"
+
       # saphnet.xyz
       traefik.http.routers.saphnet.rule: Host(`saphnet.xyz`)
       traefik.http.routers.saphnet.entrypoints: websecure
@@ -133,6 +137,7 @@ services:
       traefik.http.routers.saphnet.tls.domains[0].sans: *saphnet_domains_sans
       traefik.http.routers.saphnet.middlewares: anubis-saphnet@docker
       traefik.http.routers.saphnet.service: under-construction-svc
+
       # www.saphnet.xyz
       traefik.http.routers.saphnet-www.rule: "Host(`www.saphnet.xyz`)"
       traefik.http.routers.saphnet-www.middlewares: "saphnet-www-redirectregex"

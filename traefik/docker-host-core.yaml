@@ -1,0 +1,139 @@
+# To be run, and merged, with the base file
+# Example command:
+# docker compose -f base.yaml -f docker-host-core.yaml up
+
+# Extra environment variables to set (in addition to in base.yaml):
+# - DASHBOARD_LOGIN (create with htpasswd, is in format of username:passwordhash)
+
+x-common:
+  DASHBOARD_HOST: &dashboard_host "Host(`traefik-core.int.saphnet.xyz`)" # Domain name for dashboard
+  certificate_groups:
+    SAPHNET_INT_DOMAINS_MAIN: &saphnet_int_domains_main "int.saphnet.xyz"
+    SAPHNET_INT_DOMAINS_SANS: &saphnet_int_domains_sans "*.int.saphnet.xyz"
+
+services:
+  traefik:
+    labels:
+      # Enable self‑routing
+      traefik.enable: "true"
+
+      # Dashboard router
+      traefik.http.routers.dashboard.rule: *dashboard_host
+      traefik.http.routers.dashboard.entrypoints: websecure
+      traefik.http.routers.dashboard.service: api@internal
+      traefik.http.routers.dashboard.tls: "true"
+      traefik.http.routers.dashboard.tls.certresolver: letsencrypt
+
+      # Basic‑auth middleware
+      traefik.http.middlewares.dashboard-auth.basicauth.users: "${DASHBOARD_LOGIN}"
+      traefik.http.routers.dashboard.middlewares: dashboard-auth@docker
+
+      # glances.int.saphnet.xyz
+      traefik.http.routers.glances.rule: Host(`glances.int.saphnet.xyz`)
+      traefik.http.routers.glances.entrypoints: websecure
+      traefik.http.routers.glances.tls: "true"
+      traefik.http.routers.glances.tls.certresolver: letsencrypt
+      traefik.http.routers.glances.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.glances.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.glances.service: glances-svc
+      traefik.http.services.glances-svc.loadbalancer.server.url: http://pve1.int-net.saphnet.xyz:61208
+
+      # glances3.int.saphnet.xyz
+      traefik.http.routers.glances3.rule: Host(`glances3.int.saphnet.xyz`)
+      traefik.http.routers.glances3.entrypoints: websecure
+      traefik.http.routers.glances3.tls: "true"
+      traefik.http.routers.glances3.tls.certresolver: letsencrypt
+      traefik.http.routers.glances3.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.glances3.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.glances3.service: glances3-svc
+      traefik.http.services.glances3-svc.loadbalancer.server.url: http://pve3.int-net.saphnet.xyz:61208
+
+      # glances4.int.saphnet.xyz
+      traefik.http.routers.glances4.rule: Host(`glances4.int.saphnet.xyz`)
+      traefik.http.routers.glances4.entrypoints: websecure
+      traefik.http.routers.glances4.tls: "true"
+      traefik.http.routers.glances4.tls.certresolver: letsencrypt
+      traefik.http.routers.glances4.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.glances4.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.glances4.service: glances4-svc
+      traefik.http.services.glances-svc.loadbalancer.server.url: http://pve4.int-net.saphnet.xyz:61208
+
+      # glances-vps1.int.saphnet.xyz
+      traefik.http.routers.glances-vps1.rule: Host(`glances-vps1.int.saphnet.xyz`)
+      traefik.http.routers.glances-vps1.entrypoints: websecure
+      traefik.http.routers.glances-vps1.tls: "true"
+      traefik.http.routers.glances-vps1.tls.certresolver: letsencrypt
+      traefik.http.routers.glances-vps1.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.glances-vps1.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.glances-vps1.service: glances-vps1-svc
+      traefik.http.services.glances-vps1-svc.loadbalancer.server.url: http://vps1-ts.saphnet.xyz:61208
+      
+      # modem.int.saphnet.xyz
+      traefik.http.routers.modem.rule: Host(`modem.int.saphnet.xyz`)
+      traefik.http.routers.modem.entrypoints: websecure
+      traefik.http.routers.modem.tls: "true"
+      traefik.http.routers.modem.tls.certresolver: letsencrypt
+      traefik.http.routers.modem.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.modem.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.modem.service: modem-svc
+      traefik.http.services.modem-svc.loadbalancer.server.url: http://192.168.0.1:80
+
+      # netdata.int.saphnet.xyz
+      traefik.http.routers.netdata.rule: Host(`netdata.int.saphnet.xyz`)
+      traefik.http.routers.netdata.entrypoints: websecure
+      traefik.http.routers.netdata.tls: "true"
+      traefik.http.routers.netdata.tls.certresolver: letsencrypt
+      traefik.http.routers.netdata.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.netdata.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.netdata.service: netdata-svc
+      traefik.http.services.netdata-svc.loadbalancer.server.url: http://pve1.int-net.saphnet.xyz:19999
+
+      # netdata3.int.saphnet.xyz
+      traefik.http.routers.netdata3.rule: Host(`netdata3.int.saphnet.xyz`)
+      traefik.http.routers.netdata3.entrypoints: websecure
+      traefik.http.routers.netdata3.tls: "true"
+      traefik.http.routers.netdata3.tls.certresolver: letsencrypt
+      traefik.http.routers.netdata3.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.netdata3.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.netdata3.service: netdata3-svc
+      traefik.http.services.netdata3-svc.loadbalancer.server.url: http://pve3.int-net.saphnet.xyz:19999
+
+      # netdata4.int.saphnet.xyz
+      traefik.http.routers.netdata4.rule: Host(`netdata4.int.saphnet.xyz`)
+      traefik.http.routers.netdata4.entrypoints: websecure
+      traefik.http.routers.netdata4.tls: "true"
+      traefik.http.routers.netdata4.tls.certresolver: letsencrypt
+      traefik.http.routers.netdata4.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.netdata4.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.netdata4.service: netdata4-svc
+      traefik.http.services.netdata4-svc.loadbalancer.server.url: http://pve4.int-net.saphnet.xyz:19999
+
+      # netdata-vps1.int.saphnet.xyz
+      traefik.http.routers.netdata-vps1.rule: Host(`netdata-vps1.int.saphnet.xyz`)
+      traefik.http.routers.netdata-vps1.entrypoints: websecure
+      traefik.http.routers.netdata-vps1.tls: "true"
+      traefik.http.routers.netdata-vps1.tls.certresolver: letsencrypt
+      traefik.http.routers.netdata-vps1.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.netdata-vps1.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.netdata-vps1.service: netdata-vps1-svc
+      traefik.http.services.netdata-vps1-svc.loadbalancer.server.url: http://vps1-ts.saphnet.xyz:19999
+
+      # proxmox.int.saphnet.xyz
+      traefik.http.routers.proxmox.rule: Host(`proxmox.int.saphnet.xyz`)
+      traefik.http.routers.proxmox.entrypoints: websecure
+      traefik.http.routers.proxmox.tls: "true"
+      traefik.http.routers.proxmox.tls.certresolver: letsencrypt
+      traefik.http.routers.proxmox.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.proxmox.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.proxmox.service: proxmox-svc
+      traefik.http.services.proxmox-svc.loadbalancer.server.url: https://pve1.int-net.saphnet.xyz:8006
+      
+      # router.int.saphnet.xyz
+      traefik.http.routers.router.rule: Host(`router.int.saphnet.xyz`)
+      traefik.http.routers.router.entrypoints: websecure
+      traefik.http.routers.router.tls: "true"
+      traefik.http.routers.router.tls.certresolver: letsencrypt
+      traefik.http.routers.router.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.router.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.router.service: router-svc
+      traefik.http.services.router-svc.loadbalancer.server.url: https://192.168.8.1:443

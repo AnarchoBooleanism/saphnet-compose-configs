@@ -28,6 +28,28 @@ services:
       - guacd
     # ports:
     #   - "8080:8080"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.guacamole.rule: Host(`guacamole.int.saphnet.xyz`) && PathPrefix(`/guacamole/`)
+      traefik.http.routers.guacamole.entrypoints: websecure
+      traefik.http.routers.guacamole.tls: true
+      traefik.http.routers.guacamole.tls.certresolver: letsencrypt
+      traefik.http.routers.guacamole.tls.domains[0].main: int.saphnet.xyz
+      traefik.http.routers.guacamole.tls.domains[0].sans: "*.int.saphnet.xyz"
+      traefik.http.routers.guacamole.service: guacamole-svc
+      traefik.http.services.guacamole-svc.loadBalancer.server.port: "8080"
+      # Root directory redirect
+      traefik.http.routers.guacamole-root.rule: Host(`guacamole.int.saphnet.xyz`) && Path(`/`)
+      traefik.http.routers.guacamole-root.entrypoints: websecure
+      traefik.http.routers.guacamole-root.tls: true
+      traefik.http.routers.guacamole-root.tls.certresolver: letsencrypt
+      traefik.http.routers.guacamole-root.tls.domains[0].main: int.saphnet.xyz
+      traefik.http.routers.guacamole-root.tls.domains[0].sans: "*.int.saphnet.xyz"
+      traefik.http.routers.app-websecure-redir.middlewares: guacamole-root-redirect
+      traefik.http.middlewares.guacamole-root-redirect.redirectregex.regex: "^https?://(.*)/$"
+      traefik.http.middlewares.guacamole-root-redirect.redirectregex.replacement: "https://$${1}/guacamole/"
+      traefik.http.middlewares.guacamole-root-redirect.redirectregex.permanent: "true"
+      traefik.http.routers.guacamole-root.service: guacamole-svc
     environment:
       GUACD_HOSTNAME: guacd
       MYSQL_HOSTNAME: guacdb

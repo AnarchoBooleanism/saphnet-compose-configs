@@ -4,6 +4,16 @@ services:
     image: machines/filestash@sha256:1ab02df51fd34defb15483925a011fdfc81fcf8834b8574e66bf46a6c6fae9ab
     # ports:
     # - "8334:8334"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.filestash.rule: Host(`filestash.int.saphnet.xyz`)
+      traefik.http.routers.filestash.entrypoints: websecure
+      traefik.http.routers.filestash.tls: true
+      traefik.http.routers.filestash.tls.certresolver: letsencrypt
+      traefik.http.routers.filestash.tls.domains[0].main: int.saphnet.xyz
+      traefik.http.routers.filestash.tls.domains[0].sans: "*.int.saphnet.xyz"
+      traefik.http.routers.filestash.service: filestash-svc
+      traefik.http.services.filestash-svc.loadBalancer.server.port: "8334"
     environment:
       APPLICATION_URL: filestash.int.saphnet.xyz
       CANARY: "true"

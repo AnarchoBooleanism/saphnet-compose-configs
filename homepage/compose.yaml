@@ -22,6 +22,26 @@ services:
       - docker-proxy
 #    ports:
 #      - "3000:3000"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.homepage.rule: Host(`homepage.int.saphnet.xyz`)
+      traefik.http.routers.homepage.entrypoints: websecure
+      traefik.http.routers.homepage.tls: true
+      traefik.http.routers.homepage.tls.certresolver: letsencrypt
+      traefik.http.routers.homepage.tls.domains[0].main: int.saphnet.xyz
+      traefik.http.routers.homepage.tls.domains[0].sans: "*.int.saphnet.xyz"
+      traefik.http.routers.homepage.service: homepage-svc
+      traefik.http.services.homepage-svc.loadBalancer.server.port: "3000"
+      # Redirect int.saphnet.xyz to homepage.int.saphnet.xyz
+      traefik.http.routers.saphnet-int.rule: "Host(`int.saphnet.xyz`)"
+      traefik.http.routers.saphnet-int.middlewares: "saphnet-int-redirectregex"
+      traefik.http.routers.saphnet-int.tls: true
+      traefik.http.routers.saphnet-int.tls.certresolver: letsencrypt
+      traefik.http.routers.saphnet-int.tls.domains[0].main: int.saphnet.xyz
+      traefik.http.routers.saphnet-int.tls.domains[0].sans: "*.int.saphnet.xyz"
+      traefik.http.routers.saphnet-int.service: homepage-svc
+      traefik.http.middlewares.saphnet-int-redirectregex.redirectregex.regex: "^https://int\\.saphnet\\.xyz/(.*)"
+      traefik.http.middlewares.saphnet-int-redirectregex.redirectregex.replacement: "https://homepage.int.saphnet.xyz/$${1}"
     environment:
       HOMEPAGE_ALLOWED_HOSTS: homepage.int.saphnet.xyz
     env_file:
@@ -36,3 +56,5 @@ networks:
   web_bridge:
     name: web_bridge
     external: true
+# TODO:
+# - int.saphnet.xyz redirect
