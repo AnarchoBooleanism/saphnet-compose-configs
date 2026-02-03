@@ -49,7 +49,7 @@ services:
   
   vpn:
     image: qmcgaw/gluetun:v3.41.0
-    container_name: vpn
+    container_name: deluge-vpn
     cap_add:
       - NET_ADMIN
     sysctls:
@@ -57,8 +57,17 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     ports:
-      - "8112:8112"
+      # - "8112:8112"
       - "58846:58846"
+    labels:
+      traefik.enable: true
+      traefik.http.routers.seedbox.rule: Host(`seedbox.int.saphnet.xyz`)
+      traefik.http.routers.seedbox.entrypoints: websecure
+      traefik.http.routers.seedbox.tls: true
+      traefik.http.routers.seedbox.tls.certresolver: letsencrypt
+      traefik.http.routers.seedbox.tls.domains[0].main: seedbox.int.saphnet.xyz
+      traefik.http.routers.seedbox.service: seedbox-svc
+      traefik.http.services.seedbox-svc.loadBalancer.server.port: "8112"
     environment:
       VPN_SERVICE_PROVIDER: nordvpn
       VPN_TYPE: openvpn
@@ -66,6 +75,8 @@ services:
       OPENVPN_USER: "${OPENVPN_USER}"
       OPENVPN_PASSWORD: "${OPENVPN_PASSWORD}"
       SERVER_HOSTNAMES: "${CONNECT}.nordvpn.com"
+    networks:
+      - web_bridge
     restart: unless-stopped
 
   deluge:
@@ -107,3 +118,8 @@ volumes:
       type: "nfs"
       o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
       device: ":/mnt/saphnet-nas1b/media-server/deluge"
+
+networks:
+  web_bridge:
+    name: web_bridge
+    external: true
