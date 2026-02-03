@@ -15,3 +15,4 @@ services:
         pterodactyl-panel_database-data
         pterodactyl-panel_panel-data
         pterodactyl-panel_panel-logs
+        netbootxyz_netboot-config
