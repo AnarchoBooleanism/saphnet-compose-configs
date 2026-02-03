@@ -10,13 +10,14 @@ A set of configuration files for different Docker Compose stacks for Komodo to p
 ### docker-host-nginx (docker-host-nginx.int-net.saphnet.xyz)
 NOTE: `nginx-proxy-manager` is the stack that creates the `web_bridge` network, which is what all of the other web-related stacks depend on.
 - `docker-volume-rclone`
-- ALL stacks in `nginx-stacks`. Make sure the host has access to the Tailscale network as well.
-- `pterodactyl/panel`
-
-### docker-host-pve1 (docker-host-pve1.int-net.saphnet.xyz)
-- `docker-proxy`
-- `docker-volume-rclone` (if applicable)
+- `filestash`
+- `guacamole`
+- `homepage`
 - `netbootxyz`
+- `nginx-proxy-manager`
+- `openspeedtest`
+- `pterodactyl/panel`
+- `vert-sh`
 
 ### docker-host-pve3 (docker-host-pve3.int-net.saphnet.xyz)
 NOTE: This host has an Intel Arc A310 for GPU acceleration.

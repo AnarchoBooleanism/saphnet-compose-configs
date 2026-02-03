@@ -1,6 +1,8 @@
 ## Media server
 A media server designed to integrate with the Deluge Seedbox, using Jellyfin, Jellyseerr, Prowlarr (suported with Flaresolverr), Radarr & Sonarr (supported with Recyclarr), and Bazarr. Note that there are two groups of Radarr/Sonarr-related containers, for anime and non-anime media.
 
+NOTE: Relies on Traefik setup.
+
 For ideal results, make sure your virtual machine has access to a GPU with good transcoding support.
 
 This setup is designed to work with an NFS server, with a central directory for a media server, with the following subdirectories:
