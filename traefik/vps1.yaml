@@ -73,9 +73,30 @@ services:
       traefik.http.routers.jellyfin.tls.certresolver: letsencrypt
       traefik.http.routers.jellyfin.tls.domains[0].main: *saphnet_media_domains_main
       traefik.http.routers.jellyfin.tls.domains[0].sans: *saphnet_media_domains_sans
-      traefik.http.routers.jellyfin.middlewares: anubis-saphnet@docker
+      traefik.http.routers.jellyfin.middlewares: anubis-saphnet@docker, jellyfin-mw
       traefik.http.routers.jellyfin.service: jellyfin-svc
       traefik.http.services.jellyfin-svc.loadbalancer.server.url: http://docker-host-pve3:8096
+      ## Jellyfin-specific middleware
+      #### The customResponseHeaders option lists the Header names and values to apply to the response.
+      traefik.http.middlewares.jellyfin-mw.headers.customResponseHeaders.X-Robots-Tag: noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
+      #### The stsSeconds is the max-age of the Strict-Transport-Security header. If set to 0, would NOT include the header.
+      traefik.http.middlewares.jellyfin-mw.headers.STSSeconds: "315360000"
+      #### The stsIncludeSubdomains is set to true, the includeSubDomains directive will be
+      #### appended to the Strict-Transport-Security header.
+      traefik.http.middlewares.jellyfin-mw.headers.STSIncludeSubdomains: "true"
+      #### Set stsPreload to true to have the preload flag appended to the Strict-Transport-Security header.
+      traefik.http.middlewares.jellyfin-mw.headers.STSPreload: "true"
+      #### Set forceSTSHeader to true, to add the STS header even when the connection is HTTP.
+      traefik.http.middlewares.jellyfin-mw.headers.forceSTSHeader: "true"
+      #### Set frameDeny to true to add the X-Frame-Options header with the value of DENY.
+      traefik.http.middlewares.jellyfin-mw.headers.frameDeny: "true"
+      #### Set contentTypeNosniff to true to add the X-Content-Type-Options header with the value nosniff.
+      traefik.http.middlewares.jellyfin-mw.headers.contentTypeNosniff: "true"
+      #### Set browserXssFilter to true to add the X-XSS-Protection header with the value 1; mode=block.
+      traefik.http.middlewares.jellyfin-mw.headers.customresponseheaders.X-XSS-PROTECTION: "1"
+      #### The customFrameOptionsValue allows the X-Frame-Options header value to be set with a custom value. This
+      #### overrides the FrameDeny option.
+      traefik.http.middlewares.jellyfin-mw.headers.customFrameOptionsValue: "'allow-from https://jellyfin.media.saphnet.xyz'"
       ## Redirect from media.saphnet.xyz
       traefik.http.routers.saphnet-media.rule: "Host(`media.saphnet.xyz`)"
       traefik.http.routers.saphnet-media.middlewares: "saphnet-media-redirectregex"
