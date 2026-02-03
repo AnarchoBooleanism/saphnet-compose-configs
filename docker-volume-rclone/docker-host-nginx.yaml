@@ -1,11 +1,11 @@
 # To be run, and merged, with the base file
 # Example command:
-# docker compose -f base.yaml -f docker-host-nginx.yaml up
+# docker compose -f base.yaml -f docker-host-core.yaml up
 
 services:
   docker-volume-rclone:
     environment:
-      TARGET_SUBDIR_NAME: docker-host-nginx
+      TARGET_SUBDIR_NAME: docker-host-core
       VOLUME_NAMES: >-
         filestash_filestash
         guacamole_guac-db-data

@@ -1,5 +1,5 @@
 # Configuration for Pterodactyl panel, to be combined with wings
-# This is intended to be used with nginx-proxy-manager, on docker-host-nginx
+# This is intended to be used with nginx-proxy-manager, on docker-host-core
 
 # Much of this comes from https://wiki.s5gi.com/guides/linux/pterodactyl_and_wings_dockerized
 #                         https://technotim.live/posts/pterodactyl-game-server/

@@ -7,7 +7,7 @@ A set of configuration files for different Docker Compose stacks for Komodo to p
 - `docker-proxy`
 - `docker-volume-rclone`
 
-### docker-host-nginx (docker-host-nginx.int-net.saphnet.xyz)
+### docker-host-core (docker-host-core.int-net.saphnet.xyz)
 NOTE: `nginx-proxy-manager` is the stack that creates the `web_bridge` network, which is what all of the other web-related stacks depend on.
 - `docker-volume-rclone`
 - `filestash`
