@@ -56,7 +56,7 @@ services:
       traefik.http.routers.glances4.tls.domains[0].main: *saphnet_int_domains_main
       traefik.http.routers.glances4.tls.domains[0].sans: *saphnet_int_domains_sans
       traefik.http.routers.glances4.service: glances4-svc
-      traefik.http.services.glances-svc.loadbalancer.server.url: http://pve4.int-net.saphnet.xyz:61208
+      traefik.http.services.glances4-svc.loadbalancer.server.url: http://pve4.int-net.saphnet.xyz:61208
 
       # glances-vps1.int.saphnet.xyz
       traefik.http.routers.glances-vps1.rule: Host(`glances-vps1.int.saphnet.xyz`)
