@@ -23,6 +23,10 @@ services:
 volumes:
   netboot-config: # Boot menu files, web application config
   netboot-assets: # Bootable assets (e.g. live CDs)
+    driver_opts:
+      type: "nfs"
+      o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
+      device: ":/mnt/saphnet-nas1a/netboot-assets"
 
 networks:
   web_bridge:
