@@ -26,8 +26,8 @@ services:
     depends_on:
       - guacdb
       - guacd
-    ports:
-      # - "8080:8080"
+    # ports:
+    #   - "8080:8080"
     environment:
       GUACD_HOSTNAME: guacd
       MYSQL_HOSTNAME: guacdb
