@@ -6,11 +6,6 @@
 #                         https://docs.agamersgrind.com/guides/pterodactyl/creating-a-new-wings-node
 #                         https://dev.to/marrouchi/the-challenge-about-ssl-in-docker-containers-no-one-talks-about-32gh
 
-# Be sure to define
-# - DNS_NAMECHEAP_USERNAME
-# - DNS_NAMECHEAP_API_KEY
-# - CERTBOT_EMAIL
-
 x-common:
   TIMEZONE: &timezone "America/Los_Angeles"
   # INSTANCE_DOMAIN: &instance-domain "pterodactyl-node-main.int-net.saphnet.xyz"
@@ -48,54 +43,12 @@ services:
       - /tmp/pterodactyl:/tmp/elytra
     networks:
       - ptero0
-      - pterodactyl_wing_internal
       - web_bridge
     restart: unless-stopped
-  
-  # nginx:
-  #   image: ghcr.io/anarchobooleanism/saphnet-nginx:v0.1.1
-  #   depends_on:
-  #     certbot:
-  #       condition: service_healthy
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   environment:
-  #     TZ: *timezone
-  #   volumes:
-  #     # Main conf file
-  #     - ./reverse-proxy/proxies-docker-host-pve4.conf:/etc/nginx/proxies.conf:ro
-  #     # Certificate files
-  #     - certbot-conf:/etc/letsencrypt:ro
-  #   networks:
-  #     - pterodactyl_wing_internal
-  #   restart: unless-stopped
-  
-  # certbot:
-  #   image: ghcr.io/anarchobooleanism/certbot-dns-namecheap:v1.0.0-certbotv5.2.2-1
-  #   entrypoint: [ "/certbot-entrypoint.sh" ]
-  #   environment:
-  #     TZ: *timezone
-  #     DNS_NAMECHEAP_USERNAME: "${DNS_NAMECHEAP_USERNAME}"
-  #     DNS_NAMECHEAP_API_KEY: "${DNS_NAMECHEAP_API_KEY}"
-  #     CERTBOT_DOMAIN: *instance-domain
-  #     CERTBOT_EMAIL: "${CERTBOT_EMAIL}"
-  #   volumes:
-  #     - certbot-conf:/etc/letsencrypt
-  #     - ./certbot-entrypoint.sh:/certbot-entrypoint.sh:ro
-  #   healthcheck:
-  #     test: ["CMD", "sh", "-c", "[ -f /etc/letsencrypt/live/pterodactyl-node-main.int-net.saphnet.xyz/fullchain.pem ]"]
-  #     interval: "20s"
-  #     retries: 12
-  #     start_period: "10s"
-  #     timeout: "10s"
-  #   # Make sure certbot is run first if not yet, then renew certificates every 12 hours
-  #   restart: unless-stopped
 
 volumes:
   wings-config:
   wings-logs:
-  # certbot-conf:
 
 # This is Wings' Network. We don't need much depth here, all you need to know, is
 # that it allows the passthrough of the ports from Wings.
@@ -103,7 +56,6 @@ networks:
   web_bridge:
     name: web_bridge
     external: true
-  pterodactyl_wing_internal:
   ptero0:
     name: ptero0
     driver: bridge

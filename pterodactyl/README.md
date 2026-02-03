@@ -7,8 +7,6 @@ The two locations that will be used in our instance are `homelab` and `vps1`.
 
 The main node, under the `homelab` location, will have an FQDN of `pterodactyl-node-main.int.saphnet.xyz` (this should be the domain that a reverse proxy with HTTPS support serves), use an SSL connection, be behind a proxy, and have a RAM allocation limit of 6144 MiB, 65536 MiB of disk space, and no overallocation, with the daemon port being 443, and the daemon SFTP port being 2022.
 
-The vps1 node, under the `vps1` location, will have an FQDN of `pterodactyl-node-public.saphnet.xyz` (this should be the domain that a reverse proxy with HTTPS support serves; note that this should be only accessible within Tailscale), use an SSL connection, be behind a proxy, and have a RAM allocation limit of 512 MiB, 2048 MiB of disk space, and no overallocation, with the daemon port being 443, and the daemon SFTP port being 2022.
-
 When setting up your node/Wing, remember to add this to your config.yml (ensure the subnet is different that of `ptero0`):
 ```yaml
 docker:
