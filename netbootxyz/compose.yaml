@@ -13,7 +13,7 @@ services:
     volumes:
       - netboot-config:/config
       - netboot-assets:/assets
-      - ./local-vars.ipxe:/config/menus/local-vars.ipxe:ro
+      - ./local-vars.ipxe:/config/menus/local-vars.ipxe
     networks:
       - web_bridge
     restart: unless-stopped
