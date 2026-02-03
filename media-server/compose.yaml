@@ -1,3 +1,6 @@
+# Environment variables to set:
+# - TAILSCALE_IP, if you want to restrict access to certain ports to just Tailscale only (for external Traefik)
+
 x-common:
   TIMEZONE: &timezone "America/Los_Angeles"
   NAS_NFS_DRIVER_OPTS: &nas_nfs_driver_opts
@@ -58,8 +61,8 @@ services:
     devices:
       - /dev/dri:/dev/dri
     ports:
-      - "8096:8096"
-      - "8920:8920"
+      - "${TAILSCALE_IP:-0.0.0.0}:8096:8096"
+      - "${TAILSCALE_IP:-0.0.0.0}:8920:8920"
       - "1900:1900"
       - "7359:7359"
     labels:
@@ -129,7 +132,7 @@ services:
     container_name: jellyseerr
     init: true
     ports:
-      - "5055:5055"
+      - "${TAILSCALE_IP:-0.0.0.0}:5055:5055"
     labels:
       traefik.enable: true
       traefik.http.routers.jellyseerr.rule: Host(`jellyseerr.media.int.saphnet.xyz`)

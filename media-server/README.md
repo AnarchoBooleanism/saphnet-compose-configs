@@ -12,3 +12,6 @@ This setup is designed to work with an NFS server, with a central directory for 
   - `anime-movies`: A directory that contains anime movie files, from Radarr (anime).
   - `anime`: A directory that contains anime TV show files, from Sonarr (anime).
 - `deluge`: Has the subdirectories `torrent_files` and `torrent_downloads`, respectively for .torrent files and completed downloads, which the Deluge Seedbox deals with.
+
+When deploying, make sure to set these environment variables with your secrets:
+- `TAILSCALE_IP` - For certain services with exposed ports that bypass Traefik, set this if you want to restrict the interfaces from which it can be reached (e.g. restricting from public access)
