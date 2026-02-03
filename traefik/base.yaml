@@ -40,6 +40,9 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
 
+      # For backend services
+      - "--serversTransport.insecureSkipVerify=true"
+
       # Miscellaneous
       - "--global.sendAnonymousUsage=true"
     ports: # Port 8080 is for dashboard, but it should be through HTTPS anyway
