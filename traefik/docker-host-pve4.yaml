@@ -1,0 +1,26 @@
+# To be run, and merged, with the base file
+# Example command:
+# docker compose -f base.yaml -f docker-host-pve4.yaml up
+
+# Extra environment variables to set (in addition to in base.yaml):
+# - DASHBOARD_LOGIN (create with htpasswd, is in format of username:passwordhash)
+
+x-common:
+  DASHBOARD_HOST: &dashboard_host "Host(`traefik-pve4.int.saphnet.xyz`)" # Domain name for dashboard
+
+services:
+  traefik:
+    labels:
+      # Enable self‑routing
+      traefik.enable: "true"
+
+      # Dashboard router
+      traefik.http.routers.dashboard.rule: *dashboard_host
+      traefik.http.routers.dashboard.entrypoints: websecure
+      traefik.http.routers.dashboard.service: api@internal
+      traefik.http.routers.dashboard.tls: "true"
+      traefik.http.routers.dashboard.tls.certresolver: letsencrypt
+
+      # Basic‑auth middleware
+      traefik.http.middlewares.dashboard-auth.basicauth.users: "${DASHBOARD_LOGIN}"
+      traefik.http.routers.dashboard.middlewares: dashboard-auth@docker

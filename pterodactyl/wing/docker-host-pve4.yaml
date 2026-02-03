@@ -13,7 +13,7 @@
 
 x-common:
   TIMEZONE: &timezone "America/Los_Angeles"
-  INSTANCE_DOMAIN: &instance-domain "pterodactyl-node-main.int-net.saphnet.xyz"
+  # INSTANCE_DOMAIN: &instance-domain "pterodactyl-node-main.int-net.saphnet.xyz"
 
 services:
   wing:
@@ -23,6 +23,15 @@ services:
       # - "8443:443" # Is port 8443 on this IP, but 443 on the inside and 443 on the reverse proxy
       - "2022:2022" # SFTP port
     tty: true
+    labels:
+      traefik.enable: true
+      traefik.http.routers.pterodactyl-wing.rule: Host(`pterodactyl-node-main.int-net.saphnet.xyz`)
+      traefik.http.routers.pterodactyl-wing.entrypoints: websecure
+      traefik.http.routers.pterodactyl-wing.tls: true
+      traefik.http.routers.pterodactyl-wing.tls.certresolver: letsencrypt
+      traefik.http.routers.pterodactyl-wing.tls.domains[0].main: pterodactyl-node-main.int-net.saphnet.xyz
+      traefik.http.routers.pterodactyl-wing.service: pterodactyl-wing-svc
+      traefik.http.services.pterodactyl-wing-svc.loadBalancer.server.port: "443"
     environment:
       TZ: *timezone
       # For ease of setup, this is going to use root user.
@@ -42,50 +51,50 @@ services:
       - pterodactyl_wing_internal
     restart: unless-stopped
   
-  nginx:
-    image: ghcr.io/anarchobooleanism/saphnet-nginx:v0.1.1
-    depends_on:
-      certbot:
-        condition: service_healthy
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      TZ: *timezone
-    volumes:
-      # Main conf file
-      - ./reverse-proxy/proxies-docker-host-pve4.conf:/etc/nginx/proxies.conf:ro
-      # Certificate files
-      - certbot-conf:/etc/letsencrypt:ro
-    networks:
-      - pterodactyl_wing_internal
-    restart: unless-stopped
+  # nginx:
+  #   image: ghcr.io/anarchobooleanism/saphnet-nginx:v0.1.1
+  #   depends_on:
+  #     certbot:
+  #       condition: service_healthy
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   environment:
+  #     TZ: *timezone
+  #   volumes:
+  #     # Main conf file
+  #     - ./reverse-proxy/proxies-docker-host-pve4.conf:/etc/nginx/proxies.conf:ro
+  #     # Certificate files
+  #     - certbot-conf:/etc/letsencrypt:ro
+  #   networks:
+  #     - pterodactyl_wing_internal
+  #   restart: unless-stopped
   
-  certbot:
-    image: ghcr.io/anarchobooleanism/certbot-dns-namecheap:v1.0.0-certbotv5.2.2-1
-    entrypoint: [ "/certbot-entrypoint.sh" ]
-    environment:
-      TZ: *timezone
-      DNS_NAMECHEAP_USERNAME: "${DNS_NAMECHEAP_USERNAME}"
-      DNS_NAMECHEAP_API_KEY: "${DNS_NAMECHEAP_API_KEY}"
-      CERTBOT_DOMAIN: *instance-domain
-      CERTBOT_EMAIL: "${CERTBOT_EMAIL}"
-    volumes:
-      - certbot-conf:/etc/letsencrypt
-      - ./certbot-entrypoint.sh:/certbot-entrypoint.sh:ro
-    healthcheck:
-      test: ["CMD", "sh", "-c", "[ -f /etc/letsencrypt/live/pterodactyl-node-main.int-net.saphnet.xyz/fullchain.pem ]"]
-      interval: "20s"
-      retries: 12
-      start_period: "10s"
-      timeout: "10s"
-    # Make sure certbot is run first if not yet, then renew certificates every 12 hours
-    restart: unless-stopped
+  # certbot:
+  #   image: ghcr.io/anarchobooleanism/certbot-dns-namecheap:v1.0.0-certbotv5.2.2-1
+  #   entrypoint: [ "/certbot-entrypoint.sh" ]
+  #   environment:
+  #     TZ: *timezone
+  #     DNS_NAMECHEAP_USERNAME: "${DNS_NAMECHEAP_USERNAME}"
+  #     DNS_NAMECHEAP_API_KEY: "${DNS_NAMECHEAP_API_KEY}"
+  #     CERTBOT_DOMAIN: *instance-domain
+  #     CERTBOT_EMAIL: "${CERTBOT_EMAIL}"
+  #   volumes:
+  #     - certbot-conf:/etc/letsencrypt
+  #     - ./certbot-entrypoint.sh:/certbot-entrypoint.sh:ro
+  #   healthcheck:
+  #     test: ["CMD", "sh", "-c", "[ -f /etc/letsencrypt/live/pterodactyl-node-main.int-net.saphnet.xyz/fullchain.pem ]"]
+  #     interval: "20s"
+  #     retries: 12
+  #     start_period: "10s"
+  #     timeout: "10s"
+  #   # Make sure certbot is run first if not yet, then renew certificates every 12 hours
+  #   restart: unless-stopped
 
 volumes:
   wings-config:
   wings-logs:
-  certbot-conf:
+  # certbot-conf:
 
 # This is Wings' Network. We don't need much depth here, all you need to know, is
 # that it allows the passthrough of the ports from Wings.
