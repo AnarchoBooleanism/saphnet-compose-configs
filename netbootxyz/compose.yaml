@@ -24,7 +24,7 @@ volumes:
   netboot-config: # Boot menu files, web application config
   netboot-assets: # Bootable assets (e.g. live CDs)
 
-network:
+networks:
   web_bridge:
     name: web_bridge
     external: true
