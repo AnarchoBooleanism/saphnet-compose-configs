@@ -1,5 +1,5 @@
 # Configuration for Pterodactyl panel, to be combined with wings
-# This is intended to be used with nginx-proxy-manager, on docker-host-core
+# This is intended to be used on docker-host-core
 
 # Much of this comes from https://wiki.s5gi.com/guides/linux/pterodactyl_and_wings_dockerized
 #                         https://technotim.live/posts/pterodactyl-game-server/
@@ -28,7 +28,7 @@ x-common:
     # http://php.net/manual/en/timezones.php
     APP_TIMEZONE: *timezone
     APP_SERVICE_AUTHOR: "homelab@saphnet.xyz"
-    TRUSTED_PROXIES: "nginx-proxy-manager"
+    TRUSTED_PROXIES: "traefik"
     HASHIDS_SALT: "${HASHIDS_SALT}"
     HASHIDS_LENGTH: "8"
   mail: &mail-environment

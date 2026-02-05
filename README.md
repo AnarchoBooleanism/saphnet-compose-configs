@@ -37,5 +37,4 @@ NOTE: This host has an Intel Arc A310 for GPU acceleration.
 ### vps1 (vps1.saphnet.xyz)
 - `traefik` (`base.yaml` and `vps1.yaml`)
 - `glances`
-- `nginx-vps1`
 - `velocity-vps1`

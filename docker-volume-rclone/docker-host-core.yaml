@@ -9,9 +9,6 @@ services:
       VOLUME_NAMES: >-
         filestash_filestash
         guacamole_guac-db-data
-        nginx-proxy-manager_data
-        nginx-proxy-manager_letsencrypt
-        nginx-proxy-manager_mysql
         pterodactyl-panel_database-data
         pterodactyl-panel_panel-data
         pterodactyl-panel_panel-logs
