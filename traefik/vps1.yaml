@@ -14,7 +14,7 @@ x-common:
     THEVOIDPACT_DOMAINS_MAIN: &thevoidpact_domains_main "map.thevoidpact.xyz"
     THEVOIDPACT_DOMAINS_SANS: &thevoidpact_domains_sans "anubis.thevoidpact.xyz"
     SAPHNET_DOMAINS_MAIN: &saphnet_domains_main "saphnet.xyz"
-    SAPHNET_DOMAINS_SANS: &saphnet_domains_sans "www.saphnet.xyz,anubis.saphnet.xyz"
+    SAPHNET_DOMAINS_SANS: &saphnet_domains_sans "www.saphnet.xyz,anubis.saphnet.xyz,immich.saphnet.xyz"
     SAPHNET_MEDIA_DOMAINS_MAIN: &saphnet_media_domains_main "media.saphnet.xyz"
     SAPHNET_MEDIA_DOMAINS_SANS: &saphnet_media_domains_sans "*.media.saphnet.xyz"
 
