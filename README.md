@@ -27,6 +27,7 @@ NOTE: This host has an Intel Arc A310 for GPU acceleration.
 - `deluge-seedbox`
 - `foldingathome` (Can be deployed anywhere, but GPU on host preferred, and ideally CUDA)
 - `media-server` (Should be deployed on hosts that have a good GPU for transcoding)
+- `immich` (Should be deployed on hosts that have a good GPU for transcoding & machine learning)
 
 ### docker-host-pve4 (docker-host-pve4.int-net.saphnet.xyz)
 - `docker-proxy`
