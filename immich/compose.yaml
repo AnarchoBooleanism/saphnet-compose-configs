@@ -57,6 +57,10 @@ services:
       - model-cache:/cache
     networks:
       - immich-internal
+    deploy:
+      resources:
+        limits:
+          memory: "8G"
     healthcheck:
       disable: false
     restart: unless-stopped
