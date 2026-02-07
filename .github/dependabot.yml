@@ -30,6 +30,7 @@ updates:
       - "/docker-volume-rclone/"
       - "/foldingathome/"
       - "/glances/"
+      - "/immich/"
       - "/media-server/"
       - "/netbootxyz/"
       - "/filestash/"
@@ -42,5 +43,14 @@ updates:
       - "/traefik/"
       - "/velocity-vps1/"
       - "/vertd/"
+    groups:
+      immich:
+        patterns:
+          - "immich"
+          - "immich-machine-learning"
+      pyrodactyl:
+        patterns:
+          - "pyrodactyl"
+          - "elytra"
     schedule:
       interval: "weekly"
