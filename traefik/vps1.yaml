@@ -120,6 +120,17 @@ services:
       traefik.http.routers.jellyseerr.middlewares: anubis-saphnet@docker
       traefik.http.routers.jellyseerr.service: jellyseerr-svc
       traefik.http.services.jellyseerr-svc.loadbalancer.server.url: http://docker-host-pve3:5055
+      
+      # immich.saphnet.xyz
+      traefik.http.routers.immich.rule: Host(`immich.media.saphnet.xyz`)
+      traefik.http.routers.immich.entrypoints: websecure
+      traefik.http.routers.immich.tls: "true"
+      traefik.http.routers.immich.tls.certresolver: letsencrypt
+      traefik.http.routers.immich.tls.domains[0].main: *saphnet_media_domains_main
+      traefik.http.routers.immich.tls.domains[0].sans: *saphnet_media_domains_sans
+      traefik.http.routers.immich.middlewares: anubis-saphnet@docker
+      traefik.http.routers.immich.service: immich-svc
+      traefik.http.services.immich-svc.loadbalancer.server.url: http://docker-host-pve3:2283
 
   under-construction: # Serving "under construction" pages
     image: ghcr.io/palmergw/under-construction-page:0c76870ebebca03d451e3de2a074fbf21ecf3893
