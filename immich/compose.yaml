@@ -15,7 +15,7 @@ services:
     container_name: immich_server
     image: ghcr.io/immich-app/immich-server:v2.5.3
     extends:
-      file: ./extra/hwaccel.transcoding.yml
+      file: ./extra/hwaccel.transcoding.yaml
       service: quicksync # set to one of [nvenc, quicksync, rkmpp, vaapi, vaapi-wsl] for accelerated transcoding
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:2283:2283"
@@ -52,7 +52,7 @@ services:
     # Example tag: ${IMMICH_VERSION:-release}-cuda
     image: ghcr.io/immich-app/immich-machine-learning:v2.5.3-openvino
     extends: # uncomment this section for hardware acceleration - see https://docs.immich.app/features/ml-hardware-acceleration
-      file: ./extra/hwaccel.ml.yml
+      file: ./extra/hwaccel.ml.yaml
       service: openvino # set to one of [armnn, cuda, rocm, openvino, openvino-wsl, rknn] for accelerated inference - use the `-wsl` version for WSL2 where applicable
     volumes:
       - model-cache:/cache
