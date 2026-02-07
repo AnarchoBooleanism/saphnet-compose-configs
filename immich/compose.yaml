@@ -2,7 +2,6 @@
 # - DB_PASSWORD
 # - REDIS_PASSWORD
 # - TAILSCALE_IP, if you want to restrict access to Immich port to just Tailscale only (for external Traefik)
-# TODO: Link immich-machine-learning, immich-server together in dependabot
 
 x-common:
   TIMEZONE: &timezone "America/Los_Angeles"
