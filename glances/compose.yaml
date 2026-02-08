@@ -1,6 +1,6 @@
 # NOTE: If you want this to be accessible via Traefik, have a separate Compose file that refers to
 # this file that has the labels included.
-# This is the generic base version, with no labels.
+# This is the generic base version, with no labels. This can be run as-is, standalone.
 
 services:
   glances:
