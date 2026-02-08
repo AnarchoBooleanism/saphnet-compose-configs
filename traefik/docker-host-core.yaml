@@ -6,10 +6,12 @@
 # - DASHBOARD_LOGIN (create with htpasswd, is in format of username:passwordhash)
 
 x-common:
-  DASHBOARD_HOST: &dashboard_host "Host(`traefik-core.int.saphnet.xyz`)" # Domain name for dashboard
+  DASHBOARD_HOST: &dashboard_host "Host(`docker-host-core.int.saphnet.xyz`)" # Domain name for dashboard
   certificate_groups:
     SAPHNET_INT_DOMAINS_MAIN: &saphnet_int_domains_main "int.saphnet.xyz"
     SAPHNET_INT_DOMAINS_SANS: &saphnet_int_domains_sans "*.int.saphnet.xyz"
+    HOST_INT_DOMAINS_MAIN: &host_int_domains_main "docker-host-core.int.saphnet.xyz"
+    HOST_INT_DOMAINS_SANS: &host_int_domains_sans "*.docker-host-core.int.saphnet.xyz"
 
 services:
   traefik:
@@ -23,6 +25,8 @@ services:
       traefik.http.routers.dashboard.service: api@internal
       traefik.http.routers.dashboard.tls: "true"
       traefik.http.routers.dashboard.tls.certresolver: letsencrypt
+      traefik.http.routers.dashboard.tls.domains[0].main: *host_int_domains_main
+      traefik.http.routers.dashboard.tls.domains[0].sans: *host_int_domains_sans
 
       # Basic‑auth middleware
       traefik.http.middlewares.dashboard-auth.basicauth.users: "${DASHBOARD_LOGIN}"

@@ -1,10 +1,14 @@
+# NOTE: If you want this to be accessible via Traefik, have a separate Compose file that refers to
+# this file that has the labels included.
+# This is the generic base version, with no labels.
+
 services:
   glances:
     image: nicolargo/glances:4.4.1
     pid: host
     network_mode: host # Make sure to set firewall rules accordingly!
     # ports:
-    #   - "${HOST_IP:-0.0.0.0}:61208:61208"
+    #   - "61208:61208"
     environment:
       GLANCES_OPT: "-w"
     volumes:
@@ -13,6 +17,3 @@ services:
       - /etc/os-release:/etc/os-release:ro
       - /etc/hostname:/etc/hostname:ro
     restart: unless-stopped
-
-# NOTE: If using this on a host that has a publicly accessible IP address, make sure
-# you specify a non-public IP address to restrict the port to, as HOST_IP!

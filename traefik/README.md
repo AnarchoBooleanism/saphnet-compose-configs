@@ -15,11 +15,13 @@ If you wish to use a dashboard, make sure to add these to the labels section of 
 traefik.enable: "true"
 
 # Dashboard router
-traefik.http.routers.dashboard.rule: "Host(`traefik-host1.example.com`)" # Replace this with the domain you want to use for the dashboard
+traefik.http.routers.dashboard.rule: "Host(`host1.example.com`)" # Replace this with the domain you want to use for the dashboard
 traefik.http.routers.dashboard.entrypoints: websecure
 traefik.http.routers.dashboard.service: api@internal
 traefik.http.routers.dashboard.tls: "true"
 traefik.http.routers.dashboard.tls.certresolver: letsencrypt
+traefik.http.routers.dashboard.tls.domains[0].main: "host1.example.com" # Reflecting the style used by existing docker-hosts.
+traefik.http.routers.dashboard.tls.domains[0].sans: "*.host1.example.com"
 
 # Basic‑auth middleware
 traefik.http.middlewares.dashboard-auth.basicauth.users: "${DASHBOARD_LOGIN}"

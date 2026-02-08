@@ -59,6 +59,8 @@ services:
       - traefik-certs:/letsencrypt
     networks:
       - web_bridge
+    extra_hosts: # To connect to containers with network_mode as "host"
+      - "host.docker.internal:host-gateway"
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
