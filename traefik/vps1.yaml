@@ -42,7 +42,7 @@ services:
       traefik.enable: "true"
 
       # Dashboard router
-      # Can be accessed via http://traefik-vps.saphnet.xyz, Tailscale only
+      # Can be accessed via https://traefik-vps1.saphnet.xyz, Tailscale only
       traefik.http.routers.dashboard.rule: *dashboard_host
       traefik.http.routers.dashboard.entrypoints: websecure
       traefik.http.routers.dashboard.service: api@internal
