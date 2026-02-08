@@ -33,14 +33,14 @@ services:
       traefik.http.routers.dashboard.middlewares: dashboard-auth@docker
 
       # glances.int.saphnet.xyz
-      traefik.http.routers.glances.rule: Host(`glances.int.saphnet.xyz`)
-      traefik.http.routers.glances.entrypoints: websecure
-      traefik.http.routers.glances.tls: "true"
-      traefik.http.routers.glances.tls.certresolver: letsencrypt
-      traefik.http.routers.glances.tls.domains[0].main: *saphnet_int_domains_main
-      traefik.http.routers.glances.tls.domains[0].sans: *saphnet_int_domains_sans
-      traefik.http.routers.glances.service: glances-svc
-      traefik.http.services.glances-svc.loadbalancer.server.url: http://pve1.int-net.saphnet.xyz:61208
+      traefik.http.routers.glances1.rule: Host(`glances.int.saphnet.xyz`)
+      traefik.http.routers.glances1.entrypoints: websecure
+      traefik.http.routers.glances1.tls: "true"
+      traefik.http.routers.glances1.tls.certresolver: letsencrypt
+      traefik.http.routers.glances1.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.glances1.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.glances1.service: glances1-svc
+      traefik.http.services.glances1-svc.loadbalancer.server.url: http://pve1.int-net.saphnet.xyz:61208
 
       # glances3.int.saphnet.xyz
       traefik.http.routers.glances3.rule: Host(`glances3.int.saphnet.xyz`)
