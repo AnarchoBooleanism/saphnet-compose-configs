@@ -52,5 +52,9 @@ updates:
         patterns:
           - "pyrodactyl"
           - "elytra"
+      guacamole:
+        patterns:
+          - "guacd"
+          - "guacamole"
     schedule:
       interval: "weekly"

@@ -1,7 +1,7 @@
 services:
   guacdb:
     container_name: guacamoledb
-    image: mariadb:12.1.2
+    image: mariadb:12@sha256:f54db0cb3ccfe9431aba6d08c65a1763c499789b116b4cb651dd7fcf325965b3
     environment:
       MYSQL_ROOT_PASSWORD: MariaDBRootPass
       MYSQL_DATABASE: guacamole_db
@@ -15,14 +15,14 @@ services:
 
   guacd:
     container_name: guacd
-    image: guacamole/guacd:1.6.0
+    image: guacamole/guacd:latest@sha256:0188a7224190a697153806c523360f4032139f3b5dec3d58cb37a543ab1aef1e
     networks:
       - web_bridge
     restart: unless-stopped
 
   guacamole:
     container_name: guacamole
-    image: guacamole/guacamole:1.6.0
+    image: guacamole/guacamole:latest@sha256:6efa264bfdc7d72c86524110d5a0c0c15adfa3fae91afae89305a7eff49c4246
     depends_on:
       - guacdb
       - guacd

@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
 
   homepage:
-    image: ghcr.io/anarchobooleanism/saphnet-homepage:latest
+    image: ghcr.io/anarchobooleanism/saphnet-homepage:latest # Intentionally not pinned
     container_name: homepage
     depends_on:
       - docker-proxy

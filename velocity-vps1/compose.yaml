@@ -8,11 +8,10 @@
 # Variables you'll want to frequently change
 x-common:
   VELOCITY_VERSION: &velocity-version "3.4.0" # See: https://papermc.io/downloads/velocity
-  IMAGE_NAME: &image-name "itzg/mc-proxy:java21" # Set this to the Java version used by the Velocity version
 
 services:
   velocity:
-    image: *image-name
+    image: itzg/mc-proxy:java21@sha256:32ca67b7cd41264dfca59edcf3b19c298c8f2f8d246d8f333d08a1c2380391bb
     container_name: velocity
     command:
       - /bin/sh
@@ -44,7 +43,7 @@ services:
     restart: unless-stopped
   
   velocity-sftp: 
-    image: ghcr.io/anarchobooleanism/saphnet-sftp:v0.1.1
+    image: ghcr.io/anarchobooleanism/saphnet-sftp:latest@sha256:bb164f405864b029fd3b3e5501bb347de0acd8a54436b3ffc79b9b456e3ce152
     container_name: velocity-sftp
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:2022:22"

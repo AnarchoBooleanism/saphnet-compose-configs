@@ -20,7 +20,7 @@ x-common:
 
 x-services:
   anubis: &anubis
-    image: ghcr.io/techarohq/anubis:v1.24.0
+    image: ghcr.io/techarohq/anubis:latest@sha256:4bdf6ddd1a8dc8bfe7a33d823a1cb72157885ca4fd3ee749654b21cba732e439
     # Set container_name here
     # For environment, set COOKIE_DOMAIN, PUBLIC_URL, and REDIRECT_DOMAINS,
     # and import anubis-environment!
@@ -134,7 +134,7 @@ services:
       traefik.http.services.jellyseerr-svc.loadbalancer.server.url: http://docker-host-pve3:5055
 
   under-construction: # Serving "under construction" pages
-    image: ghcr.io/palmergw/under-construction-page:0c76870ebebca03d451e3de2a074fbf21ecf3893
+    image: ghcr.io/palmergw/under-construction-page:latest@sha256:2fd2eab189cb8bef5ba7c1b6bc76f86c46dbbe68644bf1ae99e2b3c1f47389e7
     container_name: under-construction
     labels:
       traefik.enable: "true"

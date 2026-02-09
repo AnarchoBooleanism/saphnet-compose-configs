@@ -52,7 +52,7 @@ x-common:
 
 services:
   database:
-    image: mariadb:12.1.2
+    image: mariadb:12@sha256:f54db0cb3ccfe9431aba6d08c65a1763c499789b116b4cb651dd7fcf325965b3
     command: --default-authentication-plugin=mysql_native_password
     environment:
       <<: *db-environment
@@ -65,13 +65,13 @@ services:
     restart: unless-stopped
   
   cache:
-    image: redis:8.4.0-alpine
+    image: redis:8@sha256:c22af04bb576503bf16b3e34a1fd2fd82de0f765afd866d2e380145e0af30d78
     networks:
       - pterodactyl_panel_internal
     restart: unless-stopped
   
   panel:
-    image: ghcr.io/pyrodactyl-oss/pyrodactyl:v5.0.0
+    image: ghcr.io/pyrodactyl-oss/pyrodactyl:latest@sha256:8e2d75446ddfd3576c0298e001ba287eedc3d66036e1da069a4dbd9e6b37b3fe
     container_name: pterodactyl-panel # Refer to the panel container this way
     # ports:
     #   - "802:80" # Web port

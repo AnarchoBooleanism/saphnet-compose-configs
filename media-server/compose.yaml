@@ -10,7 +10,7 @@ x-common:
 
 x-services: # Base instances of services to customize
   radarr: &radarr # For movies
-    image: lscr.io/linuxserver/radarr:6.0.4
+    image: lscr.io/linuxserver/radarr:latest@sha256:f08dda38e7d12e5a722d9a5cb6e54acaf63c8598fefeefec88effe0c0d0038dd
     # Set a unique container_name here
     # For ports, link host port to container port's 7878
     environment:
@@ -25,7 +25,7 @@ x-services: # Base instances of services to customize
     restart: unless-stopped
   
   sonarr: &sonarr # For shows
-    image: lscr.io/linuxserver/sonarr:4.0.16
+    image: lscr.io/linuxserver/sonarr:latest@sha256:6f73bbba33391a338e20d836a60c86beaf2a865a89b706b339fc8cb0b8ce1559
     # Set a unique container_name here
     # For ports, link host port to container port's 8989
     environment:
@@ -40,7 +40,7 @@ x-services: # Base instances of services to customize
     restart: unless-stopped
   
   bazarr: &bazarr # For subtitles
-    image: lscr.io/linuxserver/bazarr:1.5.5
+    image: lscr.io/linuxserver/bazarr:latest@sha256:d40ee61030a9afafddfdd58d160281b865bfcad7cb66e920116fd6fd40668cbb
     # Set a unique container_name here
     # For ports, link host port to container port's 6767
     environment:
@@ -56,7 +56,7 @@ x-services: # Base instances of services to customize
 
 services:
   jellyfin: # Media streaming
-    image: jellyfin/jellyfin:10.11.6
+    image: jellyfin/jellyfin:10.11@sha256:333b647716631443a43c7fabac4b0c46b4e2f036bad19547e00958f10f721b85 # To only update intentionally
     container_name: jellyfin
     devices:
       - /dev/dri:/dev/dri
@@ -130,7 +130,7 @@ services:
     restart: unless-stopped
 
   jellyseerr:
-    image: ghcr.io/fallenbagel/jellyseerr:2.7.3
+    image: ghcr.io/fallenbagel/jellyseerr:2.7@sha256:9cc9e9ee6cd5cf5a23feb45c37742ba34cfd6314d81d259cddb373a97ac92cdd # To only update intentionally
     container_name: jellyseerr
     init: true
     ports:
@@ -162,7 +162,7 @@ services:
     restart: unless-stopped
 
   flaresolverr: # Handles CloudFlare prompts for Prowlarr
-    image: ghcr.io/flaresolverr/flaresolverr:v3.4.6
+    image: ghcr.io/flaresolverr/flaresolverr:latest@sha256:7962759d99d7e125e108e0f5e7f3cdbcd36161776d058d1d9b7153b92ef1af9e
     container_name: flaresolverr
     # ports:
     #   - "8191:8191"
@@ -179,7 +179,7 @@ services:
     restart: unless-stopped
   
   prowlarr: # Handles trackers
-    image: lscr.io/linuxserver/prowlarr:2.3.0
+    image: lscr.io/linuxserver/prowlarr:latest@sha256:5339e9050cfcc0cb5331e9c98610ed9d4ce70ef481a5461ea664a13dda3f1eb0
     container_name: prowlarr
     # ports:
     #   - "9696:9696"
@@ -205,7 +205,7 @@ services:
     restart: unless-stopped
 
   recyclarr:
-    image: ghcr.io/recyclarr/recyclarr:7.5.2
+    image: ghcr.io/recyclarr/recyclarr:latest@sha256:2550848d43a453f2c6adf3582f2198ac719f76670691d76de0819053103ef2fb
     container_name: recyclarr
     user: "1000:1000"
     environment:

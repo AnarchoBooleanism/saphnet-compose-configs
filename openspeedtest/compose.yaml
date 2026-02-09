@@ -1,6 +1,6 @@
 services:
   speedtest:
-    image: openspeedtest/latest:v2.0.6
+    image: openspeedtest/latest:latest@sha256:1745e913f596fe98882b286a67751efdae74774e9caa742a4934bb056e8748d2
     container_name: openspeedtest
     ports:
       - "3000:3000"

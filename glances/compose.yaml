@@ -4,7 +4,7 @@
 
 services:
   glances:
-    image: nicolargo/glances:4.4.1
+    image: nicolargo/glances:latest@sha256:0646276d6c40b1d8b86eb99124c07484c65b737d17f257052ff1b2eee9f3b957
     pid: host
     network_mode: host # Make sure to set firewall rules accordingly!
     # ports:
