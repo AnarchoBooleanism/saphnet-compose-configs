@@ -201,4 +201,4 @@ services:
       COOKIE_DOMAIN: "saphnet.xyz"
       PUBLIC_URL: "https://anubis.saphnet.xyz"
       REDIRECT_DOMAINS: >-
-        jellyfin.media.saphnet.xyz,jellyseerr.media.saphnet.xyz,saphnet.xyz
+        jellyfin.media.saphnet.xyz,jellyseerr.media.saphnet.xyz,saphnet.xyz,immich.saphnet.xyz
