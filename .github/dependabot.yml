@@ -46,15 +46,15 @@ updates:
     groups:
       immich:
         patterns:
-          - "immich"
-          - "immich-machine-learning"
+          - "immich-app/immich"
+          - "immich-app/immich-machine-learning"
       pyrodactyl:
         patterns:
-          - "pyrodactyl"
-          - "elytra"
+          - "pyrodactyl-oss/pyrodactyl"
+          - "pyrohost/elytra"
       guacamole:
         patterns:
-          - "guacd"
-          - "guacamole"
+          - "guacamole/guacd"
+          - "guacamole/guacamole"
     schedule:
       interval: "weekly"
