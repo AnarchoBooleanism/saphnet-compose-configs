@@ -15,7 +15,7 @@ services:
 
   guacd:
     container_name: guacd
-    image: guacamole/guacd:latest@sha256:0188a7224190a697153806c523360f4032139f3b5dec3d58cb37a543ab1aef1e
+    image: guacamole/guacd:latest@sha256:c775fee8077fd50321a7f339213b047625203d1038dce2bb2d105bab9d95ee7b
     networks:
       - web_bridge
     restart: unless-stopped
