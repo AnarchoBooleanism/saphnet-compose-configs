@@ -91,7 +91,7 @@ services:
       # Uncomment the DB_STORAGE_TYPE: 'HDD' var if your database isn't stored on SSDs
       # DB_STORAGE_TYPE: 'HDD'
     volumes:
-      - immich-db:/var/lib/postgresql/data
+      - immich-db-16:/var/lib/postgresql/data
     networks:
       - immich-internal
     shm_size: 128mb
@@ -107,6 +107,7 @@ volumes:
       o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
       device: ":/mnt/saphnet-nas1a/immich-data"
   immich-db:
+  immich-db-16:
 
 networks:
   immich-internal:
