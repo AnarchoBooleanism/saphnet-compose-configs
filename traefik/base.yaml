@@ -19,6 +19,8 @@ services:
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.http.tls=true"
+      - "--entrypoints.websecure.forwardedHeaders.trustedIPs=127.0.0.1/32,172.16.0.0/12,10.0.0.0/8"
+      - "--entrypoints.websecure.proxyProtocol.trustedIPs=127.0.0.1/32,172.16.0.0/12,10.0.0.0/8"
       # For Immich
       - "--entrypoints.websecure.transport.respondingTimeouts.readTimeout=600s"
       - "--entrypoints.websecure.transport.respondingTimeouts.idleTimeout=600s"
@@ -48,18 +50,17 @@ services:
 
       # Miscellaneous
       - "--global.sendAnonymousUsage=true"
-    network_mode: host
-    # ports: # Port 8080 is for dashboard, but it should be through HTTPS anyway
-    #   - "80:80"
-    #   - "443:443"
+    ports: # Port 8080 is for dashboard, but it should be through HTTPS anyway
+      - "80:80"
+      - "443:443"
     environment:
       NAMECHEAP_API_USER: "${NAMECHEAP_API_USER}"
       NAMECHEAP_API_KEY: "${NAMECHEAP_API_KEY}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik-certs:/letsencrypt
-    # networks:
-    #   - web_bridge
+    networks:
+      - web_bridge
     extra_hosts: # To connect to containers with network_mode as "host"
       - "host.docker.internal:host-gateway"
     security_opt:
