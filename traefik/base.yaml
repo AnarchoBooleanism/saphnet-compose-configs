@@ -19,6 +19,7 @@ services:
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.http.tls=true"
+      - "--entrypoints.websecure.forwardedHeaders.trustedIPs=172.16.0.0/12"
       # For Immich
       - "--entrypoints.websecure.transport.respondingTimeouts.readTimeout=600s"
       - "--entrypoints.websecure.transport.respondingTimeouts.idleTimeout=600s"
