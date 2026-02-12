@@ -50,8 +50,7 @@ services:
       traefik.http.routers.dashboard.tls.certresolver: letsencrypt
       traefik.http.routers.dashboard.middlewares: dashboard-ipallowlist, dashboard-auth
       traefik.http.middlewares.dashboard-auth.basicauth.users: "${DASHBOARD_LOGIN}" # Leave only accessible via Tailscale
-      traefik.http.middlewares.dashboard-ipallowlist.ipallowlist.sourcerange: "100.64.0.0/10, fd7a:115c:a1e0::/48"
-      traefik.http.middlewares.dashboard-ipallowlist.ipallowlist.ipstrategy.depth: "1"
+      traefik.http.middlewares.dashboard-ipallowlist.ipallowlist.sourcerange: "100.64.0.0/10, fd7a:115c:a1e0::/48, 172.16.0.0/12, 10.0.0.0/8"
 
       # Anubis middleware
       traefik.http.middlewares.anubis-thevoidpact.forwardauth.address: http://anubis-thevoidpact:8923/.within.website/x/cmd/anubis/api/check
