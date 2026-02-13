@@ -112,15 +112,47 @@ services:
       traefik.http.routers.netdata-vps1.service: netdata-vps1-svc
       traefik.http.services.netdata-vps1-svc.loadbalancer.server.url: http://vps1-ts.saphnet.xyz:19999
 
-      # proxmox.int.saphnet.xyz
-      traefik.http.routers.proxmox.rule: Host(`proxmox.int.saphnet.xyz`)
-      traefik.http.routers.proxmox.entrypoints: websecure
-      traefik.http.routers.proxmox.tls: "true"
+      # Proxmox
+      # pve1.int.saphnet.xyz
+      traefik.http.routers.pve1.rule: Host(`pve1.int.saphnet.xyz`)
+      traefik.http.routers.pve1.entrypoints: websecure
+      traefik.http.routers.pve1.tls: "true"
+      traefik.http.routers.pve1.tls.certresolver: letsencrypt
+      traefik.http.routers.pve1.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.pve1.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.pve1.service: pve1-svc
+      traefik.http.services.pve1-svc.loadbalancer.server.url: https://pve1.int-net.saphnet.xyz:8006
+      
+      # pve3.int.saphnet.xyz
+      traefik.http.routers.pve3.rule: Host(`pve3.int.saphnet.xyz`)
+      traefik.http.routers.pve3.entrypoints: websecure
+      traefik.http.routers.pve3.tls: "true"
+      traefik.http.routers.pve3.tls.certresolver: letsencrypt
+      traefik.http.routers.pve3.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.pve3.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.pve3.service: pve3-svc
+      traefik.http.services.pve3-svc.loadbalancer.server.url: https://pve3.int-net.saphnet.xyz:8006
+      
+      # pve4.int.saphnet.xyz
+      traefik.http.routers.pve4.rule: Host(`pve4.int.saphnet.xyz`)
+      traefik.http.routers.pve4.entrypoints: websecure
+      traefik.http.routers.pve4.tls: "true"
+      traefik.http.routers.pve4.tls.certresolver: letsencrypt
+      traefik.http.routers.pve4.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.routers.pve4.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.routers.pve4.service: pve4-svc
+      traefik.http.services.pve4-svc.loadbalancer.server.url: https://pve4.int-net.saphnet.xyz:8006
+      
+      # Redirect proxmox.int.saphnet.xyz to pve1.int.saphnet.xyz
+      traefik.http.routers.proxmox.rule: "Host(`proxmox.int.saphnet.xyz`)"
+      traefik.http.routers.proxmox.middlewares: "proxmox-redirectregex"
+      traefik.http.routers.proxmox.tls: true
       traefik.http.routers.proxmox.tls.certresolver: letsencrypt
       traefik.http.routers.proxmox.tls.domains[0].main: *saphnet_int_domains_main
       traefik.http.routers.proxmox.tls.domains[0].sans: *saphnet_int_domains_sans
-      traefik.http.routers.proxmox.service: proxmox-svc
-      traefik.http.services.proxmox-svc.loadbalancer.server.url: https://pve1.int-net.saphnet.xyz:8006
+      traefik.http.routers.proxmox.service: pve1-svc
+      traefik.http.middlewares.proxmox-redirectregex.redirectregex.regex: "^https://proxmox\\.int\\.saphnet\\.xyz/(.*)"
+      traefik.http.middlewares.proxmox-redirectregex.redirectregex.replacement: "https://pve1.int.saphnet.xyz/$${1}"
       
       # router.int.saphnet.xyz
       traefik.http.routers.router.rule: Host(`router.int.saphnet.xyz`)

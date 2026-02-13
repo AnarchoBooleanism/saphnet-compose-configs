@@ -75,7 +75,7 @@ services:
       traefik.http.routers.jellyfin.tls.domains[0].sans: "*.media.int.saphnet.xyz"
       traefik.http.routers.jellyfin.service: jellyfin-svc
 
-      # Redirect media.int.saphnet.xyz to jellyfun.media.int.saphnet.xyz
+      # Redirect media.int.saphnet.xyz to jellyfin.media.int.saphnet.xyz
       traefik.http.routers.media.rule: "Host(`media.int.saphnet.xyz`)"
       traefik.http.routers.media.middlewares: "media-redirectregex"
       traefik.http.routers.media.tls: true
