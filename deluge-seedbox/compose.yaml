@@ -48,7 +48,7 @@ services:
   #   restart: unless-stopped
   
   vpn:
-    image: qmcgaw/gluetun:latest@sha256:4661dc8fc58b1e5e106bc5df0ef22d4a2e4ab4b86f2571d91b0130535cb00660
+    image: qmcgaw/gluetun:latest@sha256:a26bf64824e15a841c6ab9757a008969ae814ab3991c22f1f397c7c303575623
     container_name: deluge-vpn
     cap_add:
       - NET_ADMIN
