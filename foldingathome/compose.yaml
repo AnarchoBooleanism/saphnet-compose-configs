@@ -14,10 +14,10 @@ services:
     # ports:
     #   - "7396:7396"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.fah.rule: Host(`fah.int.saphnet.xyz`)
       traefik.http.routers.fah.entrypoints: websecure
-      traefik.http.routers.fah.tls: true
+      traefik.http.routers.fah.tls: "true"
       traefik.http.routers.fah.tls.certresolver: letsencrypt
       traefik.http.routers.fah.tls.domains[0].main: fah.int.saphnet.xyz
       traefik.http.routers.fah.service: fah-svc

@@ -76,10 +76,10 @@ services:
     # ports:
     #   - "802:80" # Web port
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.pterodactyl.rule: Host(`pterodactyl.int.saphnet.xyz`)
       traefik.http.routers.pterodactyl.entrypoints: websecure
-      traefik.http.routers.pterodactyl.tls: true
+      traefik.http.routers.pterodactyl.tls: "true"
       traefik.http.routers.pterodactyl.tls.certresolver: letsencrypt
       traefik.http.routers.pterodactyl.tls.domains[0].main: int.saphnet.xyz
       traefik.http.routers.pterodactyl.tls.domains[0].sans: "*.int.saphnet.xyz"

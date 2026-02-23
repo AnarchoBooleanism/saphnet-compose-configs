@@ -19,10 +19,10 @@ services:
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:2283:2283"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.immich.rule: Host(`immich.int.saphnet.xyz`)
       traefik.http.routers.immich.entrypoints: websecure
-      traefik.http.routers.immich.tls: true
+      traefik.http.routers.immich.tls: "true"
       traefik.http.routers.immich.tls.certresolver: letsencrypt
       traefik.http.routers.immich.tls.domains[0].main: immich.int.saphnet.xyz
       traefik.http.routers.immich.service: immich-svc

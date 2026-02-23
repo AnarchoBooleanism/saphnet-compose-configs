@@ -43,6 +43,7 @@ updates:
       - "/traefik/"
       - "/velocity-vps1/"
       - "/vertd/"
+      - "/n8n/"
     groups:
       immich:
         patterns:

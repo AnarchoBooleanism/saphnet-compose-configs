@@ -62,10 +62,10 @@ services:
     expose:
       - "8112"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.seedbox.rule: Host(`seedbox.int.saphnet.xyz`)
       traefik.http.routers.seedbox.entrypoints: websecure
-      traefik.http.routers.seedbox.tls: true
+      traefik.http.routers.seedbox.tls: "true"
       traefik.http.routers.seedbox.tls.certresolver: letsencrypt
       traefik.http.routers.seedbox.tls.domains[0].main: seedbox.int.saphnet.xyz
       traefik.http.routers.seedbox.service: seedbox-svc

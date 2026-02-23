@@ -29,10 +29,10 @@ services:
     # ports:
     #   - "8080:8080"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.guacamole.rule: Host(`guacamole.int.saphnet.xyz`) && PathPrefix(`/guacamole/`)
       traefik.http.routers.guacamole.entrypoints: websecure
-      traefik.http.routers.guacamole.tls: true
+      traefik.http.routers.guacamole.tls: "true"
       traefik.http.routers.guacamole.tls.certresolver: letsencrypt
       traefik.http.routers.guacamole.tls.domains[0].main: int.saphnet.xyz
       traefik.http.routers.guacamole.tls.domains[0].sans: "*.int.saphnet.xyz"
@@ -41,7 +41,7 @@ services:
       # Root directory redirect
       traefik.http.routers.guacamole-root.rule: Host(`guacamole.int.saphnet.xyz`) && Path(`/`)
       traefik.http.routers.guacamole-root.entrypoints: websecure
-      traefik.http.routers.guacamole-root.tls: true
+      traefik.http.routers.guacamole-root.tls: "true"
       traefik.http.routers.guacamole-root.tls.certresolver: letsencrypt
       traefik.http.routers.guacamole-root.tls.domains[0].main: int.saphnet.xyz
       traefik.http.routers.guacamole-root.tls.domains[0].sans: "*.int.saphnet.xyz"

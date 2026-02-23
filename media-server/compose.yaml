@@ -66,10 +66,10 @@ services:
       - "1900:1900"
       - "7359:7359"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.jellyfin.rule: Host(`jellyfin.media.int.saphnet.xyz`)
       traefik.http.routers.jellyfin.entrypoints: websecure
-      traefik.http.routers.jellyfin.tls: true
+      traefik.http.routers.jellyfin.tls: "true"
       traefik.http.routers.jellyfin.tls.certresolver: letsencrypt
       traefik.http.routers.jellyfin.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.jellyfin.tls.domains[0].sans: "*.media.int.saphnet.xyz"
@@ -78,7 +78,7 @@ services:
       # Redirect media.int.saphnet.xyz to jellyfin.media.int.saphnet.xyz
       traefik.http.routers.media.rule: "Host(`media.int.saphnet.xyz`)"
       traefik.http.routers.media.middlewares: "media-redirectregex"
-      traefik.http.routers.media.tls: true
+      traefik.http.routers.media.tls: "true"
       traefik.http.routers.media.tls.certresolver: letsencrypt
       traefik.http.routers.media.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.media.tls.domains[0].sans: "*.media.int.saphnet.xyz"
@@ -136,10 +136,10 @@ services:
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:5055:5055"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.jellyseerr.rule: Host(`jellyseerr.media.int.saphnet.xyz`)
       traefik.http.routers.jellyseerr.entrypoints: websecure
-      traefik.http.routers.jellyseerr.tls: true
+      traefik.http.routers.jellyseerr.tls: "true"
       traefik.http.routers.jellyseerr.tls.certresolver: letsencrypt
       traefik.http.routers.jellyseerr.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.jellyseerr.tls.domains[0].sans: "*.media.int.saphnet.xyz"
@@ -184,10 +184,10 @@ services:
     # ports:
     #   - "9696:9696"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.prowlarr.rule: Host(`prowlarr.media.int.saphnet.xyz`)
       traefik.http.routers.prowlarr.entrypoints: websecure
-      traefik.http.routers.prowlarr.tls: true
+      traefik.http.routers.prowlarr.tls: "true"
       traefik.http.routers.prowlarr.tls.certresolver: letsencrypt
       traefik.http.routers.prowlarr.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.prowlarr.tls.domains[0].sans: "*.media.int.saphnet.xyz"
@@ -223,10 +223,10 @@ services:
     # ports:
     #   - "7878:7878"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.radarr.rule: Host(`radarr.media.int.saphnet.xyz`)
       traefik.http.routers.radarr.entrypoints: websecure
-      traefik.http.routers.radarr.tls: true
+      traefik.http.routers.radarr.tls: "true"
       traefik.http.routers.radarr.tls.certresolver: letsencrypt
       traefik.http.routers.radarr.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.radarr.tls.domains[0].sans: "*.media.int.saphnet.xyz"
@@ -243,10 +243,10 @@ services:
     # ports:
     #   - "7879:7878"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.radarr-anime.rule: Host(`radarr-anime.media.int.saphnet.xyz`)
       traefik.http.routers.radarr-anime.entrypoints: websecure
-      traefik.http.routers.radarr-anime.tls: true
+      traefik.http.routers.radarr-anime.tls: "true"
       traefik.http.routers.radarr-anime.tls.certresolver: letsencrypt
       traefik.http.routers.radarr-anime.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.radarr-anime.tls.domains[0].sans: "*.media.int.saphnet.xyz"
@@ -263,10 +263,10 @@ services:
     # ports:
     #   - "8989:8989"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.sonarr.rule: Host(`sonarr.media.int.saphnet.xyz`)
       traefik.http.routers.sonarr.entrypoints: websecure
-      traefik.http.routers.sonarr.tls: true
+      traefik.http.routers.sonarr.tls: "true"
       traefik.http.routers.sonarr.tls.certresolver: letsencrypt
       traefik.http.routers.sonarr.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.sonarr.tls.domains[0].sans: "*.media.int.saphnet.xyz"
@@ -283,10 +283,10 @@ services:
     # ports:
     #   - "8990:8989"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.sonarr-anime.rule: Host(`sonarr-anime.media.int.saphnet.xyz`)
       traefik.http.routers.sonarr-anime.entrypoints: websecure
-      traefik.http.routers.sonarr-anime.tls: true
+      traefik.http.routers.sonarr-anime.tls: "true"
       traefik.http.routers.sonarr-anime.tls.certresolver: letsencrypt
       traefik.http.routers.sonarr-anime.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.sonarr-anime.tls.domains[0].sans: "*.media.int.saphnet.xyz"
@@ -303,10 +303,10 @@ services:
     # ports:
     #   - "6767:6767"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.bazarr.rule: Host(`bazarr.media.int.saphnet.xyz`)
       traefik.http.routers.bazarr.entrypoints: websecure
-      traefik.http.routers.bazarr.tls: true
+      traefik.http.routers.bazarr.tls: "true"
       traefik.http.routers.bazarr.tls.certresolver: letsencrypt
       traefik.http.routers.bazarr.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.bazarr.tls.domains[0].sans: "*.media.int.saphnet.xyz"
@@ -323,10 +323,10 @@ services:
     # ports:
     #   - "6768:6767"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.bazarr-anime.rule: Host(`bazarr-anime.media.int.saphnet.xyz`)
       traefik.http.routers.bazarr-anime.entrypoints: websecure
-      traefik.http.routers.bazarr-anime.tls: true
+      traefik.http.routers.bazarr-anime.tls: "true"
       traefik.http.routers.bazarr-anime.tls.certresolver: letsencrypt
       traefik.http.routers.bazarr-anime.tls.domains[0].main: media.int.saphnet.xyz
       traefik.http.routers.bazarr-anime.tls.domains[0].sans: "*.media.int.saphnet.xyz"

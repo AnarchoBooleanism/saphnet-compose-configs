@@ -19,10 +19,10 @@ services:
       - "2022:2022" # SFTP port
     tty: true
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.pterodactyl-wing.rule: Host(`pterodactyl-node-main.int-net.saphnet.xyz`)
       traefik.http.routers.pterodactyl-wing.entrypoints: websecure
-      traefik.http.routers.pterodactyl-wing.tls: true
+      traefik.http.routers.pterodactyl-wing.tls: "true"
       traefik.http.routers.pterodactyl-wing.tls.certresolver: letsencrypt
       traefik.http.routers.pterodactyl-wing.tls.domains[0].main: pterodactyl-node-main.int-net.saphnet.xyz
       traefik.http.routers.pterodactyl-wing.service: pterodactyl-wing-svc

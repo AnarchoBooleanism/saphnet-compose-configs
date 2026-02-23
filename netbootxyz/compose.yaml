@@ -10,10 +10,10 @@ services:
       - "69:69/udp"
       - "8080:80"  # optional, destination should match ${NGINX_PORT} variable above.
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.netboot.rule: Host(`netboot.int.saphnet.xyz`)
       traefik.http.routers.netboot.entrypoints: websecure
-      traefik.http.routers.netboot.tls: true
+      traefik.http.routers.netboot.tls: "true"
       traefik.http.routers.netboot.tls.certresolver: letsencrypt
       traefik.http.routers.netboot.tls.domains[0].main: int.saphnet.xyz
       traefik.http.routers.netboot.tls.domains[0].sans: "*.int.saphnet.xyz"

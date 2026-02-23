@@ -18,6 +18,7 @@ Note that for most hosts, there are stacks that require the `web_bridge` network
 - `openspeedtest`
 - `pterodactyl/panel`
 - `vert-sh`
+- `n8n`
 
 ### docker-host-pve3 (docker-host-pve3.int-net.saphnet.xyz)
 NOTE: This host has an Intel Arc A310 for GPU acceleration.

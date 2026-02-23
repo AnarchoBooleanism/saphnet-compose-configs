@@ -21,10 +21,10 @@ services:
     # ports:
     #   - "${PORT:-24153}:24153"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.vertd.rule: Host(`vertd.int.saphnet.xyz`)
       traefik.http.routers.vertd.entrypoints: websecure
-      traefik.http.routers.vertd.tls: true
+      traefik.http.routers.vertd.tls: "true"
       traefik.http.routers.vertd.tls.certresolver: letsencrypt
       traefik.http.routers.vertd.tls.domains[0].main: vertd.int.saphnet.xyz
       traefik.http.routers.vertd.service: vertd-svc

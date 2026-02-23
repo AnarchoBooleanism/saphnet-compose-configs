@@ -115,7 +115,7 @@ services:
       ## Redirect from media.saphnet.xyz
       traefik.http.routers.saphnet-media.rule: "Host(`media.saphnet.xyz`)"
       traefik.http.routers.saphnet-media.middlewares: "saphnet-media-redirectregex"
-      traefik.http.routers.saphnet-media.tls: true
+      traefik.http.routers.saphnet-media.tls: "true"
       traefik.http.routers.saphnet-media.tls.certresolver: letsencrypt
       traefik.http.routers.saphnet-media.tls.domains[0].main: *saphnet_media_domains_main
       traefik.http.routers.saphnet-media.tls.domains[0].sans: *saphnet_media_domains_sans

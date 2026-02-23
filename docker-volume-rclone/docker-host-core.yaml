@@ -13,3 +13,6 @@ services:
         pterodactyl-panel_panel-data
         pterodactyl-panel_panel-logs
         netbootxyz_netboot-config
+        n8n_db-storage
+        n8n_n8n-storage
+        n8n_redis-storage

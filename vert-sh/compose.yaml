@@ -3,10 +3,10 @@ services:
     image: ghcr.io/vert-sh/vert:latest@sha256:a0f634f7df20b19192d61d16a00b4f876728580122299df056217e4a78c74c78
     container_name: vert
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.vert.rule: Host(`vert.int.saphnet.xyz`)
       traefik.http.routers.vert.entrypoints: websecure
-      traefik.http.routers.vert.tls: true
+      traefik.http.routers.vert.tls: "true"
       traefik.http.routers.vert.tls.certresolver: letsencrypt
       traefik.http.routers.vert.tls.domains[0].main: int.saphnet.xyz
       traefik.http.routers.vert.tls.domains[0].sans: "*.int.saphnet.xyz"

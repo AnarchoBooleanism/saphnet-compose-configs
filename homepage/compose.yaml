@@ -23,10 +23,10 @@ services:
 #    ports:
 #      - "3000:3000"
     labels:
-      traefik.enable: true
+      traefik.enable: "true"
       traefik.http.routers.homepage.rule: Host(`homepage.int.saphnet.xyz`)
       traefik.http.routers.homepage.entrypoints: websecure
-      traefik.http.routers.homepage.tls: true
+      traefik.http.routers.homepage.tls: "true"
       traefik.http.routers.homepage.tls.certresolver: letsencrypt
       traefik.http.routers.homepage.tls.domains[0].main: int.saphnet.xyz
       traefik.http.routers.homepage.tls.domains[0].sans: "*.int.saphnet.xyz"
@@ -35,7 +35,7 @@ services:
       # Redirect int.saphnet.xyz to homepage.int.saphnet.xyz
       traefik.http.routers.saphnet-int.rule: "Host(`int.saphnet.xyz`)"
       traefik.http.routers.saphnet-int.middlewares: "saphnet-int-redirectregex"
-      traefik.http.routers.saphnet-int.tls: true
+      traefik.http.routers.saphnet-int.tls: "true"
       traefik.http.routers.saphnet-int.tls.certresolver: letsencrypt
       traefik.http.routers.saphnet-int.tls.domains[0].main: int.saphnet.xyz
       traefik.http.routers.saphnet-int.tls.domains[0].sans: "*.int.saphnet.xyz"
