@@ -8,7 +8,7 @@ x-common:
   TIMEZONE: &timezone "America/Los_Angeles"
   POSTGRES: &postgres
     POSTGRES_USER: &postgres_user "postgres"
-    POSTGRES_NON_ROOT_USER: &postgres_non_root_user "postgres-nonroot"
+    POSTGRES_NON_ROOT_USER: &postgres_non_root_user "postgres_nonroot"
     POSTGRES_DB: &postgres_db "n8n"
 
 x-services: # Base instances of services to customize

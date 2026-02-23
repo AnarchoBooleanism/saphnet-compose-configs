@@ -40,3 +40,6 @@ NOTE: This host has an Intel Arc A310 for GPU acceleration.
 - `traefik` (`base.yaml` and `vps1.yaml`)
 - `glances`
 - `velocity-vps1`
+
+## Note for Komodo environment variables
+If the values of environment variables include the character `$`, make sure it's escaped with a backslash (`\`) beforehand!
