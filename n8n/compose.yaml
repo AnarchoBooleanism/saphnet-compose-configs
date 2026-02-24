@@ -1,4 +1,5 @@
 # Environment variables to set:
+# - MAIL_PASSWORD
 # - POSTGRES_PASSWORD
 # - POSTGRES_NON_ROOT_PASSWORD
 # - ENCRYPTION_KEY, made with "openssl rand -hex 32"
@@ -10,6 +11,14 @@ x-common:
     POSTGRES_USER: &postgres_user "postgres"
     POSTGRES_NON_ROOT_USER: &postgres_non_root_user "postgres_nonroot"
     POSTGRES_DB: &postgres_db "n8n"
+  MAIL: &mail
+    N8N_SMTP_SENDER: "n8n <homelab@saphnet.xyz>"
+    N8N_EMAIL_MODE: "smtp"
+    N8N_SMTP_HOST: "mail.privateemail.com"
+    N8N_SMTP_PORT: "465"
+    N8N_SMTP_USER: "homelab@saphnet.xyz"
+    N8N_SMTP_PASS: "${MAIL_PASSWORD}"
+    N8N_SMTP_SSL: "true"
 
 x-services: # Base instances of services to customize
   N8N_COMMON: &n8n_common
@@ -20,6 +29,7 @@ x-services: # Base instances of services to customize
       postgres:
         condition: service_healthy
     environment:
+      <<: [*mail]
       # Database
       DB_TYPE: postgresdb
       DB_POSTGRESDB_HOST: n8n-postgres
