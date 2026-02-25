@@ -82,7 +82,7 @@ services:
     restart: unless-stopped
 
   deluge:
-    image: ghcr.io/linuxserver/deluge:2.2.0@sha256:dddd1f95b4fcea607813b12bd821396519e5fcc250e5ce138eb7e0dbf147e995 # To only update intentionally
+    image: ghcr.io/linuxserver/deluge:2.2.0-r1-ls364@sha256:5149ae326b3c291d4d30d540bce4658f2f815b19ff43b01bb1f6c5a593ec6b5e # To only update intentionally
     container_name: deluge
     environment:
       PUID: "1000"
