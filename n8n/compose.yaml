@@ -47,6 +47,7 @@ x-services: # Base instances of services to customize
       N8N_HOST: n8n.int.saphnet.xyz
       N8N_PORT: "5678"
       N8N_PROTOCOL: https
+      OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS: "true"
       N8N_RUNNERS_ENABLED: "true"
       N8N_RUNNERS_MODE: external
       N8N_RUNNERS_BROKER_LISTEN_ADDRESS: "0.0.0.0"
