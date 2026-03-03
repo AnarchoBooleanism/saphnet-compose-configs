@@ -2,6 +2,7 @@
 A workflow automation platform, with the flexibility of code and the speed of no-code.
 
 When deploying, make sure to set these environment variables with your secrets:
+- `N8N_RUNNER_TOKEN` - Shared secret to use between n8n and its runners, can be anything
 - `MAIL_PASSWORD` - Password to use for SMTP password
 - `POSTGRES_PASSWORD` - Password to use for PostgreSQL user
 - `POSTGRES_NON_ROOT_PASSWORD` - Password to use for PostgreSQL non-root user (separate to `POSTGRES_PASSWORD`)
