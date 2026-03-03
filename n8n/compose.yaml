@@ -21,6 +21,47 @@ x-common:
     N8N_SMTP_PASS: "${MAIL_PASSWORD}"
     N8N_SMTP_SSL: "true"
 
+x-services: # Base instances of services to customize
+  N8N_COMMON: &n8n_common
+    image: n8nio/n8n:stable@sha256:53004142b0e93de1e9e31943e601ed9bd4b24ca82a307864ccadf1820b627e5e
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: [*mail]
+      # Database
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: n8n-postgres
+      DB_POSTGRESDB_PORT: "5432"
+      DB_POSTGRESDB_DATABASE: *postgres_db
+      DB_POSTGRESDB_USER: *postgres_non_root_user
+      DB_POSTGRESDB_PASSWORD: "${POSTGRES_NON_ROOT_PASSWORD}"
+      EXECUTIONS_MODE: queue
+      QUEUE_BULL_REDIS_HOST: n8n-redis
+      QUEUE_HEALTH_CHECK_ACTIVE: "true"
+      N8N_ENCRYPTION_KEY: "${ENCRYPTION_KEY}"
+      # Other
+      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
+      N8N_HOST: n8n.int.saphnet.xyz
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: https
+      N8N_RUNNERS_ENABLED: "true"
+      N8N_RUNNERS_MODE: external
+      N8N_RUNNERS_BROKER_LISTEN_ADDRESS: "0.0.0.0"
+      N8N_RUNNERS_AUTH_TOKEN: "${N8N_RUNNER_TOKEN}"
+      N8N_NATIVE_PYTHON_RUNNER: "true"
+      NODE_ENV: production
+      WEBHOOK_URL: https://n8n.int.saphnet.xyz/
+      GENERIC_TIMEZONE: *timezone
+      TZ: *timezone
+    volumes:
+      - n8n-storage:/home/node/.n8n
+    networks: # When having more networks when merging this, be sure to include n8n_internal in the list too!
+      - n8n_internal
+    restart: unless-stopped
+
 services:
   postgres:
     image: postgres:16@sha256:e4842c8a99ca99339e1693e6fe5fe62c7becb31991f066f989047dfb2fbf47af
@@ -58,13 +99,8 @@ services:
     restart: unless-stopped
   
   n8n:
-    image: n8nio/n8n:stable@sha256:53004142b0e93de1e9e31943e601ed9bd4b24ca82a307864ccadf1820b627e5e
+    <<: *n8n_common
     container_name: n8n
-    depends_on:
-      redis:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:5678:5678"
     labels:
@@ -84,47 +120,24 @@ services:
       traefik.http.middlewares.n8n.headers.STSIncludeSubdomains: "true"
       traefik.http.middlewares.n8n.headers.STSPreload: "true"
       traefik.http.routers.n8n.middlewares: n8n@docker
-    environment:
-      <<: [*mail]
-      # Database
-      DB_TYPE: postgresdb
-      DB_POSTGRESDB_HOST: n8n-postgres
-      DB_POSTGRESDB_PORT: "5432"
-      DB_POSTGRESDB_DATABASE: *postgres_db
-      DB_POSTGRESDB_USER: *postgres_non_root_user
-      DB_POSTGRESDB_PASSWORD: "${POSTGRES_NON_ROOT_PASSWORD}"
-      EXECUTIONS_MODE: queue
-      QUEUE_BULL_REDIS_HOST: n8n-redis
-      QUEUE_HEALTH_CHECK_ACTIVE: "true"
-      N8N_ENCRYPTION_KEY: "${ENCRYPTION_KEY}"
-      # Other
-      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
-      N8N_HOST: n8n.int.saphnet.xyz
-      N8N_PORT: "5678"
-      N8N_PROTOCOL: https
-      N8N_RUNNERS_ENABLED: "true"
-      N8N_RUNNERS_MODE: external
-      N8N_RUNNERS_BROKER_LISTEN_ADDRESS: "0.0.0.0"
-      N8N_RUNNERS_AUTH_TOKEN: "${N8N_RUNNER_TOKEN}"
-      N8N_NATIVE_PYTHON_RUNNER: "true"
-      NODE_ENV: production
-      WEBHOOK_URL: https://n8n.int.saphnet.xyz/
-      GENERIC_TIMEZONE: *timezone
-      TZ: *timezone
-    volumes:
-      - n8n-storage:/home/node/.n8n
-    networks: # When having more networks when merging this, be sure to include n8n_internal in the list too!
+    networks:
       - n8n_internal
       - web_bridge
-    restart: unless-stopped
   
+  n8n-worker:
+    <<: *n8n_common
+    container_name: n8n-worker
+    command: worker
+    depends_on:
+      - n8n
+
   n8n-runner:
     image: n8nio/runners:stable@sha256:7d9812fd1f84cd0f6ecc7fc7ba236103d2eb97f50895c31d9725cf61377b60fb
     container_name: n8n-runner
     depends_on:
       - n8n
     environment:
-      N8N_RUNNERS_TASK_BROKER_URI: http://n8n:5679
+      N8N_RUNNERS_TASK_BROKER_URI: http://n8n-worker:5679
       N8N_RUNNERS_AUTH_TOKEN: "${N8N_RUNNER_TOKEN}"
     networks:
       - n8n_internal
