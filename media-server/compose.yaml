@@ -40,7 +40,7 @@ x-services: # Base instances of services to customize
     restart: unless-stopped
   
   bazarr: &bazarr # For subtitles
-    image: ghcr.io/linuxserver/bazarr:latest@sha256:18ff732dffcebd559d15a91845fc3360d49652ea01dccfbfd98b8248ceb86e38
+    image: ghcr.io/linuxserver/bazarr:latest@sha256:94eee5e3e14430b7b144d4556be73963a7daf6f1bddc25586627f426465482ce
     # Set a unique container_name here
     # For ports, link host port to container port's 6767
     environment:
