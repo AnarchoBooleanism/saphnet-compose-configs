@@ -75,11 +75,9 @@ services:
       traefik.http.routers.thevoidpact-map.tls.certresolver: letsencrypt
       traefik.http.routers.thevoidpact-map.tls.domains[0].main: *thevoidpact_domains_main
       traefik.http.routers.thevoidpact-map.tls.domains[0].sans: *thevoidpact_domains_sans
-      traefik.http.routers.thevoidpact-map.middlewares: anubis-thevoidpact@docker, thevoidpact-map-cache
+      traefik.http.routers.thevoidpact-map.middlewares: anubis-thevoidpact@docker
       traefik.http.routers.thevoidpact-map.service: thevoidpact-map-svc
       traefik.http.services.thevoidpact-map-svc.loadbalancer.server.url: http://docker-host-pve4:63624
-      traefik.http.middlewares.thevoidpact-map-cache.plugin.httpCache.maxTtl: "600" # Tiny cache to not need to bug the database and static data as much
-      traefik.http.middlewares.thevoidpact-map-cache.plugin.httpCache.memory.limit: "32Mi"
       
       # Media stack
       # jellyfin.media.saphnet.xyz
