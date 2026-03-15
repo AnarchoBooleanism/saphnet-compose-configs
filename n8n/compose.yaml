@@ -144,6 +144,36 @@ services:
       - n8n_internal
     restart: unless-stopped
 
+  n8n-homepage-api:
+    image: ghcr.io/anarchobooleanism/n8n-homepage-api:latest@sha256:741748175297b4ae7916fcccc48df25cb3eeaaa7fa5f4bffb89fd67418ff5f07
+    container_name: n8n-homepage-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.n8n-homepage-api.rule: Host(`n8n.int.saphnet.xyz`) && Path(`/api/homepage-custom`)
+      traefik.http.routers.n8n-homepage-api.tls: "true"
+      traefik.http.routers.n8n-homepage-api.entrypoints: websecure
+      traefik.http.routers.n8n-homepage-api.tls.certresolver: letsencrypt
+      traefik.http.routers.n8n-homepage-api.tls.domains[0].main: int.saphnet.xyz
+      traefik.http.routers.n8n-homepage-api.tls.domains[0].sans: "*.int.saphnet.xyz"
+      traefik.http.middlewares.n8n-homepage-api-stripprefix.stripprefix.prefixes: /api/homepage-custom # Since our API listens at "/", we need to strip our path prefix out for it to work properly
+      traefik.http.routers.n8n-homepage-api.middlewares: n8n-homepage-api-stripprefix
+      traefik.http.routers.n8n-homepage-api.service: n8n-homepage-api-svc
+      traefik.http.services.n8n-homepage-api-svc.loadbalancer.server.port: "8000" # FastAPI listens to 8000 by default
+    environment:
+      POSTGRES_USER: *postgres_non_root_user
+      POSTGRES_PASSWORD: "${POSTGRES_NON_ROOT_PASSWORD}"
+      POSTGRES_HOST: n8n-postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: *postgres_db
+      ROOT_PATH_PREFIX: "/api/homepage-custom" # Since Traefik serves the API at a custom path, we need to pass this to FastAPI so it can be aware of it
+    networks:
+      - n8n_internal
+      - web_bridge
+    restart: unless-stopped
+
 volumes:
   db-storage:
   n8n-storage:
