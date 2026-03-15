@@ -145,7 +145,7 @@ services:
     restart: unless-stopped
 
   n8n-homepage-api:
-    image: ghcr.io/anarchobooleanism/n8n-homepage-api:latest@sha256:741748175297b4ae7916fcccc48df25cb3eeaaa7fa5f4bffb89fd67418ff5f07
+    image: ghcr.io/anarchobooleanism/n8n-homepage-api:latest@sha256:5db9edfa3e2f0511be908c330f28b7396800adb9b5f6b4136c005dc8266107df
     container_name: n8n-homepage-api
     depends_on:
       postgres:
