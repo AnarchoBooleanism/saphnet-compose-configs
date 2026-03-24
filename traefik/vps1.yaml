@@ -75,9 +75,10 @@ services:
       traefik.http.routers.thevoidpact-map.tls.certresolver: letsencrypt
       traefik.http.routers.thevoidpact-map.tls.domains[0].main: *thevoidpact_domains_main
       traefik.http.routers.thevoidpact-map.tls.domains[0].sans: *thevoidpact_domains_sans
-      traefik.http.routers.thevoidpact-map.middlewares: anubis-thevoidpact@docker
+      traefik.http.routers.thevoidpact-map.middlewares: anubis-thevoidpact@docker, thevoidpact-map-cache
       traefik.http.routers.thevoidpact-map.service: thevoidpact-map-svc
       traefik.http.services.thevoidpact-map-svc.loadbalancer.server.url: http://docker-host-pve4:63624
+      traefik.http.middlewares.thevoidpact-map-cache.plugin.cache.path: /tmp/thevoidpact-map-cache
       
       # Media stack
       # jellyfin.media.saphnet.xyz
@@ -133,6 +134,8 @@ services:
       traefik.http.routers.jellyseerr.middlewares: anubis-saphnet@docker
       traefik.http.routers.jellyseerr.service: jellyseerr-svc
       traefik.http.services.jellyseerr-svc.loadbalancer.server.url: http://docker-host-pve3:5055
+    tmpfs:
+      - /tmp/thevoidpact-map-cache:size=32m
 
   under-construction: # Serving "under construction" pages
     image: ghcr.io/palmergw/under-construction-page:latest@sha256:2fd2eab189cb8bef5ba7c1b6bc76f86c46dbbe68644bf1ae99e2b3c1f47389e7

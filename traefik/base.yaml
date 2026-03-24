@@ -48,6 +48,10 @@ services:
       # For backend services
       - "--serversTransport.insecureSkipVerify=true"
 
+      # Cache plugin
+      - "--experimental.plugins.cache.modulename=github.com/ciaranj/cacheify"
+      - "--experimental.plugins.cache.version=v0.0.8" # TODO: Find way to automate updating this (maybe move this to file, then have file that checks the TOML file and then checks Git repo tags)
+
       # Miscellaneous
       - "--global.sendAnonymousUsage=true"
     ports: # Port 8080 is for dashboard, but it should be through HTTPS anyway
