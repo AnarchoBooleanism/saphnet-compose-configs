@@ -35,7 +35,7 @@ services:
       - "--api.insecure=false"
 
       # Observability 
-      - "--log.level=DEBUG"
+      - "--log.level=INFO"
       - "--accesslog=true"
       - "--metrics.prometheus=true"
 
