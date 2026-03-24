@@ -148,8 +148,8 @@ services:
       traefik.http.routers.jellyseerr.service: jellyseerr-svc
       traefik.http.services.jellyseerr-svc.loadbalancer.server.url: http://docker-host-pve3:5055
     volumes:
-      - thevoidpact-map-cache:/tmp/thevoidpact-map-tiles-cache
       - thevoidpact-map-cache:/tmp/thevoidpact-map-cache
+      - thevoidpact-map-tiles-cache:/tmp/thevoidpact-map-tiles-cache
 
   under-construction: # Serving "under construction" pages
     image: ghcr.io/palmergw/under-construction-page:latest@sha256:2fd2eab189cb8bef5ba7c1b6bc76f86c46dbbe68644bf1ae99e2b3c1f47389e7
