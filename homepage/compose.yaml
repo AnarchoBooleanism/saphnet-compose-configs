@@ -56,5 +56,3 @@ networks:
   web_bridge:
     name: web_bridge
     external: true
-# TODO:
-# - int.saphnet.xyz redirect
