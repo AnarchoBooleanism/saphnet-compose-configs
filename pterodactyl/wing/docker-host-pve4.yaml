@@ -29,7 +29,6 @@ services:
       traefik.http.services.pterodactyl-wing-svc.loadBalancer.server.port: "443"
 
       # For Dynmap specifically
-      traefik.enable: "true"
       traefik.http.routers.thevoidpact-map.rule: Host(`map-int.thevoidpact.xyz`)
       traefik.http.routers.thevoidpact-map.entrypoints: websecure
       traefik.http.routers.thevoidpact-map.tls: "true"
