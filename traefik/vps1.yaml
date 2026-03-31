@@ -137,16 +137,27 @@ services:
       traefik.http.middlewares.saphnet-media-redirectregex.redirectregex.regex: "^https://media\\.saphnet\\.xyz/(.*)"
       traefik.http.middlewares.saphnet-media-redirectregex.redirectregex.replacement: "https://jellyfin.media.saphnet.xyz/$${1}"
 
-      # jellyseerr.media.saphnet.xyz
-      traefik.http.routers.jellyseerr.rule: Host(`jellyseerr.media.saphnet.xyz`)
-      traefik.http.routers.jellyseerr.entrypoints: websecure
+      # seerr.media.saphnet.xyz
+      traefik.http.routers.seerr.rule: Host(`seerr.media.saphnet.xyz`)
+      traefik.http.routers.seerr.entrypoints: websecure
+      traefik.http.routers.seerr.tls: "true"
+      traefik.http.routers.seerr.tls.certresolver: letsencrypt
+      traefik.http.routers.seerr.tls.domains[0].main: *saphnet_media_domains_main
+      traefik.http.routers.seerr.tls.domains[0].sans: *saphnet_media_domains_sans
+      traefik.http.routers.seerr.middlewares: anubis-saphnet@docker
+      traefik.http.routers.seerr.service: seerr-svc
+      traefik.http.services.seerr-svc.loadbalancer.server.url: http://docker-host-pve3:5055
+
+      # Redirect jellyseerr to seerr
+      traefik.http.routers.jellyseerr.rule: "Host(`jellyseerr.media.saphnet.xyz`)"
+      traefik.http.routers.jellyseerr.middlewares: "jellyseerr-redirectregex"
       traefik.http.routers.jellyseerr.tls: "true"
       traefik.http.routers.jellyseerr.tls.certresolver: letsencrypt
       traefik.http.routers.jellyseerr.tls.domains[0].main: *saphnet_media_domains_main
       traefik.http.routers.jellyseerr.tls.domains[0].sans: *saphnet_media_domains_sans
-      traefik.http.routers.jellyseerr.middlewares: anubis-saphnet@docker
-      traefik.http.routers.jellyseerr.service: jellyseerr-svc
-      traefik.http.services.jellyseerr-svc.loadbalancer.server.url: http://docker-host-pve3:5055
+      traefik.http.routers.jellyseerr.service: seerr-svc
+      traefik.http.middlewares.jellyseerr-redirectregex.redirectregex.regex: "^https://jellyseerr\\.media\\.saphnet\\.xyz/(.*)"
+      traefik.http.middlewares.jellyseerr-redirectregex.redirectregex.replacement: "https://seerr.media.saphnet.xyz/$${1}"
     volumes:
       - thevoidpact-map-cache:/tmp/thevoidpact-map-cache
       - thevoidpact-map-tiles-cache:/tmp/thevoidpact-map-tiles-cache

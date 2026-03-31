@@ -7,6 +7,9 @@ x-common:
     type: "nfs"
     o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
     # Set device here, e.g. ":/mnt/saphnet-nas1b/media-server/deluge/torrent_downloads"
+  certificate_groups:
+    MEDIA_DOMAINS_MAIN: &media_domains_main "int.media.saphnet.xyz"
+    MEDIA_DOMAINS_SANS: &media_domains_sans "*.int.media.saphnet.xyz"
 
 x-services: # Base instances of services to customize
   radarr: &radarr # For movies
@@ -71,8 +74,8 @@ services:
       traefik.http.routers.jellyfin.entrypoints: websecure
       traefik.http.routers.jellyfin.tls: "true"
       traefik.http.routers.jellyfin.tls.certresolver: letsencrypt
-      traefik.http.routers.jellyfin.tls.domains[0].main: media.int.saphnet.xyz
-      traefik.http.routers.jellyfin.tls.domains[0].sans: "*.media.int.saphnet.xyz"
+      traefik.http.routers.jellyfin.tls.domains[0].main: *media_domains_main
+      traefik.http.routers.jellyfin.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.jellyfin.service: jellyfin-svc
 
       # Redirect media.int.saphnet.xyz to jellyfin.media.int.saphnet.xyz
@@ -80,8 +83,8 @@ services:
       traefik.http.routers.media.middlewares: "media-redirectregex"
       traefik.http.routers.media.tls: "true"
       traefik.http.routers.media.tls.certresolver: letsencrypt
-      traefik.http.routers.media.tls.domains[0].main: media.int.saphnet.xyz
-      traefik.http.routers.media.tls.domains[0].sans: "*.media.int.saphnet.xyz"
+      traefik.http.routers.media.tls.domains[0].main: *media_domains_main
+      traefik.http.routers.media.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.media.service: jellyfin-svc
       traefik.http.middlewares.media-redirectregex.redirectregex.regex: "^https://media\\.int\\.saphnet\\.xyz/(.*)"
       traefik.http.middlewares.media-redirectregex.redirectregex.replacement: "https://jellyfin.media.int.saphnet.xyz/$${1}"
@@ -129,22 +132,33 @@ services:
       - 'host.docker.internal:host-gateway'
     restart: unless-stopped
 
-  jellyseerr:
-    image: ghcr.io/fallenbagel/jellyseerr:2.7@sha256:9cc9e9ee6cd5cf5a23feb45c37742ba34cfd6314d81d259cddb373a97ac92cdd # To only update intentionally
-    container_name: jellyseerr
+  seerr:
+    image: ghcr.io/seerr-team/seerr:v3.1.0@sha256:b35ba0461c4a1033d117ac1e5968fd4cbe777899e4cbfbdeaf3d10a42a0eb7e9 # To only update intentionally
+    container_name: seerr
     init: true
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:5055:5055"
     labels:
       traefik.enable: "true"
-      traefik.http.routers.jellyseerr.rule: Host(`jellyseerr.media.int.saphnet.xyz`)
-      traefik.http.routers.jellyseerr.entrypoints: websecure
+      traefik.http.routers.seerr.rule: Host(`seerr.media.int.saphnet.xyz`)
+      traefik.http.routers.seerr.entrypoints: websecure
+      traefik.http.routers.seerr.tls: "true"
+      traefik.http.routers.seerr.tls.certresolver: letsencrypt
+      traefik.http.routers.seerr.tls.domains[0].main: *media_domains_main
+      traefik.http.routers.seerr.tls.domains[0].sans: *media_domains_sans
+      traefik.http.routers.seerr.service: seerr-svc
+      traefik.http.services.seerr-svc.loadBalancer.server.port: "5055"
+
+      # Redirect jellyseerr to seerr
+      traefik.http.routers.jellyseerr.rule: "Host(`jellyseerr.media.int.saphnet.xyz`)"
+      traefik.http.routers.jellyseerr.middlewares: "jellyseerr-redirectregex"
       traefik.http.routers.jellyseerr.tls: "true"
       traefik.http.routers.jellyseerr.tls.certresolver: letsencrypt
-      traefik.http.routers.jellyseerr.tls.domains[0].main: media.int.saphnet.xyz
-      traefik.http.routers.jellyseerr.tls.domains[0].sans: "*.media.int.saphnet.xyz"
-      traefik.http.routers.jellyseerr.service: jellyseerr-svc
-      traefik.http.services.jellyseerr-svc.loadBalancer.server.port: "5055"
+      traefik.http.routers.jellyseerr.tls.domains[0].main: *media_domains_main
+      traefik.http.routers.jellyseerr.tls.domains[0].sans: *media_domains_sans
+      traefik.http.routers.jellyseerr.service: seerr-svc
+      traefik.http.middlewares.jellyseerr-redirectregex.redirectregex.regex: "^https://jellyseerr\\.media\\.int\\.saphnet\\.xyz/(.*)"
+      traefik.http.middlewares.jellyseerr-redirectregex.redirectregex.replacement: "https://seerr.media.int.saphnet.xyz/$${1}"
     environment:
       LOG_LEVEL: debug
       TZ: *timezone
@@ -189,8 +203,8 @@ services:
       traefik.http.routers.prowlarr.entrypoints: websecure
       traefik.http.routers.prowlarr.tls: "true"
       traefik.http.routers.prowlarr.tls.certresolver: letsencrypt
-      traefik.http.routers.prowlarr.tls.domains[0].main: media.int.saphnet.xyz
-      traefik.http.routers.prowlarr.tls.domains[0].sans: "*.media.int.saphnet.xyz"
+      traefik.http.routers.prowlarr.tls.domains[0].main: *media_domains_main
+      traefik.http.routers.prowlarr.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.prowlarr.service: prowlarr-svc
       traefik.http.services.prowlarr-svc.loadBalancer.server.port: "9696"
     environment:
@@ -228,8 +242,8 @@ services:
       traefik.http.routers.radarr.entrypoints: websecure
       traefik.http.routers.radarr.tls: "true"
       traefik.http.routers.radarr.tls.certresolver: letsencrypt
-      traefik.http.routers.radarr.tls.domains[0].main: media.int.saphnet.xyz
-      traefik.http.routers.radarr.tls.domains[0].sans: "*.media.int.saphnet.xyz"
+      traefik.http.routers.radarr.tls.domains[0].main: *media_domains_main
+      traefik.http.routers.radarr.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.radarr.service: radarr-svc
       traefik.http.services.radarr-svc.loadBalancer.server.port: "7878"
     volumes:
@@ -248,8 +262,8 @@ services:
       traefik.http.routers.radarr-anime.entrypoints: websecure
       traefik.http.routers.radarr-anime.tls: "true"
       traefik.http.routers.radarr-anime.tls.certresolver: letsencrypt
-      traefik.http.routers.radarr-anime.tls.domains[0].main: media.int.saphnet.xyz
-      traefik.http.routers.radarr-anime.tls.domains[0].sans: "*.media.int.saphnet.xyz"
+      traefik.http.routers.radarr-anime.tls.domains[0].main: *media_domains_main
+      traefik.http.routers.radarr-anime.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.radarr-anime.service: radarr-anime-svc
       traefik.http.services.radarr-anime-svc.loadBalancer.server.port: "7878"
     volumes:
@@ -268,8 +282,8 @@ services:
       traefik.http.routers.sonarr.entrypoints: websecure
       traefik.http.routers.sonarr.tls: "true"
       traefik.http.routers.sonarr.tls.certresolver: letsencrypt
-      traefik.http.routers.sonarr.tls.domains[0].main: media.int.saphnet.xyz
-      traefik.http.routers.sonarr.tls.domains[0].sans: "*.media.int.saphnet.xyz"
+      traefik.http.routers.sonarr.tls.domains[0].main: *media_domains_main
+      traefik.http.routers.sonarr.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.sonarr.service: sonarr-svc
       traefik.http.services.sonarr-svc.loadBalancer.server.port: "8989"
     volumes:
@@ -288,8 +302,8 @@ services:
       traefik.http.routers.sonarr-anime.entrypoints: websecure
       traefik.http.routers.sonarr-anime.tls: "true"
       traefik.http.routers.sonarr-anime.tls.certresolver: letsencrypt
-      traefik.http.routers.sonarr-anime.tls.domains[0].main: media.int.saphnet.xyz
-      traefik.http.routers.sonarr-anime.tls.domains[0].sans: "*.media.int.saphnet.xyz"
+      traefik.http.routers.sonarr-anime.tls.domains[0].main: *media_domains_main
+      traefik.http.routers.sonarr-anime.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.sonarr-anime.service: sonarr-anime-svc
       traefik.http.services.sonarr-anime-svc.loadBalancer.server.port: "8989"
     volumes:
@@ -308,8 +322,8 @@ services:
       traefik.http.routers.bazarr.entrypoints: websecure
       traefik.http.routers.bazarr.tls: "true"
       traefik.http.routers.bazarr.tls.certresolver: letsencrypt
-      traefik.http.routers.bazarr.tls.domains[0].main: media.int.saphnet.xyz
-      traefik.http.routers.bazarr.tls.domains[0].sans: "*.media.int.saphnet.xyz"
+      traefik.http.routers.bazarr.tls.domains[0].main: *media_domains_main
+      traefik.http.routers.bazarr.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.bazarr.service: bazarr-svc
       traefik.http.services.bazarr-svc.loadBalancer.server.port: "6767"
     volumes:
@@ -328,8 +342,8 @@ services:
       traefik.http.routers.bazarr-anime.entrypoints: websecure
       traefik.http.routers.bazarr-anime.tls: "true"
       traefik.http.routers.bazarr-anime.tls.certresolver: letsencrypt
-      traefik.http.routers.bazarr-anime.tls.domains[0].main: media.int.saphnet.xyz
-      traefik.http.routers.bazarr-anime.tls.domains[0].sans: "*.media.int.saphnet.xyz"
+      traefik.http.routers.bazarr-anime.tls.domains[0].main: *media_domains_main
+      traefik.http.routers.bazarr-anime.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.bazarr-anime.service: bazarr-anime-svc
       traefik.http.services.bazarr-anime-svc.loadBalancer.server.port: "6767"
     volumes:
@@ -341,7 +355,7 @@ volumes:
   seedbox-files:
   jellyfin-config:
   jellyfin-cache:
-  jellyseerr-config:
+  jellyseerr-config: # Is carryover from pre-migration, not renaming for continuity
   flaresolverr-config:
   prowlarr-config:
   recyclarr-config:
