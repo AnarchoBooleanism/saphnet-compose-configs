@@ -163,7 +163,7 @@ services:
       LOG_LEVEL: debug
       TZ: *timezone
     volumes:
-      - jellyseerr-config:/app/config
+      - seerr-config:/app/config
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
       start_period: "20s"
@@ -355,7 +355,7 @@ volumes:
   seedbox-files:
   jellyfin-config:
   jellyfin-cache:
-  jellyseerr-config: # Is carryover from pre-migration, not renaming for continuity
+  seerr-config:
   flaresolverr-config:
   prowlarr-config:
   recyclarr-config:
