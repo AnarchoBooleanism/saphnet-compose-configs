@@ -59,7 +59,7 @@ x-services: # Base instances of services to customize
 
 services:
   jellyfin: # Media streaming
-    image: jellyfin/jellyfin:10.11@sha256:333b647716631443a43c7fabac4b0c46b4e2f036bad19547e00958f10f721b85 # To only update intentionally
+    image: jellyfin/jellyfin:10.11@sha256:2b93aa3830dcd0aab7185c635e20edef1f8dc5d2e999768baf1724e88c078004 # To only update intentionally
     container_name: jellyfin
     devices:
       - /dev/dri:/dev/dri
