@@ -23,6 +23,7 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "docker-compose"
+    open-pull-requests-limit: 64 # We have a lot of packages, so we need to be able to have a lot of pull requests
     registries: "*"
     directories:
       - "/deluge-seedbox/"
