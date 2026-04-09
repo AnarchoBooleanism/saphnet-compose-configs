@@ -46,17 +46,36 @@ updates:
       - "/vertd/"
       - "/n8n/"
     groups:
-      immich:
-        patterns:
-          - "immich-app/immich"
-          - "immich-app/immich-machine-learning"
-      pyrodactyl:
-        patterns:
-          - "pyrodactyl-oss/pyrodactyl"
-          - "pyrohost/elytra"
       guacamole:
         patterns:
           - "guacamole/guacd"
           - "guacamole/guacamole"
+      immich:
+        patterns:
+          - "immich-app/immich"
+          - "immich-app/immich-machine-learning"
+      media-server: # Grouping everything together for simplicity
+        patterns:
+          - "ghcr.io/linuxserver/bazarr"
+          - "ghcr.io/linuxserver/prowlarr"
+          - "ghcr.io/linuxserver/radarr"
+          - "ghcr.io/linuxserver/sonarr"
+          - "ghcr.io/flaresolverr/flaresolverr"
+          - "ghcr.io/recyclarr/recyclarr"
+          - "ghcr.io/seerr-team/seerr"
+          - "jellyfin/jellyfin"
+      n8n:
+        patterns:
+          - "ghcr.io/anarchobooleanism/n8n-homepage-api"
+          - "n8nio/n8n"
+          - "n8nio/runners"
+      pyrodactyl:
+        patterns:
+          - "pyrodactyl-oss/pyrodactyl"
+          - "pyrohost/elytra"
+      vert:
+        patterns:
+          - "ghcr.io/vert-sh/vert"
+          - "ghcr.io/vert-sh/vertd"
     schedule:
       interval: "weekly"
