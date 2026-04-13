@@ -84,6 +84,10 @@ services:
   deluge:
     image: ghcr.io/linuxserver/deluge:2.2.0-r1-ls364@sha256:5149ae326b3c291d4d30d540bce4658f2f815b19ff43b01bb1f6c5a593ec6b5e # To only update intentionally
     container_name: deluge
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
     environment:
       PUID: "1000"
       PGID: "1000"
