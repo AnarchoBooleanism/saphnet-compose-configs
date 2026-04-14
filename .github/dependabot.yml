@@ -52,7 +52,7 @@ updates:
           - "guacamole/guacamole"
       immich:
         patterns:
-          - "immich-app/immich"
+          - "immich-app/immich-server"
           - "immich-app/immich-machine-learning"
       media-server: # Grouping everything together for simplicity
         patterns:
