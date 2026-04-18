@@ -61,8 +61,8 @@ services:
   jellyfin: # Media streaming
     image: jellyfin/jellyfin:10.11@sha256:1694ff069f0c9dafb283c36765175606866769f5d72f2ed56b6a0f1be922fc37 # To only update intentionally
     container_name: jellyfin
-    devices:
-      - /dev/dri:/dev/dri
+    # devices: # TEMPORARY: UNCOMMENT ONCE pve3 BACK UP!
+    #   - /dev/dri:/dev/dri
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:8096:8096"
       - "${TAILSCALE_IP:-0.0.0.0}:8920:8920"
