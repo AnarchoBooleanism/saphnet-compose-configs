@@ -43,7 +43,7 @@ services:
     restart: unless-stopped
   
   velocity-sftp: 
-    image: ghcr.io/anarchobooleanism/saphnet-sftp:latest@sha256:bb164f405864b029fd3b3e5501bb347de0acd8a54436b3ffc79b9b456e3ce152
+    image: ghcr.io/anarchobooleanism/saphnet-sftp:v0.1.1@sha256:bb164f405864b029fd3b3e5501bb347de0acd8a54436b3ffc79b9b456e3ce152
     container_name: velocity-sftp
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:2022:22"

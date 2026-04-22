@@ -71,7 +71,7 @@ services:
     restart: unless-stopped
   
   panel:
-    image: ghcr.io/pyrodactyl-oss/pyrodactyl:latest@sha256:8d7c2d08bf8146bda2b5bfb3627d9ccef95d1e1a01c3efd3ac4a7572ff1595c8
+    image: ghcr.io/pyrodactyl-oss/pyrodactyl:v5.0.4@sha256:8d7c2d08bf8146bda2b5bfb3627d9ccef95d1e1a01c3efd3ac4a7572ff1595c8
     container_name: pterodactyl-panel # Refer to the panel container this way
     # ports:
     #   - "802:80" # Web port

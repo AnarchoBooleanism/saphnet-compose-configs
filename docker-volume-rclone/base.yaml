@@ -7,7 +7,7 @@ x-common:
 
 services:
   docker-volume-rclone: &docker-volume-rclone # Is base service
-    image: ghcr.io/anarchobooleanism/docker-volume-rclone:latest@sha256:e10ecf7949bcbc2e2753a0d42f3a2e8c8173f3a63d3fad03b97bf3fbb92c0324
+    image: ghcr.io/anarchobooleanism/docker-volume-rclone:v0.1.1@sha256:9944901a7f4b59173725591893f587681b5caa85f4da572baa43bad669bc2f6c
     environment: &environment
       # Set TARGET_SUBDIR_NAME here
       # Set VOLUME_NAMES here, is space-delimited string, use ">-"

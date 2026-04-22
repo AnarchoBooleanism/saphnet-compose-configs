@@ -82,7 +82,7 @@ services:
     restart: unless-stopped
 
   deluge:
-    image: ghcr.io/linuxserver/deluge:2.2.0-r1-ls364@sha256:5149ae326b3c291d4d30d540bce4658f2f815b19ff43b01bb1f6c5a593ec6b5e # To only update intentionally
+    image: ghcr.io/linuxserver/deluge:2.2.0@sha256:933325a5f052e6cf617ed366019f7b191cd5bb071694dd4c40e39962c873703d # To only update intentionally
     container_name: deluge
     ulimits:
       nofile:
@@ -103,7 +103,7 @@ services:
     restart: unless-stopped
 
   deluge-sftp:
-    image: ghcr.io/anarchobooleanism/saphnet-sftp:latest@sha256:bb164f405864b029fd3b3e5501bb347de0acd8a54436b3ffc79b9b456e3ce152
+    image: ghcr.io/anarchobooleanism/saphnet-sftp:v0.1.1@sha256:bb164f405864b029fd3b3e5501bb347de0acd8a54436b3ffc79b9b456e3ce152
     container_name: deluge-sftp
     ports:
       - "2222:22"
