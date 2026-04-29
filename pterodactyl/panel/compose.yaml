@@ -65,7 +65,7 @@ services:
     restart: unless-stopped
   
   cache:
-    image: redis:8@sha256:125f446fbd4c4345cdbd0f60c61ed83c35a10e09436dd797e0e82377325034f5
+    image: redis:8@sha256:832d7785830f3f4b559300e6191fc914b15642c1935252338825cf4332200148
     networks:
       - pterodactyl_panel_internal
     restart: unless-stopped
