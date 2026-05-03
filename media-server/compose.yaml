@@ -8,8 +8,8 @@ x-common:
     o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
     # Set device here, e.g. ":/mnt/saphnet-nas1b/media-server/deluge/torrent_downloads"
   certificate_groups:
-    MEDIA_DOMAINS_MAIN: &media_domains_main "int.media.saphnet.xyz"
-    MEDIA_DOMAINS_SANS: &media_domains_sans "*.int.media.saphnet.xyz"
+    MEDIA_DOMAINS_MAIN: &media_domains_main "media.int.saphnet.xyz"
+    MEDIA_DOMAINS_SANS: &media_domains_sans "*.media.int.saphnet.xyz"
 
 x-services: # Base instances of services to customize
   radarr: &radarr # For movies
