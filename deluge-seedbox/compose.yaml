@@ -82,7 +82,7 @@ services:
     restart: unless-stopped
 
   deluge:
-    image: ghcr.io/linuxserver/deluge:2.2.0@sha256:933325a5f052e6cf617ed366019f7b191cd5bb071694dd4c40e39962c873703d # To only update intentionally
+    image: ghcr.io/linuxserver/deluge:2.2.0@sha256:665b41a3b1a36701b182ca35249070506217ef064878d2c3aeffde7cc9caf7d2 # To only update intentionally
     container_name: deluge
     ulimits:
       nofile:
