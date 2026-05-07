@@ -23,7 +23,7 @@ x-common:
 
 x-services: # Base instances of services to customize
   N8N_COMMON: &n8n_common
-    image: n8nio/n8n:2.17.7@sha256:a293b89bac876872a0c1ef0fbbb7ce056aa2d215f62917acf032ecb8010199af
+    image: n8nio/n8n:2.18.5@sha256:2d70fafea7c0c397f40df30daa31243c0bff590e9e87e0430398e7cb4d3d8d0b
     depends_on:
       redis:
         condition: service_healthy
@@ -133,7 +133,7 @@ services:
       - n8n
 
   n8n-runner:
-    image: n8nio/runners:2.17.7@sha256:4a05ed669077da9f3c4c2ece53f5830f8eaf6d517a368aeb4da84b0d0a66eff3
+    image: n8nio/runners:2.18.5@sha256:422fb501dc73613d898c89ba6c1f19b2a8ee9f2036c6cfccc235fb27957cbfb0
     container_name: n8n-runner
     depends_on:
       - n8n
@@ -145,7 +145,7 @@ services:
     restart: unless-stopped
 
   n8n-homepage-api:
-    image: ghcr.io/anarchobooleanism/n8n-homepage-api:v0.6.0@sha256:8a0f0a669df0c34e44a60030308c9bf10340e6f3b3d4915d9c32ae0fb75f8e54
+    image: ghcr.io/anarchobooleanism/n8n-homepage-api:v0.7.0@sha256:5327529b51cc041a037554ea0ecb8c19fa4b2c3e24751d3663f444111318c0e4
     container_name: n8n-homepage-api
     depends_on:
       postgres:
