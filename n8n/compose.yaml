@@ -65,7 +65,7 @@ x-services: # Base instances of services to customize
 
 services:
   postgres:
-    image: postgres:16@sha256:972eeb4e0a5fee4c3046cf868896719227e845aa9e38ff79a353efb3b2b2c10a
+    image: postgres:16@sha256:b6ccf02e9b47eac0d67b5eaa0ef56fd59163bffa5506f64e96ceb5053130ec86
     container_name: n8n-postgres
     ports:
       - "5432:5432"
