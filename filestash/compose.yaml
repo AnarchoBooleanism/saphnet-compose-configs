@@ -1,7 +1,7 @@
 services:
   app:
     container_name: filestash
-    image: machines/filestash:latest@sha256:2f713c81f46384d266b77223d8a07a67fffff2802bf0345b4cf37defe9797ba7
+    image: machines/filestash:latest@sha256:00f03fe263b252d701dd645c64238b8c720caade3bc879b6313e63a0f02f7a7f
     # ports:
     # - "8334:8334"
     labels:
