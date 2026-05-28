@@ -3,7 +3,7 @@
 
 services:
   netbootxyz:
-    image: ghcr.io/netbootxyz/netbootxyz:latest@sha256:7963ae7c29179615933c9b056f49eec9a38dec00e5dfab1ccea3ba4f5f6b37ff
+    image: ghcr.io/netbootxyz/netbootxyz:latest@sha256:39bb40c85d1f6e500b3df1871460f88609215735c224b234b9e6e4e849faf92b
     container_name: netbootxyz
     ports:
       # - "3000:3000"  # optional, destination should match ${WEB_APP_PORT} variable above.
