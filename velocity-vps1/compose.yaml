@@ -11,7 +11,7 @@ x-common:
 
 services:
   velocity:
-    image: itzg/mc-proxy:java21@sha256:a45ca70f1ba9a13a244c89e7904c3e3d8d5b7b39a83f9be4ecde20e21ff9f32e
+    image: itzg/mc-proxy:java21@sha256:f7dc81a0aecf472de1402496d155195f68067f415102f1fcf3d62b5020293f42
     container_name: velocity
     command:
       - /bin/sh
