@@ -13,7 +13,7 @@ x-common:
 
 x-services: # Base instances of services to customize
   radarr: &radarr # For movies
-    image: ghcr.io/linuxserver/radarr:6.1.1@sha256:079e48870584baf2a3e7e43e7ba6d3c834555931851a59c82c51cc792d285caf
+    image: ghcr.io/linuxserver/radarr:6.2.1@sha256:4c490ccd44d31feb49dc4cc542f2148a420fc1ae0c1ba94e59b39ba4bf112716
     # Set a unique container_name here
     # For ports, link host port to container port's 7878
     environment:
@@ -28,7 +28,7 @@ x-services: # Base instances of services to customize
     restart: unless-stopped
   
   sonarr: &sonarr # For shows
-    image: ghcr.io/linuxserver/sonarr:4.0.17@sha256:0b5c4803f92456fb9b65bae8375716ea120b4ea17b3cced7da32b63f0085782b
+    image: ghcr.io/linuxserver/sonarr:4.0.17@sha256:0b3f344388bd7bed4f2f770058de795e76447e4a481b83c8d5f8fed489371fde
     # Set a unique container_name here
     # For ports, link host port to container port's 8989
     environment:
@@ -43,7 +43,7 @@ x-services: # Base instances of services to customize
     restart: unless-stopped
   
   bazarr: &bazarr # For subtitles
-    image: ghcr.io/linuxserver/bazarr:1.5.6@sha256:95f27692c3de6dbe130cd035d342d8138ec74ade7b62cfc52e11ae222c52c855
+    image: ghcr.io/linuxserver/bazarr:1.5.6@sha256:4b5e510042bf471c8bafab89cada9774fba2fb25f16ec64235151cacbe847c10
     # Set a unique container_name here
     # For ports, link host port to container port's 6767
     environment:
@@ -193,7 +193,7 @@ services:
     restart: unless-stopped
   
   prowlarr: # Handles trackers
-    image: ghcr.io/linuxserver/prowlarr:2.3.5@sha256:c9fe528f34b1fd3715438b6f6d6991d64e2965f2c055db36398bc66a0e7eab01
+    image: ghcr.io/linuxserver/prowlarr:2.4.0@sha256:a46d0ce0a8236bc4e065fe7c91a55d026c9d849620c5845250519b977d8857f3
     container_name: prowlarr
     # ports:
     #   - "9696:9696"
