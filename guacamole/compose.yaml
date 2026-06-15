@@ -22,7 +22,7 @@ services:
 
   guacamole:
     container_name: guacamole
-    image: guacamole/guacamole:latest@sha256:8c58969a70d24329180cd9216874a7fcaf71b73cfecb5aaf76263adaa082e4ed
+    image: guacamole/guacamole:latest@sha256:3b7e28bd42c780cc369ee85d816328aebefdc3523b56985b78cbfda7fe5f9b5f
     depends_on:
       - guacdb
       - guacd
