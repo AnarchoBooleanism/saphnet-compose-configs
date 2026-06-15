@@ -13,7 +13,7 @@ x-common:
 
 x-services: # Base instances of services to customize
   radarr: &radarr # For movies
-    image: ghcr.io/linuxserver/radarr:6.2.1@sha256:4c490ccd44d31feb49dc4cc542f2148a420fc1ae0c1ba94e59b39ba4bf112716
+    image: ghcr.io/linuxserver/radarr:6.2.1@sha256:7b45af3b660f5ff5f7d6d625bfa99960cb9265e902f1bef136486f6d2be73ee9
     # Set a unique container_name here
     # For ports, link host port to container port's 7878
     environment:
@@ -28,7 +28,7 @@ x-services: # Base instances of services to customize
     restart: unless-stopped
   
   sonarr: &sonarr # For shows
-    image: ghcr.io/linuxserver/sonarr:4.0.17@sha256:0b3f344388bd7bed4f2f770058de795e76447e4a481b83c8d5f8fed489371fde
+    image: ghcr.io/linuxserver/sonarr:4.0.17@sha256:02bc962946fef994e67a38152446df25c10a52f8583aefeeb6467f9dd44cab99
     # Set a unique container_name here
     # For ports, link host port to container port's 8989
     environment:
