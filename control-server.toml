@@ -7,7 +7,7 @@ auto_update = true
 auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
-run_directory = "docker-proxy"
+run_directory = "stacks/docker-proxy"
 
 # docker-volume-rclone
 [[stack]]
@@ -19,7 +19,7 @@ auto_update = true
 auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
-run_directory = "docker-volume-rclone"
+run_directory = "stacks/docker-volume-rclone"
 file_paths = [
   "base.yaml",
   "control-server.yaml"
