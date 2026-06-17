@@ -1,0 +1,27 @@
+# docker-proxy
+[[stack]]
+name = "docker-proxy-control"
+[stack.config]
+server = "control-server"
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "docker-proxy"
+
+# docker-volume-rclone
+[[stack]]
+name = "docker-volume-rclone-control"
+[stack.config]
+server = "control-server"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "docker-volume-rclone"
+file_paths = [
+  "base.yaml",
+  "control-server.yaml"
+]
+
