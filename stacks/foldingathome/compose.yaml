@@ -3,7 +3,7 @@ x-common:
 
 services:
   foldingathome:
-    image: ghcr.io/linuxserver/foldingathome:8.5.5@sha256:1115bb15fd145a9acee4286b80d182f98a66b661ee1187ae4462e0a0b95c15a3
+    image: ghcr.io/linuxserver/foldingathome:8.5.5@sha256:8de10919d00924a2ed02f465897830e90909d5723fa916d63e16a4be143b7b52
     container_name: foldingathome
     deploy:
       resources:
