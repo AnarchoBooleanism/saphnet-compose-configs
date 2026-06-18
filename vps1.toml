@@ -1,0 +1,66 @@
+# docker-proxy
+[[stack]]
+name = "docker-proxy-vps1"
+[stack.config]
+server = "vps1"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/docker-proxy"
+environment = """
+HOST_IP=[[TAILSCALE_IP_VPS1]]
+"""
+
+# glances
+[[stack]]
+name = "glances-vps1"
+[stack.config]
+server = "vps1"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/glances"
+file_paths = ["vps1.yaml"]
+
+# traefik
+[[stack]]
+name = "traefik-vps1"
+[stack.config]
+server = "vps1"
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/traefik"
+file_paths = ["base.yaml", "vps1.yaml"]
+compose_cmd_wrapper = "sops exec-env secrets/vps1.enc.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
+environment = """
+NAMECHEAP_API_USER = [[NAMECHEAP_USERNAME]]
+NAMECHEAP_API_KEY = [[NAMECHEAP_API_KEY]]
+ACME_EMAIL = [[CERTBOT_EMAIL]]
+DASHBOARD_PASSWORD = [[TRAEFIK_DASHBOARD_PASSWORD]]
+DASHBOARD_LOGIN = "[[TRAEFIK_DASHBOARD_LOGIN]]"
+"""
+
+# velocity-vps1
+[[stack]]
+name = "velocity-vps1"
+[stack.config]
+server = "vps1"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/velocity-vps1"
+compose_cmd_wrapper = "sops exec-env secrets/vps1.enc.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
+environment = """
+TAILSCALE_IP = [[TAILSCALE_IP_VPS1]]
+"""
+

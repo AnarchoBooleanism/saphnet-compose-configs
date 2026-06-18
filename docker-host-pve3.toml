@@ -1,0 +1,136 @@
+## deluge-seedbox
+[[stack]]
+name = "deluge-seedbox"
+[stack.config]
+server = "docker-host-pve3"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/deluge-seedbox"
+compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve3.enc.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
+environment = """
+"""
+
+## docker-proxy
+[[stack]]
+name = "docker-proxy-pve3"
+[stack.config]
+server = "docker-host-pve3"
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/docker-proxy"
+
+## docker-volume-rclone
+[[stack]]
+name = "docker-volume-rclone-pve3"
+[stack.config]
+server = "docker-host-pve3"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/docker-volume-rclone"
+file_paths = [
+  "base.yaml",
+  "docker-host-pve3.yaml"
+]
+
+## foldingathome
+[[stack]]
+name = "foldingathome"
+[stack.config]
+server = "docker-host-pve3"
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/foldingathome"
+compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve3.enc.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
+environment = """
+"""
+
+## glances
+[[stack]]
+name = "glances-pve3"
+[stack.config]
+server = "docker-host-pve3"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/glances"
+file_paths = ["docker-host-pve3.yaml"]
+
+## immich
+[[stack]]
+name = "immich"
+[stack.config]
+server = "docker-host-pve3"
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/immich"
+compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve3.enc.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
+environment = """
+TAILSCALE_IP = "[[TAILSCALE_IP_PVE3]]"
+"""
+
+## media-server
+[[stack]]
+name = "media-server"
+[stack.config]
+server = "docker-host-pve3"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/media-server"
+environment = """
+TAILSCALE_IP = [[TAILSCALE_IP_PVE3]]
+"""
+
+## traefik
+[[stack]]
+name = "traefik-pve3"
+[stack.config]
+server = "docker-host-pve3"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/traefik"
+file_paths = [
+  "base.yaml",
+  "docker-host-pve3.yaml"
+]
+environment = """
+NAMECHEAP_API_USER = [[NAMECHEAP_USERNAME]]
+NAMECHEAP_API_KEY = [[NAMECHEAP_API_KEY]]
+ACME_EMAIL = [[CERTBOT_EMAIL]]
+DASHBOARD_PASSWORD = [[TRAEFIK_DASHBOARD_PASSWORD]]
+DASHBOARD_LOGIN = "[[TRAEFIK_DASHBOARD_LOGIN]]"
+"""
+
+## vertd
+[[stack]]
+name = "vertd"
+[stack.config]
+server = "docker-host-pve3"
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/vertd"
+
