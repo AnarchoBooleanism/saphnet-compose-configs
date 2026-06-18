@@ -6,27 +6,27 @@ keys:
   - &docker-host-pve4 age1027xeu6vnc4evypdkakgvj0u30eqtz2r8ljdgz8v3dhsvfz8zgxsu0gr3x
   - &vps1 age18xl6zml7fza9e3n0gn99yymzkjrzddax3n3t2r7zlw0vjd60049qnldus7
 creation_rules:
-  - path_regex: (^|\/)secrets\/control-server\.env$ # Control server
+  - path_regex: (^|\/)secrets\/control-server\.enc.env$ # Control server
     key_groups:
     - age:
       - *admin
       - *control_server
-  - path_regex: (^|\/)secrets\/docker-host-core\.env$ # docker-host-core
+  - path_regex: (^|\/)secrets\/docker-host-core\.enc.env$ # docker-host-core
     key_groups:
     - age:
       - *admin
       - *docker-host-core
-  - path_regex: (^|\/)secrets\/docker-host-pve3\.env$ # docker-host-pve3
+  - path_regex: (^|\/)secrets\/docker-host-pve3\.enc.env$ # docker-host-pve3
     key_groups:
     - age:
       - *admin
       - *docker-host-pve3
-  - path_regex: (^|\/)secrets\/docker-host-pve4\.env$ # docker-host-pve4
+  - path_regex: (^|\/)secrets\/docker-host-pve4\.enc.env$ # docker-host-pve4
     key_groups:
     - age:
       - *admin
       - *docker-host-pve4
-  - path_regex: (^|\/)secrets\/vps1\.env$ # vps1
+  - path_regex: (^|\/)secrets\/vps1\.enc.env$ # vps1
     key_groups:
     - age:
       - *admin

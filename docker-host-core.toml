@@ -66,7 +66,7 @@ registry_provider = "ghcr.io"
 registry_account = "AnarchoBooleanism"
 # We do it this way since the Compose config leaves out environment variables,
 # instead expecting us to give a path to a .env file with variables to give the service
-compose_cmd_wrapper = "sops exec-file --no-fifo secrets/docker-host-core.env 'export SOPS_SECRETS_PATH={} && [[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper = "sops exec-file --no-fifo secrets/docker-host-core.enc.env 'export SOPS_SECRETS_PATH={} && [[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 HOMEPAGE_VAR_TRAEFIK_PASSWORD="[[TRAEFIK_DASHBOARD_PASSWORD]]"
@@ -82,7 +82,7 @@ auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/n8n"
-compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 MAIL_PASSWORD = [[NAMECHEAP_MAIL_PASSWORD]]
@@ -100,7 +100,7 @@ auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/netbootxyz"
-compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 """
@@ -128,7 +128,7 @@ auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/pterodactyl/panel"
-compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 MAIL_PASSWORD = [[NAMECHEAP_MAIL_PASSWORD]]
@@ -154,7 +154,7 @@ file_paths = [
   "base.yaml",
   "docker-host-core.yaml"
 ]
-compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 NAMECHEAP_API_USER = [[NAMECHEAP_USERNAME]]
