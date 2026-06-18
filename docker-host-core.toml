@@ -154,8 +154,6 @@ file_paths = [
   "base.yaml",
   "docker-host-core.yaml"
 ]
-compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]'"
-compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 NAMECHEAP_API_USER = [[NAMECHEAP_USERNAME]]
 NAMECHEAP_API_KEY = [[NAMECHEAP_API_KEY]]
