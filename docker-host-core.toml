@@ -1,0 +1,171 @@
+# docker-volume-rclone
+[[stack]]
+name = "docker-volume-rclone-core"
+[stack.config]
+server = "docker-host-core"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/docker-volume-rclone"
+file_paths = [
+  "base.yaml",
+  "docker-host-core.yaml"
+]
+
+# filestash
+[[stack]]
+name = "filestash"
+[stack.config]
+server = "docker-host-core"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/filestash"
+
+# glances
+[[stack]]
+name = "glances-core"
+[stack.config]
+server = "docker-host-core"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/glances"
+file_paths = ["docker-host-core.yaml"]
+
+# guacamole
+[[stack]]
+name = "guacamole"
+[stack.config]
+server = "docker-host-core"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/guacamole"
+
+# homepage
+[[stack]]
+name = "homepage"
+[stack.config]
+server = "docker-host-core"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/homepage"
+registry_provider = "ghcr.io"
+registry_account = "AnarchoBooleanism"
+compose_cmd_wrapper = "sops exec-file -no-fifo secrets/docker-host-core.yaml '[[COMPOSE_COMMAND]]'"
+environment = """
+HOMEPAGE_VAR_TRAEFIK_PASSWORD="[[TRAEFIK_DASHBOARD_PASSWORD]]"
+"""
+
+# n8n
+[[stack]]
+name = "n8n"
+[stack.config]
+server = "docker-host-core"
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/n8n"
+compose_cmd_wrapper = "sops exec-file -no-fifo secrets/docker-host-core.yaml '[[COMPOSE_COMMAND]]'"
+environment = """
+MAIL_PASSWORD = [[NAMECHEAP_MAIL_PASSWORD]]
+TAILSCALE_IP = [[TAILSCALE_IP_CORE]]
+"""
+
+# netbootxyz
+[[stack]]
+name = "netbootxyz"
+[stack.config]
+server = "docker-host-core"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/netbootxyz"
+compose_cmd_wrapper = "sops exec-file -no-fifo secrets/docker-host-core.yaml '[[COMPOSE_COMMAND]]'"
+environment = """
+"""
+
+# openspeedtest
+[[stack]]
+name = "openspeedtest-nginx"
+[stack.config]
+server = "docker-host-core"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/openspeedtest"
+
+# pterodactyl/panel
+[[stack]]
+name = "pterodactyl-panel"
+[stack.config]
+server = "docker-host-core"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/pterodactyl/panel"
+compose_cmd_wrapper = "sops exec-file -no-fifo secrets/docker-host-core.yaml '[[COMPOSE_COMMAND]]'"
+environment = """
+MAIL_PASSWORD = [[NAMECHEAP_MAIL_PASSWORD]]
+RUSTIC_S3_REGION = [[SAPHNET_S3_SERVER_REGION]]
+RUSTIC_S3_ACCESS_KEY_ID = [[PTERODACTYL_BACKUP_S3_KEY_ID]]
+RUSTIC_S3_SECRET_ACCESS_KEY = [[PTERODACTYL_BACKUP_S3_ACCESS_KEY]]
+RUSTIC_S3_BUCKET = [[PTERODACTYL_BACKUP_S3_BUCKET_NAME]]
+RUSTIC_S3_ENDPOINT = [[SAPHNET_S3_SERVER_ENDPOINT]]
+"""
+
+# traefik
+[[stack]]
+name = "traefik-core"
+[stack.config]
+server = "docker-host-core"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/traefik"
+file_paths = [
+  "base.yaml",
+  "docker-host-core.yaml"
+]
+compose_cmd_wrapper = "sops exec-file -no-fifo secrets/docker-host-core.yaml '[[COMPOSE_COMMAND]]'"
+environment = """
+NAMECHEAP_API_USER = [[NAMECHEAP_USERNAME]]
+NAMECHEAP_API_KEY = [[NAMECHEAP_API_KEY]]
+ACME_EMAIL = [[CERTBOT_EMAIL]]
+DASHBOARD_PASSWORD = [[TRAEFIK_DASHBOARD_PASSWORD]]
+DASHBOARD_LOGIN = "[[TRAEFIK_DASHBOARD_LOGIN]]"
+"""
+
+# vert-sh
+[[stack]]
+name = "vert-sh"
+[stack.config]
+server = "docker-host-core"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/vert-sh"
+
