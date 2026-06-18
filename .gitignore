@@ -1,6 +1,7 @@
-**/.env
-**/*.env
-**/.env.*
+# Only doing at top-level directory, since our SOPS secrets use .env
+/.env
+/*.env
+/.env.*
 
 # Logs
 **/*.log

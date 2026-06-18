@@ -15,6 +15,8 @@ services:
       - web_bridge
     restart: unless-stopped
 
+  # This expects to be given a path to a secrets file (by the "docker compose up" command)
+  # to use for secrets as environment variables
   homepage:
     image: ghcr.io/anarchobooleanism/saphnet-homepage:latest # Intentionally not pinned
     container_name: homepage
@@ -46,6 +48,7 @@ services:
       HOMEPAGE_ALLOWED_HOSTS: homepage.int.saphnet.xyz
     env_file:
       - ./.env
+      - ${SOPS_SECRETS_PATH:?Please set SOPS_SECRETS_PATH}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
     networks:

@@ -47,8 +47,6 @@ updates:
       # - "/velocity-vps1/"
       # - "/vertd/"
       # - "/n8n/"
-    exclude-paths:
-      - "secrets/**"
     groups:
       guacamole:
         patterns:
