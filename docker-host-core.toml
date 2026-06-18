@@ -1,4 +1,4 @@
-# docker-volume-rclone
+## docker-volume-rclone
 [[stack]]
 name = "docker-volume-rclone-core"
 [stack.config]
@@ -14,7 +14,7 @@ file_paths = [
   "docker-host-core.yaml"
 ]
 
-# filestash
+## filestash
 [[stack]]
 name = "filestash"
 [stack.config]
@@ -26,7 +26,7 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/filestash"
 
-# glances
+## glances
 [[stack]]
 name = "glances-core"
 [stack.config]
@@ -39,7 +39,7 @@ linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/glances"
 file_paths = ["docker-host-core.yaml"]
 
-# guacamole
+## guacamole
 [[stack]]
 name = "guacamole"
 [stack.config]
@@ -51,7 +51,7 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/guacamole"
 
-# homepage
+## homepage
 [[stack]]
 name = "homepage"
 [stack.config]
@@ -66,13 +66,13 @@ registry_provider = "ghcr.io"
 registry_account = "AnarchoBooleanism"
 # We do it this way since the Compose config leaves out environment variables,
 # instead expecting us to give a path to a .env file with variables to give the service
-extra_args = "--env SOPS_SECRETS_PATH={}"
-compose_cmd_wrapper = "sops exec-file --no-fifo secrets/docker-host-core.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper = "export SOPS_SECRETS_PATH={} && sops exec-file --no-fifo secrets/docker-host-core.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 HOMEPAGE_VAR_TRAEFIK_PASSWORD="[[TRAEFIK_DASHBOARD_PASSWORD]]"
 """
 
-# n8n
+## n8n
 [[stack]]
 name = "n8n"
 [stack.config]
@@ -83,12 +83,13 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/n8n"
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 MAIL_PASSWORD = [[NAMECHEAP_MAIL_PASSWORD]]
 TAILSCALE_IP = [[TAILSCALE_IP_CORE]]
 """
 
-# netbootxyz
+## netbootxyz
 [[stack]]
 name = "netbootxyz"
 [stack.config]
@@ -100,10 +101,11 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/netbootxyz"
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 """
 
-# openspeedtest
+## openspeedtest
 [[stack]]
 name = "openspeedtest-nginx"
 [stack.config]
@@ -115,7 +117,7 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/openspeedtest"
 
-# pterodactyl/panel
+## pterodactyl/panel
 [[stack]]
 name = "pterodactyl-panel"
 [stack.config]
@@ -127,6 +129,7 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/pterodactyl/panel"
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 MAIL_PASSWORD = [[NAMECHEAP_MAIL_PASSWORD]]
 RUSTIC_S3_REGION = [[SAPHNET_S3_SERVER_REGION]]
@@ -136,7 +139,7 @@ RUSTIC_S3_BUCKET = [[PTERODACTYL_BACKUP_S3_BUCKET_NAME]]
 RUSTIC_S3_ENDPOINT = [[SAPHNET_S3_SERVER_ENDPOINT]]
 """
 
-# traefik
+## traefik
 [[stack]]
 name = "traefik-core"
 [stack.config]
@@ -152,6 +155,7 @@ file_paths = [
   "docker-host-core.yaml"
 ]
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 NAMECHEAP_API_USER = [[NAMECHEAP_USERNAME]]
 NAMECHEAP_API_KEY = [[NAMECHEAP_API_KEY]]
@@ -160,7 +164,7 @@ DASHBOARD_PASSWORD = [[TRAEFIK_DASHBOARD_PASSWORD]]
 DASHBOARD_LOGIN = "[[TRAEFIK_DASHBOARD_LOGIN]]"
 """
 
-# vert-sh
+## vert-sh
 [[stack]]
 name = "vert-sh"
 [stack.config]

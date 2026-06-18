@@ -1,4 +1,4 @@
-# docker-proxy
+## docker-proxy
 [[stack]]
 name = "docker-proxy-control"
 [stack.config]
@@ -9,7 +9,7 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-proxy"
 
-# docker-volume-rclone
+## docker-volume-rclone
 [[stack]]
 name = "docker-volume-rclone-control"
 [stack.config]
