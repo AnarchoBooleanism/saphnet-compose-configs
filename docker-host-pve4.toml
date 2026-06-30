@@ -1,6 +1,27 @@
+## Stack-related procedures
+
+[[procedure]]
+name = "docker-host-pve4_redeploy-changed"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [ # Make sure to give all the names of all stacks here!
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = """
+docker-proxy-pve4
+docker-volume-rclone-pve4
+glances-pve4
+pterodactyl-wing-pve4
+traefik-pve4
+""", enabled = true }
+]
+
+## Stacks
+
 # docker-proxy
 [[stack]]
 name = "docker-proxy-pve4"
+tags = ["docker-proxy", "iac"]
 [stack.config]
 server = "docker-host-pve4"
 poll_for_updates = true
@@ -13,6 +34,7 @@ run_directory = "stacks/docker-proxy"
 # docker-volume-rclone
 [[stack]]
 name = "docker-volume-rclone-pve4"
+tags = ["docker-volume-rclone", "iac"]
 [stack.config]
 server = "docker-host-pve4"
 poll_for_updates = true
@@ -29,6 +51,7 @@ file_paths = [
 # glances
 [[stack]]
 name = "glances-pve4"
+tags = ["glances", "iac"]
 [stack.config]
 server = "docker-host-pve4"
 poll_for_updates = true
@@ -38,10 +61,14 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/glances"
 file_paths = ["docker-host-pve4.yaml"]
+config_files = [
+  { path = "compose.yaml", requires = "Redeploy" }
+]
 
 # pterodactyl/wing
 [[stack]]
 name = "pterodactyl-wing-pve4"
+tags = ["pterodactyl", "iac"]
 [stack.config]
 server = "docker-host-pve4"
 poll_for_updates = true
@@ -60,6 +87,7 @@ CERTBOT_EMAIL = [[CERTBOT_EMAIL]]
 # traefik
 [[stack]]
 name = "traefik-pve4"
+tags = ["traefik", "iac"]
 [stack.config]
 server = "docker-host-pve4"
 poll_for_updates = true

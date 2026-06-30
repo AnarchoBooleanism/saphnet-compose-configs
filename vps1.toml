@@ -1,6 +1,26 @@
+## Stack-related procedures
+
+[[procedure]]
+name = "vps1_redeploy-changed"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [ # Make sure to give all the names of all stacks here!
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = """
+docker-proxy-vps1
+glances-vps1
+traefik-vps1
+velocity-vps1
+""", enabled = true }
+]
+
+## Stacks
+
 # docker-proxy
 [[stack]]
 name = "docker-proxy-vps1"
+tags = ["docker-proxy", "iac"]
 [stack.config]
 server = "vps1"
 poll_for_updates = true
@@ -16,6 +36,7 @@ HOST_IP=[[TAILSCALE_IP_VPS1]]
 # glances
 [[stack]]
 name = "glances-vps1"
+tags = ["glances", "iac"]
 [stack.config]
 server = "vps1"
 poll_for_updates = true
@@ -25,10 +46,14 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/glances"
 file_paths = ["vps1.yaml"]
+config_files = [
+  { path = "compose.yaml", requires = "Redeploy" }
+]
 
 # traefik
 [[stack]]
 name = "traefik-vps1"
+tags = ["traefik", "iac"]
 [stack.config]
 server = "vps1"
 auto_update = true
@@ -37,6 +62,9 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/traefik"
 file_paths = ["base.yaml", "vps1.yaml"]
+config_files = [
+  { path = "secrets/vps1.enc.env", requires = "Redeploy" }
+]
 compose_cmd_wrapper = "sops exec-env secrets/vps1.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
@@ -50,6 +78,7 @@ DASHBOARD_LOGIN = "[[TRAEFIK_DASHBOARD_LOGIN]]"
 # velocity-vps1
 [[stack]]
 name = "velocity-vps1"
+tags = ["iac"]
 [stack.config]
 server = "vps1"
 poll_for_updates = true
@@ -58,6 +87,10 @@ auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/velocity-vps1"
+config_files = [
+  { path = "secrets/vps1.enc.env", requires = "Redeploy" },
+  { path = "velocity-config/velocity.toml", requires = "Restart" }
+]
 compose_cmd_wrapper = "sops exec-env secrets/vps1.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """

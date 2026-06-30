@@ -1,6 +1,24 @@
-## docker-proxy
+## Stack-related procedures
+
+[[procedure]]
+name = "control-server_redeploy-changed"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [ # Make sure to give all the names of all stacks here!
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = """
+docker-proxy-control
+docker-volume-rclone-control
+""", enabled = true }
+]
+
+## Stacks
+
+# docker-proxy
 [[stack]]
 name = "docker-proxy-control"
+tags = ["docker-proxy", "iac"]
 [stack.config]
 server = "control-server"
 auto_update = true
@@ -9,9 +27,10 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-proxy"
 
-## docker-volume-rclone
+# docker-volume-rclone
 [[stack]]
 name = "docker-volume-rclone-control"
+tags = ["docker-volume-rclone", "iac"]
 [stack.config]
 server = "control-server"
 poll_for_updates = true

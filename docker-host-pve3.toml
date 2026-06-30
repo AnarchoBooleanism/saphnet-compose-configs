@@ -1,6 +1,31 @@
-## deluge-seedbox
+## Stack-related procedures
+
+[[procedure]]
+name = "docker-host-pve3_redeploy-changed"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [ # Make sure to give all the names of all stacks here!
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = """
+deluge-seedbox
+docker-proxy-pve3
+docker-volume-rclone-pve3
+foldingathome
+glances-pve3
+immich
+media-server
+traefik-pve3
+vertd
+""", enabled = true }
+]
+
+## Stacks
+
+# deluge-seedbox
 [[stack]]
 name = "deluge-seedbox"
+tags = ["iac"]
 [stack.config]
 server = "docker-host-pve3"
 poll_for_updates = true
@@ -9,14 +34,18 @@ auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/deluge-seedbox"
+config_files = [
+  { path = "secrets/docker-host-pve3.enc.env", requires = "Redeploy" }
+]
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve3.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 """
 
-## docker-proxy
+# docker-proxy
 [[stack]]
 name = "docker-proxy-pve3"
+tags = ["docker-proxy", "iac"]
 [stack.config]
 server = "docker-host-pve3"
 auto_update = true
@@ -25,9 +54,10 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-proxy"
 
-## docker-volume-rclone
+# docker-volume-rclone
 [[stack]]
 name = "docker-volume-rclone-pve3"
+tags = ["docker-volume-rclone", "iac"]
 [stack.config]
 server = "docker-host-pve3"
 poll_for_updates = true
@@ -41,9 +71,10 @@ file_paths = [
   "docker-host-pve3.yaml"
 ]
 
-## foldingathome
+# foldingathome
 [[stack]]
 name = "foldingathome"
+tags = ["iac", "gpu"]
 [stack.config]
 server = "docker-host-pve3"
 auto_update = true
@@ -51,14 +82,18 @@ auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/foldingathome"
+config_files = [
+  { path = "secrets/docker-host-pve3.enc.env", requires = "Redeploy" }
+]
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve3.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 """
 
-## glances
+# glances
 [[stack]]
 name = "glances-pve3"
+tags = ["glances", "iac"]
 [stack.config]
 server = "docker-host-pve3"
 poll_for_updates = true
@@ -68,10 +103,14 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/glances"
 file_paths = ["docker-host-pve3.yaml"]
+config_files = [
+  { path = "compose.yaml", requires = "Redeploy" }
+]
 
-## immich
+# immich
 [[stack]]
 name = "immich"
+tags = ["iac", "gpu"]
 [stack.config]
 server = "docker-host-pve3"
 auto_update = true
@@ -79,15 +118,21 @@ auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/immich"
+config_files = [
+  { path = "extra/hwaccel.ml.yaml", requires = "Redeploy" },
+  { path = "extra/hwaccel.transcoding.yaml", requires = "Redeploy" },
+  { path = "secrets/docker-host-pve3.enc.env", requires = "Redeploy" },
+]
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve3.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 TAILSCALE_IP = "[[TAILSCALE_IP_PVE3]]"
 """
 
-## media-server
+# media-server
 [[stack]]
 name = "media-server"
+tags = ["iac", "gpu"]
 [stack.config]
 server = "docker-host-pve3"
 poll_for_updates = true
@@ -100,9 +145,10 @@ environment = """
 TAILSCALE_IP = [[TAILSCALE_IP_PVE3]]
 """
 
-## traefik
+# traefik
 [[stack]]
 name = "traefik-pve3"
+tags = ["traefik", "iac"]
 [stack.config]
 server = "docker-host-pve3"
 poll_for_updates = true
@@ -123,9 +169,10 @@ DASHBOARD_PASSWORD = [[TRAEFIK_DASHBOARD_PASSWORD]]
 DASHBOARD_LOGIN = "[[TRAEFIK_DASHBOARD_LOGIN]]"
 """
 
-## vertd
+# vertd
 [[stack]]
 name = "vertd"
+tags = ["vert", "iac", "gpu"]
 [stack.config]
 server = "docker-host-pve3"
 auto_update = true

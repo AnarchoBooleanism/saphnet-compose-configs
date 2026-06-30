@@ -1,6 +1,33 @@
-## docker-volume-rclone
+## Stack-related procedures
+
+[[procedure]]
+name = "docker-host-core_redeploy-changed"
+
+[[procedure.config.stage]]
+name = "Stage 1"
+enabled = true
+executions = [ # Make sure to give all the names of all stacks here!
+  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = """
+docker-volume-rclone-core
+filestash
+glances-core
+guacamole
+homepage
+n8n
+netbootxyz
+openspeedtest-nginx
+pterodactyl-panel
+traefik-core
+vert-sh
+""", enabled = true }
+]
+
+## Stacks
+
+# docker-volume-rclone
 [[stack]]
 name = "docker-volume-rclone-core"
+tags = ["docker-volume-rclone", "iac"]
 [stack.config]
 server = "docker-host-core"
 poll_for_updates = true
@@ -14,9 +41,10 @@ file_paths = [
   "docker-host-core.yaml"
 ]
 
-## filestash
+# filestash
 [[stack]]
 name = "filestash"
+tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
 poll_for_updates = true
@@ -26,9 +54,10 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/filestash"
 
-## glances
+# glances
 [[stack]]
 name = "glances-core"
+tags = ["glances", "iac"]
 [stack.config]
 server = "docker-host-core"
 poll_for_updates = true
@@ -38,10 +67,14 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/glances"
 file_paths = ["docker-host-core.yaml"]
+config_files = [
+  { path = "compose.yaml", requires = "Redeploy" }
+]
 
-## guacamole
+# guacamole
 [[stack]]
 name = "guacamole"
+tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
 poll_for_updates = true
@@ -51,9 +84,10 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/guacamole"
 
-## homepage
+# homepage
 [[stack]]
 name = "homepage"
+tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
 poll_for_updates = true
@@ -62,6 +96,9 @@ auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/homepage"
+config_files = [
+  { path = "secrets/docker-host-core.enc.env", requires = "Redeploy" }
+]
 registry_provider = "ghcr.io"
 registry_account = "AnarchoBooleanism"
 # We do it this way since the Compose config leaves out environment variables,
@@ -72,9 +109,10 @@ environment = """
 HOMEPAGE_VAR_TRAEFIK_PASSWORD="[[TRAEFIK_DASHBOARD_PASSWORD]]"
 """
 
-## n8n
+# n8n
 [[stack]]
 name = "n8n"
+tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
 auto_update = true
@@ -82,6 +120,10 @@ auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/n8n"
+config_files = [
+  { path = "secrets/docker-host-core.enc.env", requires = "Redeploy" },
+  { path = "init-data.sh", requires = "Restart" }
+]
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
@@ -89,9 +131,10 @@ MAIL_PASSWORD = [[NAMECHEAP_MAIL_PASSWORD]]
 TAILSCALE_IP = [[TAILSCALE_IP_CORE]]
 """
 
-## netbootxyz
+# netbootxyz
 [[stack]]
 name = "netbootxyz"
+tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
 poll_for_updates = true
@@ -100,14 +143,19 @@ auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/netbootxyz"
+config_files = [
+  { path = "secrets/docker-host-core.enc.env", requires = "Redeploy" },
+  { path = "local-vars.ipxe", requires = "Restart" }
+]
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 """
 
-## openspeedtest
+# openspeedtest
 [[stack]]
 name = "openspeedtest-nginx"
+tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
 poll_for_updates = true
@@ -117,9 +165,10 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/openspeedtest"
 
-## pterodactyl/panel
+# pterodactyl/panel
 [[stack]]
 name = "pterodactyl-panel"
+tags = ["pterodactyl", "iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
 poll_for_updates = true
@@ -128,6 +177,9 @@ auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/pterodactyl/panel"
+config_files = [
+  { path = "secrets/docker-host-core.enc.env", requires = "Redeploy" }
+]
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
@@ -139,9 +191,10 @@ RUSTIC_S3_BUCKET = [[PTERODACTYL_BACKUP_S3_BUCKET_NAME]]
 RUSTIC_S3_ENDPOINT = [[SAPHNET_S3_SERVER_ENDPOINT]]
 """
 
-## traefik
+# traefik
 [[stack]]
 name = "traefik-core"
+tags = ["traefik", "iac"]
 [stack.config]
 server = "docker-host-core"
 poll_for_updates = true
@@ -162,9 +215,10 @@ DASHBOARD_PASSWORD = [[TRAEFIK_DASHBOARD_PASSWORD]]
 DASHBOARD_LOGIN = "[[TRAEFIK_DASHBOARD_LOGIN]]"
 """
 
-## vert-sh
+# vert-sh
 [[stack]]
 name = "vert-sh"
+tags = ["vert", "iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
 poll_for_updates = true
