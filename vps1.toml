@@ -2,7 +2,7 @@
 
 [[procedure]]
 name = "vps1_redeploy-changed"
-tags = ["redeploy-changed"]
+tags = ["redeploy-changed", "iac"]
 
 [[procedure.config.stage]]
 name = "Stage 1"
