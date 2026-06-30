@@ -1,6 +1,6 @@
 services:
   vertd:
-    image: ghcr.io/vert-sh/vertd:latest@sha256:492d17d1ce570e538a70efc3279c7208eb8b766889e8cedaa0aab93e29567a89
+    image: ghcr.io/vert-sh/vertd:latest@sha256:c0da10914c6865393f20bd68b126d2eaedd66520ae05193809890ab7f6ab7df9
     container_name: vertd
     # For AMD/Intel GPUs, uncomment the "devices" section - then remove
     # or comment out the "deploy" section and the "runtime" string used
