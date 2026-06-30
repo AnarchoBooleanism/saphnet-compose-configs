@@ -1,5 +1,5 @@
 ## Pterodactyl
-A server management panel for games, e.g. Minecraft
+A server management panel for games, e.g. Minecraft.
 
 To create an account in the Pterodactyl panel (there will initially be no accounts), run this command in the Panel container: `php artisan p:user:make`
 

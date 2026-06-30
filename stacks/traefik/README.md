@@ -1,5 +1,5 @@
 ## Traefik
-A cloud-native reverse proxy and load balancer
+A cloud-native reverse proxy and load balancer.
 
 To run this, use this file and `base.yaml` together, so that `base.yaml`'s structure, with the default configuration settings, is merged with your instance-specific structure; an example would be with `docker compose -f base.yaml -f control-server.yaml up`
 

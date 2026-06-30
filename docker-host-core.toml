@@ -2,6 +2,7 @@
 
 [[procedure]]
 name = "docker-host-core_redeploy-changed"
+description = "A procedure that redeploys all IaC stacks that have had changes to their config or config files, for docker-host-core."
 tags = ["redeploy-changed", "iac"]
 
 [[procedure.config.stage]]
@@ -28,6 +29,7 @@ vert-sh
 # docker-volume-rclone
 [[stack]]
 name = "docker-volume-rclone-core"
+description = "A solution for regularly cloning Docker volumes to a remote NFS location."
 tags = ["docker-volume-rclone", "iac"]
 [stack.config]
 server = "docker-host-core"
@@ -45,6 +47,7 @@ file_paths = [
 # filestash
 [[stack]]
 name = "filestash"
+description = "A way to access various file servers via web UI."
 tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
@@ -58,6 +61,7 @@ run_directory = "stacks/filestash"
 # glances
 [[stack]]
 name = "glances-core"
+description = "A real-time monitoring tool for systems (e.g. processes and hardware usage), equivalent to top/htop."
 tags = ["glances", "iac"]
 [stack.config]
 server = "docker-host-core"
@@ -75,6 +79,7 @@ config_files = [
 # guacamole
 [[stack]]
 name = "guacamole"
+description = "A way to remotely access other machines via web UI."
 tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
@@ -88,6 +93,7 @@ run_directory = "stacks/guacamole"
 # homepage
 [[stack]]
 name = "homepage"
+description = "A way to see the status of various services in one webpage."
 tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
@@ -113,6 +119,7 @@ HOMEPAGE_VAR_TRAEFIK_PASSWORD="[[TRAEFIK_DASHBOARD_PASSWORD]]"
 # n8n
 [[stack]]
 name = "n8n"
+description = "A workflow automation platform, with the flexibility of code and the speed of no-code."
 tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
@@ -135,6 +142,7 @@ TAILSCALE_IP = [[TAILSCALE_IP_CORE]]
 # netbootxyz
 [[stack]]
 name = "netbootxyz"
+description = "A host for providing network access to different operating systems via PXE and HTTP."
 tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
@@ -156,6 +164,7 @@ environment = """
 # openspeedtest
 [[stack]]
 name = "openspeedtest-nginx"
+description = "A web tool for determining the speed and latency of a connection."
 tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
@@ -169,6 +178,7 @@ run_directory = "stacks/openspeedtest"
 # pterodactyl/panel
 [[stack]]
 name = "pterodactyl-panel"
+description = "A server management panel for games, e.g. Minecraft."
 tags = ["pterodactyl", "iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
@@ -195,6 +205,7 @@ RUSTIC_S3_ENDPOINT = [[SAPHNET_S3_SERVER_ENDPOINT]]
 # traefik
 [[stack]]
 name = "traefik-core"
+description = "A cloud-native reverse proxy and load balancer."
 tags = ["traefik", "iac"]
 [stack.config]
 server = "docker-host-core"
@@ -219,6 +230,7 @@ DASHBOARD_LOGIN = "[[TRAEFIK_DASHBOARD_LOGIN]]"
 # vert-sh
 [[stack]]
 name = "vert-sh"
+description = "A web interface for handling the conversion of different file formats."
 tags = ["vert", "iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"

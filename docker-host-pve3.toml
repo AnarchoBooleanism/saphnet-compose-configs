@@ -2,6 +2,7 @@
 
 [[procedure]]
 name = "docker-host-pve3_redeploy-changed"
+description = "A procedure that redeploys all IaC stacks that have had changes to their config or config files, for docker-host-pve3."
 tags = ["redeploy-changed", "iac"]
 
 [[procedure.config.stage]]
@@ -26,6 +27,7 @@ vertd
 # deluge-seedbox
 [[stack]]
 name = "deluge-seedbox"
+description = "A torrent client for file sharing, behind a VPN, and an SFTP server for accessing these files."
 tags = ["iac"]
 [stack.config]
 server = "docker-host-pve3"
@@ -46,6 +48,7 @@ environment = """
 # docker-proxy
 [[stack]]
 name = "docker-proxy-pve3"
+description = "Used as a way to access the internal Docker socket from outside (read-only), mostly by Homepage."
 tags = ["docker-proxy", "iac"]
 [stack.config]
 server = "docker-host-pve3"
@@ -58,6 +61,7 @@ run_directory = "stacks/docker-proxy"
 # docker-volume-rclone
 [[stack]]
 name = "docker-volume-rclone-pve3"
+description = "A solution for regularly cloning Docker volumes to a remote NFS location."
 tags = ["docker-volume-rclone", "iac"]
 [stack.config]
 server = "docker-host-pve3"
@@ -75,6 +79,7 @@ file_paths = [
 # foldingathome
 [[stack]]
 name = "foldingathome"
+description = "A program donating computing resources to science by simulating protein folding."
 tags = ["iac", "gpu"]
 [stack.config]
 server = "docker-host-pve3"
@@ -94,6 +99,7 @@ environment = """
 # glances
 [[stack]]
 name = "glances-pve3"
+description = "A real-time monitoring tool for systems (e.g. processes and hardware usage), equivalent to top/htop."
 tags = ["glances", "iac"]
 [stack.config]
 server = "docker-host-pve3"
@@ -111,6 +117,7 @@ config_files = [
 # immich
 [[stack]]
 name = "immich"
+description = "A self-hosted photo and video management solution."
 tags = ["iac", "gpu"]
 [stack.config]
 server = "docker-host-pve3"
@@ -133,6 +140,7 @@ TAILSCALE_IP = "[[TAILSCALE_IP_PVE3]]"
 # media-server
 [[stack]]
 name = "media-server"
+description = "A media server designed to integrate with the Deluge Seedbox, using Jellyfin, Jellyseerr, Prowlarr (suported with Flaresolverr), Radarr & Sonarr (supported with Recyclarr), and Bazarr. Note that there are two groups of Radarr/Sonarr-related containers, for anime and non-anime media."
 tags = ["iac", "gpu"]
 [stack.config]
 server = "docker-host-pve3"
@@ -149,6 +157,7 @@ TAILSCALE_IP = [[TAILSCALE_IP_PVE3]]
 # traefik
 [[stack]]
 name = "traefik-pve3"
+description = "A cloud-native reverse proxy and load balancer."
 tags = ["traefik", "iac"]
 [stack.config]
 server = "docker-host-pve3"
@@ -173,6 +182,7 @@ DASHBOARD_LOGIN = "[[TRAEFIK_DASHBOARD_LOGIN]]"
 # vertd
 [[stack]]
 name = "vertd"
+description = "The daemon that handles video conversions for the VERT.sh service, with GPU acceleration."
 tags = ["vert", "iac", "gpu"]
 [stack.config]
 server = "docker-host-pve3"

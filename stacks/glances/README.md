@@ -1,5 +1,5 @@
 ## Glances
-A real-time monitoring tool for systems (e.g. processes and hardware usage), equivalent to top/htop
+A real-time monitoring tool for systems (e.g. processes and hardware usage), equivalent to top/htop.
 
 **NOTE**: `network_mode` is set to `host`, to allow the container access to the host's network stack for monitoring purposes. However, this has the consequence of having Glances being accessible from port 61208. If you want to restrict public access to the information provided by Glances (e.g. process details), make sure to have a firewall rule blocking this port from certain interfaces; as the container uses the host's network stack, Docker will not interfere with the firewall rule.
 

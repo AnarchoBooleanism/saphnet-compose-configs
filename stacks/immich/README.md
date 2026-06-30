@@ -1,5 +1,5 @@
 ## immich
-A self-hosted photo and video management solution
+A self-hosted photo and video management solution.
 
 NOTE: Relies on Traefik setup.
 

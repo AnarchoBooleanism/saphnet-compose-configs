@@ -2,6 +2,7 @@
 
 [[procedure]]
 name = "docker-host-pve4_redeploy-changed"
+description = "A procedure that redeploys all IaC stacks that have had changes to their config or config files, for docker-host-pve4."
 tags = ["redeploy-changed", "iac"]
 
 [[procedure.config.stage]]
@@ -22,6 +23,7 @@ traefik-pve4
 # docker-proxy
 [[stack]]
 name = "docker-proxy-pve4"
+description = "Used as a way to access the internal Docker socket from outside (read-only), mostly by Homepage."
 tags = ["docker-proxy", "iac"]
 [stack.config]
 server = "docker-host-pve4"
@@ -35,6 +37,7 @@ run_directory = "stacks/docker-proxy"
 # docker-volume-rclone
 [[stack]]
 name = "docker-volume-rclone-pve4"
+description = "A solution for regularly cloning Docker volumes to a remote NFS location."
 tags = ["docker-volume-rclone", "iac"]
 [stack.config]
 server = "docker-host-pve4"
@@ -52,6 +55,7 @@ file_paths = [
 # glances
 [[stack]]
 name = "glances-pve4"
+description = "A real-time monitoring tool for systems (e.g. processes and hardware usage), equivalent to top/htop."
 tags = ["glances", "iac"]
 [stack.config]
 server = "docker-host-pve4"
@@ -69,6 +73,7 @@ config_files = [
 # pterodactyl/wing
 [[stack]]
 name = "pterodactyl-wing-pve4"
+description = "A server control plane for the Pterodactyl panel."
 tags = ["pterodactyl", "iac"]
 [stack.config]
 server = "docker-host-pve4"
@@ -88,6 +93,7 @@ CERTBOT_EMAIL = [[CERTBOT_EMAIL]]
 # traefik
 [[stack]]
 name = "traefik-pve4"
+description = "A cloud-native reverse proxy and load balancer."
 tags = ["traefik", "iac"]
 [stack.config]
 server = "docker-host-pve4"
