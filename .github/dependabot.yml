@@ -28,25 +28,6 @@ updates:
     directories: # Avoiding ** for now, so doing directories and direct subdirectories will do
       - "/stacks/*/"
       - "/stacks/*/*/"
-      # - "/deluge-seedbox/"
-      # - "/docker-proxy/"
-      # - "/docker-volume-rclone/"
-      # - "/foldingathome/"
-      # - "/glances/"
-      # - "/immich/"
-      # - "/media-server/"
-      # - "/netbootxyz/"
-      # - "/filestash/"
-      # - "/guacamole/"
-      # - "/homepage/"
-      # - "/openspeedtest/"
-      # - "/vert-sh/"
-      # - "/pterodactyl/panel/"
-      # - "/pterodactyl/wing/"
-      # - "/traefik/"
-      # - "/velocity-vps1/"
-      # - "/vertd/"
-      # - "/n8n/"
     groups:
       guacamole:
         patterns:
