@@ -33,7 +33,7 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-proxy"
 environment = """
-HOST_IP=[[TAILSCALE_IP_VPS1]]
+HOST_IP = '[[TAILSCALE_IP_VPS1]]'
 """
 
 # glances
@@ -73,11 +73,11 @@ config_files = [
 compose_cmd_wrapper = "sops exec-env secrets/vps1.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
-NAMECHEAP_API_USER = [[NAMECHEAP_USERNAME]]
-NAMECHEAP_API_KEY = [[NAMECHEAP_API_KEY]]
-ACME_EMAIL = [[CERTBOT_EMAIL]]
-DASHBOARD_PASSWORD = [[TRAEFIK_DASHBOARD_PASSWORD]]
-DASHBOARD_LOGIN = "[[TRAEFIK_DASHBOARD_LOGIN]]"
+NAMECHEAP_API_USER = '[[NAMECHEAP_USERNAME]]'
+NAMECHEAP_API_KEY = '[[NAMECHEAP_API_KEY]]'
+ACME_EMAIL = '[[CERTBOT_EMAIL]]'
+DASHBOARD_PASSWORD = '[[TRAEFIK_DASHBOARD_PASSWORD]]'
+DASHBOARD_LOGIN = '[[TRAEFIK_DASHBOARD_LOGIN]]'
 """
 
 # velocity-vps1
@@ -100,6 +100,6 @@ config_files = [
 compose_cmd_wrapper = "sops exec-env secrets/vps1.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
-TAILSCALE_IP = [[TAILSCALE_IP_VPS1]]
+TAILSCALE_IP = '[[TAILSCALE_IP_VPS1]]'
 """
 

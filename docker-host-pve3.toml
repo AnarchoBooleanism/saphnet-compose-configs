@@ -134,7 +134,7 @@ config_files = [
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve3.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
-TAILSCALE_IP = "[[TAILSCALE_IP_PVE3]]"
+TAILSCALE_IP = '[[TAILSCALE_IP_PVE3]]'
 """
 
 # media-server
@@ -151,7 +151,7 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/media-server"
 environment = """
-TAILSCALE_IP = [[TAILSCALE_IP_PVE3]]
+TAILSCALE_IP = '[[TAILSCALE_IP_PVE3]]'
 """
 
 # traefik
@@ -172,11 +172,11 @@ file_paths = [
   "docker-host-pve3.yaml"
 ]
 environment = """
-NAMECHEAP_API_USER = [[NAMECHEAP_USERNAME]]
-NAMECHEAP_API_KEY = [[NAMECHEAP_API_KEY]]
-ACME_EMAIL = [[CERTBOT_EMAIL]]
-DASHBOARD_PASSWORD = [[TRAEFIK_DASHBOARD_PASSWORD]]
-DASHBOARD_LOGIN = "[[TRAEFIK_DASHBOARD_LOGIN]]"
+NAMECHEAP_API_USER = '[[NAMECHEAP_USERNAME]]'
+NAMECHEAP_API_KEY = '[[NAMECHEAP_API_KEY]]'
+ACME_EMAIL = '[[CERTBOT_EMAIL]]'
+DASHBOARD_PASSWORD = '[[TRAEFIK_DASHBOARD_PASSWORD]]'
+DASHBOARD_LOGIN = '[[TRAEFIK_DASHBOARD_LOGIN]]'
 """
 
 # vertd

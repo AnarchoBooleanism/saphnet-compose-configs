@@ -113,7 +113,7 @@ registry_account = "AnarchoBooleanism"
 compose_cmd_wrapper = "sops exec-file --no-fifo secrets/docker-host-core.enc.env 'export SOPS_SECRETS_PATH={} && [[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
-HOMEPAGE_VAR_TRAEFIK_PASSWORD="[[TRAEFIK_DASHBOARD_PASSWORD]]"
+HOMEPAGE_VAR_TRAEFIK_PASSWORD='[[TRAEFIK_DASHBOARD_PASSWORD]]'
 """
 
 # n8n
@@ -135,8 +135,8 @@ config_files = [
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
-MAIL_PASSWORD = [[NAMECHEAP_MAIL_PASSWORD]]
-TAILSCALE_IP = [[TAILSCALE_IP_CORE]]
+MAIL_PASSWORD = '[[NAMECHEAP_MAIL_PASSWORD]]'
+TAILSCALE_IP = '[[TAILSCALE_IP_CORE]]'
 """
 
 # netbootxyz
@@ -194,12 +194,12 @@ config_files = [
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
-MAIL_PASSWORD = [[NAMECHEAP_MAIL_PASSWORD]]
-RUSTIC_S3_REGION = [[SAPHNET_S3_SERVER_REGION]]
-RUSTIC_S3_ACCESS_KEY_ID = [[PTERODACTYL_BACKUP_S3_KEY_ID]]
-RUSTIC_S3_SECRET_ACCESS_KEY = [[PTERODACTYL_BACKUP_S3_ACCESS_KEY]]
-RUSTIC_S3_BUCKET = [[PTERODACTYL_BACKUP_S3_BUCKET_NAME]]
-RUSTIC_S3_ENDPOINT = [[SAPHNET_S3_SERVER_ENDPOINT]]
+MAIL_PASSWORD = '[[NAMECHEAP_MAIL_PASSWORD]]'
+RUSTIC_S3_REGION = '[[SAPHNET_S3_SERVER_REGION]]'
+RUSTIC_S3_ACCESS_KEY_ID = '[[PTERODACTYL_BACKUP_S3_KEY_ID]]'
+RUSTIC_S3_SECRET_ACCESS_KEY = '[[PTERODACTYL_BACKUP_S3_ACCESS_KEY]]'
+RUSTIC_S3_BUCKET = '[[PTERODACTYL_BACKUP_S3_BUCKET_NAME]]'
+RUSTIC_S3_ENDPOINT = '[[SAPHNET_S3_SERVER_ENDPOINT]]'
 """
 
 # traefik
@@ -220,11 +220,11 @@ file_paths = [
   "docker-host-core.yaml"
 ]
 environment = """
-NAMECHEAP_API_USER = [[NAMECHEAP_USERNAME]]
-NAMECHEAP_API_KEY = [[NAMECHEAP_API_KEY]]
-ACME_EMAIL = [[CERTBOT_EMAIL]]
-DASHBOARD_PASSWORD = [[TRAEFIK_DASHBOARD_PASSWORD]]
-DASHBOARD_LOGIN = "[[TRAEFIK_DASHBOARD_LOGIN]]"
+NAMECHEAP_API_USER = '[[NAMECHEAP_USERNAME]]'
+NAMECHEAP_API_KEY = '[[NAMECHEAP_API_KEY]]'
+ACME_EMAIL = '[[CERTBOT_EMAIL]]'
+DASHBOARD_PASSWORD = '[[TRAEFIK_DASHBOARD_PASSWORD]]'
+DASHBOARD_LOGIN = '[[TRAEFIK_DASHBOARD_LOGIN]]'
 """
 
 # vert-sh
