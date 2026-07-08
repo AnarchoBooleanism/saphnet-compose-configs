@@ -10,11 +10,13 @@ on:
       - main
     paths-ignore:
       - '.github/**' # Avoid issues with Dependabot
+      - '**/README.md' # Ignore documentation files
   push:
     branches:
       - main
     paths-ignore:
       - '.github/**'
+      - '**/README.md' # Ignore documentation files
 
 jobs:
   lint:
