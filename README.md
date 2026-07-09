@@ -279,7 +279,7 @@ Indentation of all Compose YAML files should use spaces, and should be done with
 #### Ordering of keys
 All top-level properties for Compose YAML files should be listed in this order ([service-keys-order-rule](https://github.com/zavoloklom/docker-compose-linter/blob/main/docs/rules/service-keys-order-rule.md)): all `x-`-prefixed attributes (in alphabetical order), `version`, `name`, `include`, `services`, `networks`, `volumes`, `secrets`, `configs`
 
-All keys of a service should be listed in this order ([service-keys-order-rule](https://github.com/zavoloklom/docker-compose-linter/blob/main/docs/rules/service-keys-order-rule.md), all italicized keys are keys that were not originally in the list): *extends*, image, build, container_name, depends_on, volumes, volumes_from, configs, secrets, environment, env_file, ports, networks, network_mode, extra_hosts, command, entrypoint, working_dir, restart, healthcheck, logging, labels, *pid*, user, isolation, cap_add, devices, expose, sysctls
+All keys of a service should be listed in this order ([service-keys-order-rule](https://github.com/zavoloklom/docker-compose-linter/blob/main/docs/rules/service-keys-order-rule.md)): *`extends`*, `image`, `build`, `container_name`, `depends_on`, `volumes`, `volumes_from`, `configs`, `secrets`, `environment`, `env_file`, `ports`, `networks`, `network_mode`, `extra_hosts`, `command`, `entrypoint`, `working_dir`, `restart`, `healthcheck`, `logging`, `labels`, *`pid`*, `user`, `isolation`, `cap_add`, `devices`, `expose`, `sysctls` (all italicized keys are keys that were not originally in the list)
 
 Instead of ordering services in `services` in alphabetical order, however, this repository will have its services in each Compose YAML file be listed in order of importance (or significance), from most relevant to least relevant (for the main application(s) for which the stack exists).
 
@@ -374,13 +374,9 @@ Avoid specifying the `version` key (e.g. `version: '3.8'`) among the top-level p
 When it comes to ordering labels and environment variables within a service, there are no exact guidelines for this repository: the main priority, here, is for ease of reading, so using alphabetical order or visually separating lines into categorized groups, may be helpful in certain scenarios.
 
 ### Arguments (for the program being run as the entrypoint)
-- again, it's like passing arguments to progrma itself! Just make sure it's in same order you do it manually
-- do write disclaimer about entrypoint vs cmd, where entrypoint is the base command always run by container (unless overwritten), and cmd is the arguments attached in front of the base command, even if multiple arguments in entrypoint already (add note about there's default, so being careful if docker image already defines cmds)
-- if unsure what arguments to use, check the entrypoint command and see what it accepts
-- write note on splitting on whitespace! if whitespace included in line, it's like it was wrapped in quotes
-- can be regular string or a sequence of strings (exec form) (it is ordered) 
-  - add note about regular string (shell form) being automatically wrapped with /bin/sh
+Many applications expect you to provide in arguments when running them in the command line (e.g. `my-program run ./file.txt --debug=TRUE`), as a way to dynamically provide data, control behavior, or configure any other options; in many cases, command line arguments are the only way to get a program to run in a specific way (as compared to environment variables and config files). The Compose specification allows you to specify just that, with the `command` attribute for a service; the values of `command` are appended to the entrypoint (whether in the `entrypoint` attribute of a service or the image's default entrypoint, defined in the `ENTRYPOINT` instruction of its Dockerfile), to create the full command that the container will run.
 
+The `command` key can be specified as either a single string, or a sequence of strings. For example, here is a Compose configuration that treats the `command` key as a single string:
 ```yaml
 services:
   database:
@@ -389,6 +385,7 @@ services:
     ...
 ```
 
+This can work well in cases where the list of arguments is relatively short. However, you may want to specify a large amount of arguments for a container; in that case, you can treat the `command` key as an (ordered) sequence of strings, like in this Compose configuration:
 ```yaml
 services:
   traefik: # Reverse proxy, with dashboard enabled
@@ -400,31 +397,43 @@ services:
       ...
 ```
 
-### Environment variables, fragments, and overall plumbing
-- sometimes, you may have values that you probably don't want to have in plaintext, like secrets, but need to find a way to have the container have those values when deployed too
-- sometimes, you may want to provide options and values only determined at deploy-time, to allow for flexibility when Komodo deploys them (like multi-server stack setups)
-- on other hand, maybe you specify a certain value many many times across stack, and you want central place to define them, since error-prone to change many places at once
-- or maybe you just want a value that you may change often to be easy to find and change
-- for either of these options, you can use environment variables and fragments, sometimes even both combined!
-- environment variables are values in files, that are automatically replaced by docker compose command when reading the file, with the environment variables that docker compose has access to
-- do add note on quoting things that may be interpreted as not strings (just do it in case), since YAML parser may be confused and give wrong value, and environment variables are only strings
-- also, for environment variables, try to list them all in the first lines of comments, try to be consistent with README
-- fragments are basically reusable blocks, often defined in x- something (e.g. x-common), that are defined once, and then replace whatever refers to those fragments, great for reducing boilerplate and having streamlined places for sources of truth
-- explain how environment variables can basically replace literally anywhere in compose file, not just environment vars
-- and then explain fragments, how they can replace both individual keys but also sections
-  - note even fragments can be sub attributes of other attributes that are fragments too
-
+This approach is highly flexible, allowing you to easily change the order of strings, insert YAML comments between arguments, and, importantly, it allows you to not worry about whitespace being interpreted incorrectly (e.g. when file names with spaces are being used); however, with whitespace, strings will not be stripped of whitespace automatically, so any unexpected whitespace (e.g. at the end of strings) may result in unexpected behavior. Furthermore, you are even able to use multi-line strings as individual arguments for the `command` key, like in this Compose configuration:
 ```yaml
-# Environment variables to set:
-# - MAIL_PASSWORD
-# - RUSTIC_S3_REGION
-# - RUSTIC_S3_ACCESS_KEY_ID
-# - RUSTIC_S3_SECRET_ACCESS_KEY
-# - RUSTIC_S3_BUCKET
-# - RUSTIC_S3_ENDPOINT (include "https://"!)
-# - HASHIDS_SALT (should be 20 characters, to generate this, run "head -c20 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9/.' | head -c20")
+services:
+  velocity:
+    ... # Omitting for brevity
+    command:
+      - /bin/sh
+      - -c
+      - |
+        echo -n '${VELOCITY_FORWARDING_SECRET}' > '/config/forwarding.secret'
+        exec /usr/bin/run-bungeecord.sh
 ```
 
+The above configuration uses multi-line strings as a way to pass a full shell script to `/bin/sh` (which the entrypoint is assumed to run at the end of its own script); note that, for longer scripts, you may want to write them as a separate file that gets mounted to the container and is provided as an argument, as the operating system may not like highly long argument strings.
+
+Note that `command` overrides the values in the `CMD` instruction of a Dockerfile, which are the default set of extra arguments to append to the arguments of the entrypoint. As well, note that `command` defines extra arguments to be specified for the program specified in the entrypoint; often, images are designed to run a script that performs other tasks before running the main program itself. Furthermore, many images use scripts that treat their arguments as a full command to run at the end, and they can even use `command`/`CMD` as the way to specify the main application's complete command.
+
+For example, here is a service that uses both the `entrypoint` and `command` keys:
+```yaml
+services:
+  example:
+    ... # Omitting for brevity
+    command:
+      - "/app/entrypoint.sh"
+      - "--type=PROD"
+    entrypoint:
+      - "/bin/my-program"
+      - "run"
+      - "--detached"
+```
+
+The `command` key is specified as a sequence of strings: `/app/entrypoint.sh` and `--type=PROD`. The `entrypoint` key is specified as a sequence of strings, as well: `/bin/my-program`, `run`, and `--detached`. When the container is created, its full command to run will be `/app/entrypoint.sh`, `--type=PROD`, `/bin/my-program`, `run`, and `--detached` (typically, when manually writing commands in a shell, arguments are separated by whitespace, and the shell automatically uses whitespace to separate the arguments into separate strings). For this example image, `/app/entrypoint.sh` is a script that takes any number of arguments (for the script itself) that start with `--`; any arguments after those will be interpreted as a complete command to execute at the end of the script, which would be `/bin/my-program.sh`, `run`, and `--detached`. In this scenario, modifying `command` will be modifying the complete command, including the path of the program being invoked, for the main application that would be run at the end of the script; treating `command` as just a sequence of arguments for the main application itself may result in unexpected behavior.
+
+In any case, before modifying the `command` (and/or `entrypoint`) key of a service, be sure to review the Dockerfile of the image being used, so that there are no misunderstandings of what is being modified.
+
+### Environment variables, fragments, and overall plumbing
+Sometimes, for a Compose stack file, you may have values that you do not want in plaintext (e.g. secrets), but still need a way to provide those values to a certain container. In many cases, you may want to determine certain options and values only at deploy-time (as opposed to being defined within the Compose stack file), to allow for flexibility between different deployment instances (e.g. multi-server stack setups). For these scenarios, environment variables (and interpolation with environment variables) are a way to accommodate these needs in a simple and secure manner. Here is an example of environment variables in action for a Compose stack file:
 ```yaml
 services:
   postgres:
@@ -436,16 +445,13 @@ services:
     ...
 ```
 
-```yaml
-services:
-  vert:
-    ... # Omitting for brevity
-    environment:
-      ...
-      PORT: "${PORT:-3000}"
-      ...
-```
+The use of environment variables allows for these values to not be defined (in plaintext) in the stack itself, but be provided by Docker Compose (and indirectly by Komodo). Note that, in the context of a Compose stack file, there is no functional difference between secret-specific environment variables and non-secret environment variables; the difference only matters for Komodo, which is what provides all of the environment variables to Docker Compose.
 
+As an important note, for a Compose stack file, there are two contexts in which environment variables are used: environment variables provided directly to Docker Compose, when processing a Compose file, and environment variables provided directly to a container for a Compose service. Note that these sets of environment variables are distinct, as an environment variable provided to Docker Compose may not necessarily be provided to a container, but, often, environment variables provided to Docker Compose are what set the values of environment variables provided to containers. This can be confusing, but this does provide much power when creating Compose stack files. References to environment variables can be placed ANYWHERE in a Compose file, and Docker Compose will automatically, at deploy time, replace (interpolate) those references with the values of the environment variables it has been provided.
+
+Typically, like in the previous example, we simply use environment variables provided to Docker Compose to define the environment variables that are provided to the containers, via interpolation.
+
+It is also possible to use environment variables (provided to Docker Compose) to define non-environment variable attributes. For example, here is an environment variable (provided to Docker Compose) being used to define the value of a label of a service:
 ```yaml
 services:
   netbootxyz:
@@ -456,6 +462,34 @@ services:
     ...
 ```
 
+Furthermore, the use of environment variable interpolation is not limited to defining (entire) values of YAML attributes, but also parts of keys (and comments), like in this example:
+```yaml
+services:
+  example:
+    ... # Omitting for brevity
+    labels:
+      ...
+      example.users.${USERNAME}.allow-login: "TRUE"
+```
+
+`${USERNAME}` will be replaced with the value of the environment variable, `USERNAME`, when Docker Compose processes the file.
+
+As well, you are able to set default values for references to environment variables, so that, if an environment variable is unset or empty for Docker Compose, the reference will be replaced with the default value instead; the format for this is `${ENVIRONMENT_VARIABLE:-DEFAULT_VALUE}`. Here is an example of a Compose stack file that uses this:
+```yaml
+services:
+  vert:
+    ... # Omitting for brevity
+    environment:
+      ...
+      PORT: "${PORT:-3000}"
+      ...
+```
+
+In this file, if the environment variable, `PORT`, is not defined at deploy time, then the string, `${PORT:-3000}`, will be replaced with `3000` instead.
+
+For more information on interpolation, please refer to the [specific section on interpolation in the official Compose specification](https://github.com/compose-spec/compose-spec/blob/main/12-interpolation.md).
+
+The approach of using interpolation (of environment variables provided to Docker Compose) is not the only way to provide environment variables to a service; it is also possible to pass in files with environment variable definitions directly to containers. Typically, Komodo also writes the contents of environment variables that are provided to it to `.env`, in the working directory of a Stack resource. Here is an example of this in action, for a Compose stack file:
 ```yaml
 services:
   ... # Omitting for brevity
@@ -466,28 +500,67 @@ services:
     ...
     env_file:
       - ./.env
-      - ${SOPS_SECRETS_PATH:?Please set SOPS_SECRETS_PATH}
     ...
 ```
 
+For the `homepage` service, Docker Compose will read the contents of `./.env` and pass all environment variables defined in the file (which are all the environment variables directly provided to Komodo) directly to the container behind the service.
+
+Note that the main downside of this is that we are unable to selectively control (or modify) what environment variables are provided to a container that uses this `env_file` approach.
+
+Importantly, when using environment variables whose values may be interpreted as booleans, integers, or floats, to define attributes that may expect strings, you should use quotes around the environment variables to ensure that YAML interprets the value as a string, like in this Compose stack file example:
 ```yaml
-# Common variables, declared here
-x-common:
-  TIMEZONE: &timezone "America/Los_Angeles"
-  ... # Omitting for brevity
-
-...
-
 services:
-  ...
-  seerr:
-    ...
+  example:
+    ... # Omitting for brevity
     environment:
-      LOG_LEVEL: debug
-      TZ: *timezone
-    ...
+      TARGET_PORT: "${TARGET_PORT}"
 ```
 
+When `${TARGET_PORT}` is interpolated (e.g. as `3000`), the quotes around it will ensure that it looks like `"3000"`, so that the YAML parser treats it as a string, which environment variables expect.
+
+When using environment variables within a Compose stack file, it is generally good practice to have comments specifying all of the environment variables that need (or may need) to be set, as well as any instructions for or important notes on their values, within the first lines of the file, like this: 
+```yaml
+# Environment variables to set:
+# - MAIL_PASSWORD
+# - RUSTIC_S3_REGION
+# - RUSTIC_S3_ACCESS_KEY_ID
+# - RUSTIC_S3_SECRET_ACCESS_KEY
+# - RUSTIC_S3_BUCKET
+# - RUSTIC_S3_ENDPOINT (include "https://"!)
+# - HASHIDS_SALT (should be 20 characters, to generate this, run "head -c20 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9/.' | head -c20")
+```
+
+As a further aside, it is also good practice to list these environment variables (and instructions) within the README.md for the Compose stack being defined, in the same order as in the comments.
+
+#### Fragments (anchors)
+There are many cases where defining certain values only at deploy time (with environment variables) may not be necessary, but you still may want to have flexibility in how they are defined. In other cases, you may need to use an identical value many times within a Compose stack file, yet want to have a single source of truth for it, to avoid the error-prone process of repeatedly changing the same value in different places. There are even cases where, maybe, you don't need to have a single source of truth, but still want to have an easy-to-find location to define values that may be frequently modified. In these scenarios, fragments are the way to accommodate such needs; with fragments, we get to define re-usable blocks (YAML values), using anchors, anywhere in a file, and then reuse them, with aliases, anywhere else within the file. This feature proves to be incredibly useful for reducing boilerplate and streamlining important value definitions. 
+
+Note that anchor resolution only takes place *after* variable interpolation, so we cannot use environment variables to name anchors or aliases; on the other hand, this does mean that we can use variable interpolation for the values used in the fragments themselves, which we will cover later.
+
+To define an fragment, specify its name in the format of `&FRAGMENT_NAME` (`&` is the anchor, and should have no spaces after it) after the naming of a key (and its colon), but before the definition of the value, like this:
+```yaml
+x-common:
+  MY_KEY: &my-key "my-value"
+```
+
+Note that, typically for our repository, fragments are defined in special top-level properties, named x-properties, since the names of the properties always start with `x-`.
+
+To use the fragment somewhere else in the file, reference the name of the fragment in the format of `*FRAGMENT_NAME` (`*` is the alias, and should have no spaces after it, too), right after the naming of a key, but before the naming of another key:
+```yaml
+services:
+  example:
+    ... # Omitting for brevity
+    environment:
+      VALUE_1: *my-key
+      VALUE_2: "value-2"
+      ...
+```
+
+Note that fragments can only be used to define entire YAML values for YAML keys, and can't be used anywhere else, such as in the middle of strings.
+
+For more information on fragments, please refer to the [specific section on fragments in the official Compose specification](https://github.com/compose-spec/compose-spec/blob/main/10-fragments.md).
+
+Beyond simple values (e.g. strings), fragments can also refer to entire dictionaries (and sequences), too; these dictionary fragments are also able to be imported into other dictionaries, by using them with an alias, for the `<<` attribute. Here is an example of this in action, in a Compose stack file:
 ```yaml
 # Common variables, declared here
 x-common:
@@ -507,15 +580,9 @@ services:
     ...
 ```
 
-```yaml
-x-common:
-  ... # Omitting for brevity
-  MAIL: &mail
-    ...
-    N8N_SMTP_PASS: "${MAIL_PASSWORD}"
-    ...
-```
+In the above example, the value for the `database` key (in `x-common`) is named, with an anchor, as `db-environment`, which is reused later in the `environment` key of the `database` service. Note that that the values of sub-attributes of attributes that have anchors, can also be made into individual fragments, with more anchors; this is useful for defining entire blocks of configuration that may be used wholesale for one service while still picking out individual values to provide to other services. As well, alongside the importation of a dictionary fragment, more attributes can be individually defined for the dictionary that is importing the values.
 
+Furthermore, it is also possible to import multiple dictionary fragments into another dictionary at once; this is done by defining the `<<` key as a sequence of aliased fragment names (the order is important, as later fragments may override the values of previous fragments), like in this example Compose stack file:
 ```yaml
 x-common:
   ... # Omitting for brevity
@@ -544,34 +611,52 @@ services:
       ...
 ```
 
+In the above example, we define multiple fragments that are dictionaries: `panel-environment`, `mail-environment`, and `backup-environment`. All of these get referenced, with a list of aliases, and imported into the `panel` service's `environment` property, which is a dictionary. All of the imported dictionaries' values, alongside the individually named attributes, get merged, in order, to make up the final dictionary that makes up the `environment` property.
+
+As mentioned before, both variable interpolation and fragments can be used together, to allow environment variables to define the values of fragments, which will then get referenced and used in other places in the YAML file; this is useful for minimizing the repeated use of environment variables and keeping single sources of truth. Again, note that variable interpolation takes place *before* anchor resolution, and not the other way around, so be careful not to use variables to define the names of fragments. Here is an example of the two features being combined in a Compose stack file:
 ```yaml
 x-common:
   ... # Omitting for brevity
-  panel: &panel-environment
+  MAIL: &mail
     ...
-    HASHIDS_SALT: "${HASHIDS_SALT}"
+    N8N_SMTP_PASS: "${MAIL_PASSWORD}"
     ...
-  mail: &mail-environment
-    ...
-    MAIL_PASSWORD: "${MAIL_PASSWORD}"
-    ...
-  backup: &backup-environment
-    ...
-    RUSTIC_S3_REGION: "${RUSTIC_S3_REGION}"
-    RUSTIC_S3_ACCESS_KEY_ID: "${RUSTIC_S3_ACCESS_KEY_ID}"
-    RUSTIC_S3_SECRET_ACCESS_KEY: "${RUSTIC_S3_SECRET_ACCESS_KEY}"
-    RUSTIC_S3_BUCKET: "${RUSTIC_S3_BUCKET}"
-    RUSTIC_S3_ENDPOINT: "${RUSTIC_S3_ENDPOINT}"
 
 services:
   ...
-  
-  panel:
+  n8n:
+    environment:
+      <<: *mail
+      ...
+```
+
+In the above file, `${MAIL_PASSWORD}` will first be interpolated with the value of the `MAIL_PASSWORD` environment variable; the value of this will then be used to define the `N8N_SMTP_PASS` attribute of the `mail` fragment, which will be imported into the `environment` property of the `n8n` service. This allows for both the definition of reusable blocks and the ability to defer the value definition of certain properties to deploy-time.
+
+Finally, it is possible for the values of fragments to reference other fragments; the parser will resolve all required anchors until there are none left (this does mean that you should avoid circular dependencies). Here is an example that utilizes this:
+```yaml
+x-common:
+  ... # Omitting for brevity
+  POSTGRES: &postgres
+    POSTGRES_USER: &postgres_user "postgres"
+    POSTGRES_NON_ROOT_USER: &postgres_non_root_user "postgres_nonroot"
+    POSTGRES_DB: &postgres_db "n8n"
+  MAIL: &mail
+    N8N_SMTP_SENDER: "n8n <homelab@saphnet.xyz>"
+    ...
+
+x-services: # Base instances of services to customize
+  N8N_COMMON: &n8n_common
     ...
     environment:
-      <<: [*panel-environment, *mail-environment, *backup-environment]
-      DB_PASSWORD: *db-password
+      <<: [*mail]
+      ...
+      DB_POSTGRESDB_DATABASE: *postgres_db
+      DB_POSTGRESDB_USER: *postgres_non_root_user
+      ...
+    ...
 ```
+
+In the above example, there is an `x-common` top-level property, that defines various fragments that are used in the other sections, including the `x-services` top-level property. The `x-services` top-level property, which defines fragments to be used in the definition of multiple services, then references these fragments in its on defition; various services later on in the file will, in turn, import the values defined in `x-services`.
 
 #### On .env files (vs regular environment variables)
 - there are two ways to import environment variables: referring to them directly in docker compose
