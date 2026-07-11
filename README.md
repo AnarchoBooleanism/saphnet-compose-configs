@@ -353,7 +353,7 @@ services:
       - "8043:80" # 8043 on the host, 80 on the container
 ```
 
-In any case, when referring to environment variables provided to the Docker Compose command (anywhere in the Compose YAML file that will be interpreted), if the environment variable is being used for a value to a key that expects a string (e.g. labels and environment variables), try to ensure that it, or the entire string that it may be a part of, are surrounded in quotes to ensure that the value is ALWAYS parsed as a string, like in this example:
+In any case, when referring to environment variables provided to the Docker Compose command (anywhere in the Compose YAML file that will be interpreted), if the environment variable is being used for a value to a key that expects a string (e.g. labels and environment variables), try to ensure that it, or the entire string that it may be a part of, are surrounded in quotes to ensure that the value is *always* parsed as a string, like in this example:
 ```yaml
 services:
   example:
@@ -489,24 +489,6 @@ In this file, if the environment variable, `PORT`, is not defined at deploy time
 
 For more information on interpolation, please refer to the [specific section on interpolation in the official Compose specification](https://github.com/compose-spec/compose-spec/blob/main/12-interpolation.md).
 
-The approach of using interpolation (of environment variables provided to Docker Compose) is not the only way to provide environment variables to a service; it is also possible to pass in files with environment variable definitions directly to containers. Typically, Komodo also writes the contents of environment variables that are provided to it to `.env`, in the working directory of a Stack resource. Here is an example of this in action, for a Compose stack file:
-```yaml
-services:
-  ... # Omitting for brevity
-
-  # This expects to be given a path to a secrets file (by the "docker compose up" command)
-  # to use for secrets as environment variables
-  homepage:
-    ...
-    env_file:
-      - ./.env
-    ...
-```
-
-For the `homepage` service, Docker Compose will read the contents of `./.env` and pass all environment variables defined in the file (which are all the environment variables directly provided to Komodo) directly to the container behind the service.
-
-Note that the main downside of this is that we are unable to selectively control (or modify) what environment variables are provided to a container that uses this `env_file` approach.
-
 Importantly, when using environment variables whose values may be interpreted as booleans, integers, or floats, to define attributes that may expect strings, you should use quotes around the environment variables to ensure that YAML interprets the value as a string, like in this Compose stack file example:
 ```yaml
 services:
@@ -530,7 +512,39 @@ When using environment variables within a Compose stack file, it is generally go
 # - HASHIDS_SALT (should be 20 characters, to generate this, run "head -c20 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9/.' | head -c20")
 ```
 
-As a further aside, it is also good practice to list these environment variables (and instructions) within the README.md for the Compose stack being defined, in the same order as in the comments.
+As a further aside, it is also good practice to list these environment variables (and instructions) within the README.md for the Compose stack being defined in the same order as in the comments.
+
+#### On .env files (vs regular environment variables)
+The approach of using interpolation (of environment variables provided to Docker Compose) is not the only way to provide environment variables to a service; it is also possible to pass in files with environment variable definitions directly to containers. Typically, Komodo also writes the contents of environment variables that are provided to it to `.env`, in the working directory of a Stack resource. Here is an example of this in action, for a Compose stack file:
+```yaml
+services:
+  ... # Omitting for brevity
+
+  # This expects to be given a path to a secrets file (by the "docker compose up" command)
+  # to use for secrets as environment variables
+  homepage:
+    ...
+    env_file:
+      - ./.env
+      - ${SOPS_SECRETS_PATH:?Please set SOPS_SECRETS_PATH}
+    ...
+```
+
+For the `homepage` service, Docker Compose will read the contents of `./.env` and pass all environment variables defined in the file (which are all the environment variables directly provided to Komodo) directly to the container behind the service. As well, it is possible to provide multiple environment variable files, beyond `.env`, like the environment variable file for secrets, defined in the `SOPS_SECRETS_PATH` environment variable, that can be created by SOPS and be passed to Docker Compose; this will be covered in more depth later in this section on environment variables.
+
+Note that the main downside of this is that we are unable to selectively control (or modify) what environment variables are provided to a container that uses this `env_file` approach.
+
+```yaml
+services:
+  ... # Omitting for brevity
+  # This expects to be given a path to a secrets file (by the "docker compose up" command)
+  # to use for secrets as environment variables
+  homepage:
+    ...
+    env_file:
+      - ./.env
+...
+```
 
 #### Fragments (anchors)
 There are many cases where defining certain values only at deploy time (with environment variables) may not be necessary, but you still may want to have flexibility in how they are defined. In other cases, you may need to use an identical value many times within a Compose stack file, yet want to have a single source of truth for it, to avoid the error-prone process of repeatedly changing the same value in different places. There are even cases where, maybe, you don't need to have a single source of truth, but still want to have an easy-to-find location to define values that may be frequently modified. In these scenarios, fragments are the way to accommodate such needs; with fragments, we get to define re-usable blocks (YAML values), using anchors, anywhere in a file, and then reuse them, with aliases, anywhere else within the file. This feature proves to be incredibly useful for reducing boilerplate and streamlining important value definitions. 
@@ -658,39 +672,10 @@ x-services: # Base instances of services to customize
 
 In the above example, there is an `x-common` top-level property, that defines various fragments that are used in the other sections, including the `x-services` top-level property. The `x-services` top-level property, which defines fragments to be used in the definition of multiple services, then references these fragments in its on defition; various services later on in the file will, in turn, import the values defined in `x-services`.
 
-#### On .env files (vs regular environment variables)
-- there are two ways to import environment variables: referring to them directly in docker compose
-  - but also using env_file, to provide list of files with environment variables to give DIRECTLY
-- komodo-provided environment variables are provided in .env by default (but this can be changed too, with env_file_path)
-- can also provide it other files
-- if using secrets, can also do environment variable of path, like SOPS_SECRETS_PATH
-- allows compose file not to deal with contents of variables, but also doing it this way means it can't use it for non-env vars, also can't control what is imported
-
-```yaml
-services:
-  ... # Omitting for brevity
-  # This expects to be given a path to a secrets file (by the "docker compose up" command)
-  # to use for secrets as environment variables
-  homepage:
-    ...
-    env_file:
-      - ./.env
-      - ${SOPS_SECRETS_PATH:?Please set SOPS_SECRETS_PATH}
-...
-```
-
 #### Secrets
-- note about them being in special secrets subdirectory, being .enc.env (env format)
-- write about secrets being per-server, with .sops.yaml mapping file names to what keys are used
-  - probably have an example map here
-- also note that the compose file doesn't interact with them, komodo reads the secrets and then makes them environment variables for docker compose to read and then pass to container as compose file sees fit
-  - distinction only matters in komodo, since komodo setup handles secrets differently, in compose, only see environment variables, not where they came from
-- consider about how secrets imported, can be as individual environment variable that compose needs to be aware of, or as whole .env file to be given to container
-  - each has tradeoffs!
-  - first method is simpler in komodo, and environment variables can be used across compose in any way (outside of container env), but every time new environment variable added to image, compose file must be aware of it, so can lead to double work
-  - second method allows to define environment vars only once in one file, but can't be used easily outside specific container, also locks you in somewhat into only using secrets by passing it directly to container (can't easily be used in compose file itself, unless weird custom command), and not very granular
-- talk about how each method requires different formatting, parsing, so either dumb properties style or bash style that may require escaping (though just use single quotes)
+There may exist certain values for your stack that are required for its functioning, but also cannot be stored in plaintext, whether in the Compose stack file, or in a Stack resource file for Komodo, due to their exposure potentially leading to misuse and unauthorized access; these types of values are called **secrets**, which encompass data such as passwords, API keys, and tokens. The main tool used for handling secrets in the Sapphic Homelab/Home Server is SOPS (short for Secrets OPerationS), which encrypts sensitive values in configuration files with public keys before writing them to a file; this allows us to store these secrets publicly (e.g. in a Git repository) without worrying about exposing them, as long as the private keys involved are kept secure. To decrypt these secrets before using them, SOPS is also used, being called by Komodo when calling Docker Compose to deploy a Compose stack; each server should have a unique private key that only it has access to, provided at server deploy-time, to use with SOPS. Note that a Compose stack file can only see the values of secrets-related environment variables, and not where they come from, or how they were created; the direct use of SOPS is only within the scope of Stack resources in Komodo itself.
 
+For our Compose stacks, there is a standard way to store SOPS secrets. All SOPS secrets are in the .env format, separated into files by Server-specific instances, named after the name of the Server resource being targeted for the instance, all ending in the extension `.enc.env` (to differentiate it from a normal `.env` file); all of these files (per stack) are then stored in the `secrets` subdirectory of the Compose stack directory (the directory holding the Compose YAML files). This is an example of what this would look like for a Compose stack:
 ```
 Repository root (./.)
 │
@@ -707,6 +692,9 @@ Repository root (./.)
 └─ ...
 ```
 
+There can be as little as only one SOPS secrets file (if the stack is only being deployed on one server with secrets); conversely, there is no upper bound to the number of SOPS secrets files that can be stored.
+
+Before creating SOPS secrets, we do need to make sure that the `.sops.yaml` file (in the repository's root directory) is properly configured for the target server(s). The `.sops.yaml` file is a special file that defines what keys are available to SOPS, and for what kinds of file paths, like this:
 ```yaml
 keys:
   - &admin age1ute399nzja7le5um48rzdg2nj4c7rf5jvhj7slh05mt5x79nr4wqqlwkdj
@@ -721,23 +709,63 @@ creation_rules:
       - *example-server
 ```
 
+The top-level properties in this file are `keys` and `creation_rules`. `keys` is a sequence of public keys (as strings) that SOPS can use; note that each public key has an anchor next to it, with a name (typically for the Server that it is for), which creates a fragment that can be reused multiple times throughout the file. `creation_rules` is a sequence of dictionaries that represent rules for assigning groups of keys to different paths (represented with a regex expression under the `path_regex` property of the rule); each rule then has the `key_groups` property, which is a sequence of dictionaries representing groups of keys. Each property for each group of keys represents the type of key (e.g. age, pgp, etc.) for which its sequences of keys are; for example, we have the `age` property for the first group, which is a sequence of age public keys, which are referenced through aliases.
+
+To edit a SOPS secret file, use the command `sops edit SECRETS_FILE_NAME`; note that the environment with which you are running SOPS must have a private key corresponding to one of the public keys used in the relevant creation rule for your secrets file (e.g. `admin`, for the main admin keypair). As well, the `sops edit` command can also be used to create SOPS secrets files that do not exist yet.
+
+The main way of using SOPS secrets is through variable interpolation: the Stack configuration is set to have SOPS pass the secrets to environment variable of Docker Compose, and then Docker Compose will replace references to those variables with the values that it is given. Here is an example of a Compose stack file configured to take advantage of this:
+```yaml
+services:
+  netbootxyz:
+    ... # Omitting for brevity
+    labels:
+      ...
+      # Basic‑auth middleware
+      traefik.http.routers.netboot.middlewares: netboot-auth
+      traefik.http.middlewares.netboot-auth.basicauth.users: "${NETBOOT_LOGIN}"
+    ...
+```
+
+Note that this allows us to use these secrets anywhere in the Compose stack file, and not just in environment variables passed to the service container.
+
+When writing SOPS secrets files with the interpolation approach in mind, secrets must be written in a strict `KEY=VALUE` format, like this:
 ```ini
 EXAMPLE_VARIABLE=foobar
 EXAMPLE_VARIABLE_2=abcd$1234$=
 ```
 
+This format of SOPS secrets file has no spaces before or after the `=` symbol, and strings are treated very literally, with no `$` symbols being escaped with a backslash, and no quotes, as they will be included in the value of the environment variables.
+
+The other way of using SOPS secrets is by having SOPS create a `.env` file from the decrypted contents of the secrets file, and then pass the path of the file to Docker Compose as an environment variable; the file, after variable interpolation, gets listed in the `env_files` property of the service(s), and then the contents of the entire file are used in the creation of the environment of the service container. Here is an example of a Compose stack file using this approach:
+```yaml
+services:
+  ... # Omitting for brevity
+  # This expects to be given a path to a secrets file (by the "docker compose up" command)
+  # to use for secrets as environment variables
+  homepage:
+    ...
+    env_file:
+      - ./.env
+      - ${SOPS_SECRETS_PATH:?Please set SOPS_SECRETS_PATH}
+...
+```
+
+The convention in our repository is that the environment variable with the path of the decrypted SOPS secrets file is named as `SOPS_SECRETS_PATH`, and that the variable references in Compose stack files using this approach are configured to fail if the environment variable is unset at deploy-time.
+
+Furthermore, the way SOPS secrets files are written for this approach are slightly different: it still uses the strict `KEY=VALUE` format, but the file is parsed, like in a shell script, when Docker Compose processes it before passing its contents to the environment of the container. This means that quotes are stripped from values, and that environment variable references will be interpolated in the evaluation of these values, unless the values are wrapped in single quotes (`'`'). Here is an example of a SOPS secrets file written with this in mind:
 ```sh
 EXAMPLE_VARIABLE='foobar'
 EXAMPLE_VARIABLE_2='abcd$1234$='
 ```
 
-### Networking
-- add note about external networks, and being sure to name things so that they're externally accessible
-- add note about web_bridge, making sure external
-- add note about Docker and firewalls!
-- add note about having custom networks, and if needing containers to connect to each other if custom networks still, make sure to have stack-specific network that everything is connected to
-- ports and HOST_IP variables
+Note that the values of each environment variable are wrapped in single quotes, so that the contents within the quotes are interpreted literally (no interpolation is done); if there were no single quotes, or if double quotes (`"`) were used instead, `$` symbols would have to be escaped with backslashes, so that `$1234` wouldn't be interpreted as an environment variable to be interpolated.
 
+This approach allows for only the secrets file to be concerned with the specific keys of the environment variables (as opposed to the Compose stack file, too), reducing any error-prone repetition when there exists a large number of environment variables that may change frequently. The downsides of this approach, however, are that the contents of the secrets file are passed wholesale to containers (we are unable to be selective anymore), and that it will be harder to use the values of the secrets in the interpolation process of a Compose stack file.
+
+### Networking
+Often, a container is not useful on its own, at least without the ability to connect to other containers or be connected to from outside the host; for this, Compose provides the ability to connect services to (internal) networks as well as expose ports on services to outside the host.
+
+Before planning any networking-related changes to your Compose stack file, make sure that your service's container name is the same as the name of the service itself (the key that defines the Compose service):
 ```yaml
 services:
   foldingathome:
@@ -746,6 +774,9 @@ services:
     ...
 ```
 
+This is the convention for Compose stack files on the Sapphic Homelab/Home Server, and more importantly, this allows for other containers to be able to easily connect to the container with a consistent name, even when the stack changes names or the service moves between stacks; without setting the `container_name` property, Docker containers created for Compose services are automatically named in the format of `STACKNAME_SERVICENAME`.
+
+To expose a port on a service's container to outside the host (to bind the container's port to a port on the host), simply add an entry for the port mapping to the service's `ports` property (a sequence of strings):
 ```yaml
 services:
   ... # Omitting for brevity
@@ -756,6 +787,25 @@ services:
     ...
 ```
 
+For each port mapping, the number on the left represents the port to connect to on the host, while the number on the right represents the port on the container to bind the host's port to, in the format of `"HOST_PORT:CONTAINER_PORT"`. Note that all entries in the `ports` property are wrapped in quotes; this is because all port mappings are represented as strings, and using quotes forces a YAML parser to treat the value is a string (as opposed to a number). You are able to map as many ports on the host to ports on the container as you like, provided that nothing else on the host is using the port(s); this flexibility means that, in the case of many containers expecting to use the same port, each container still can be given a unique port to avoid conflicts.
+
+For inter-container connectivity, Compose uses Docker networks; each Docker network is a unique object (with a unique name) representing an internal network through which containers on the network can connect with each other. To define a network and connect a container to it, create an entry in the `networks` top-level property with the desired name of the network, and then add the name of the network to the `networks` property (a sequence) of the desired service(s). Here is an example of this in action, for a Compose stack file:
+```yaml
+services:
+  foldingathome:
+    image: ... # Omitting for brevity
+    container_name: foldingathome
+    ...
+    networks:
+      - example_network
+
+networks:
+  example_network:
+```
+
+Note that, for a network to be defined (in the context of a Compose stack), only the name of the network has to be specified in `networks`; all other options for the network entry (a dictionary) are optional.
+
+However, you may want to connect to a Docker network that is defined outside of the Compose stack (e.g. `web_bridge` for Traefik). To do so, under the definition of the network, specify the (globally accessible) name of the Docker network under the `name` property and define the `external` property as `true` (to tell Docker Compose that the network is externally managed, and doesn't need to be created):
 ```yaml
 services:
   foldingathome:
@@ -771,6 +821,11 @@ networks:
     external: true
 ```
 
+Generally, the network name to use when connecting with the Traefik instance of a host (to use its reverse proxy features) is `web_bridge`; this will be covered in more depth in the Traefik section.
+
+Importantly, note that, from the perspective of the Compose service, the `web_bridge` network is simply a Compose-defined network, like any other, but the configuration of `web_bridge` defines it as a specific Docker network. Furthermore, note that the `web_bridge` network entry still has to specify the name of the Docker network, even though the network (within Compose) already has a name; this is because Compose-defined networks and Docker networks are different in scope. All Compose-defined networks are mapped to Docker networks at deploy-time, but it is Docker Compose that manages them; by default, the name of a Docker network for a Compose stack's network is in the format of `STACKNAME_NETWORKNAME` (where, again, `NETWORKNAME` stands for the Compose network's name). We specify `name` to tell Docker Compose that the Compose network maps directly to a specific Docker network, and not something else that is internally defined by Docker Compose. For this reason, when creating networks in Compose stacks to be connected to by services in other stacks, the `name` property should still be specified, to avoid surprises and mismatches.
+
+Again, multiple services within a Compose stack can be connected to the same Compose network; not only that, Compose services can be connected to multiple Compose networks, like in this Compose stack file:
 ```yaml
 services:
   database:
@@ -803,6 +858,9 @@ networks:
     external: true
 ```
 
+Note that, when there are no extra networks defined, Docker Compose automatically creates a special network for all services in the Compose stack. When there are networks defined in the stack, this network may not automatically be created, so, like in the above example, we generally create another special Compose network to be used within the stack to connect all (relevant) services to, for inter-connectivity.
+
+In certain cases, we may want a service's container to use the network space of the host itself, rather than have specific ports on the container be bound to ports on the host. For example, we may want to use firewall rules on the host's port (e.g. to limit where connections can come from); however, Docker may override rules that may be set on the firewall, since it also directly manages the kernel's routing rules. Using the host's network space, in such a scenario, allows us to bypass Docker's routing features, and allow the firewall to work as expected. Here is an example of this in action, for a Compose stack file:
 ```yaml
 services:
   glances:
@@ -815,6 +873,9 @@ services:
     ...
 ```
 
+Note that this means that the container has complete access to any port on the host, and that we are unable to (as easily) map application ports to different host ports; to solve this, you may want to set a special environment variable or argument for your application to use a different port. As well, this approach prevents the container from being able to use Docker/Compose networks, and so inter-container connectivity may have to be done through ports exposed on the host itself.
+
+Still, we are still able to specify what interface on the host to bind a container's port to, to limit what interfaces can connect to the container through that port; this is done by specifying the IP address of the interface, before the ports being mapped, in the specific entry in the `ports` property, like in this Compose stack file: 
 ```yaml
 services: # To be connected to by Homepage
   docker-proxy:
@@ -824,14 +885,12 @@ services: # To be connected to by Homepage
     ...
 ```
 
-#### On VPN containers
-- in certain case, you want container to connect to certain location or have certain IP
-- this is what vpn container is for
-- vpn container is special container that handles connections, sets up the routing with the kernel too (so need special capabilities, devices, config)
-- its network space is also the network space that the container using the vpn uses, so any network setup should not be done with that container, but with vpn container
-- on container using vpn, make sure it waits for vpn container to be ready before starting, and that its network_mode is vpn
-- do mention that gluetun is probably what you want
+In this specific example, environment variables (for Docker Compose) are used to specify the IP address of the interface to bind to, as it may be hard to know what the IP address before deploy-time, or as the IP address may be dynamic; in such cases, like in the example, there is also a default value used (if the environment variable is unset) of `0.0.0.0`, which simply means that all interfaces on the host can connect to the port. The convention for this repository is that the name of the environment variable is `HOST_IP`.
 
+#### On VPN containers
+In certain cases, you may not want a service's container to connect to the Internet through the host's IP address (and routes), but rather, through that of another location/host. In such cases, you can use a VPN container to connect that container to. A VPN container is a special container that handles connections to/from the VPN, communicating with the kernel to set up the necessary routes (this means that you will need to provide it with certain capabilities). In general, you will want to use the [Gluetun client](https://github.com/passteque/gluetun) for VPN purposes, as it is a lightweight client, designed for Docker, that supports a plethora of VPN services and technologies.
+
+Here is an example of a VPN container, using Gluetun, for a Compose stack service: 
 ```yaml
 services:
   ... # Omitting for brevity
@@ -878,22 +937,26 @@ services:
     ...
 ```
 
-### Volumes, mounting
-- docker containers are ephemeral, meaning that any data written within their internal file systems is gone when container is deleted (and it will be deleted on updates)
-- may have data that you want to keep across containers (be persistent), that isn't configuration or can be provided by IaC, like databases, records, media, etc
-- volumes provide safe place, decoupled from container, to store and access data, docker manages them
-- volumes typically on local storage
-- furthermore, multiple containers can use volume at once
-- refer to volumes with their names, and you mount them to specific locations within container's file system
-- only need to have key in volumes attribute for volume, but you can do more, like access volumes external to stack
-- can also have volumes that aren't docker but are other things through driver, so like NFS
-- you can use directories on host instead of docker volumes, but not super portable and very reliant on operating system environment on which komodo runs, but may be needed to docker volumes don't work
+In the entry for the service connecting through the VPN, the `network_mode` property is set as `service:vpn`; this means that it uses the network space of another service in the stack, which is `vpn` in this case. Furthermore, there is an entry in the `depends_on` property, which is a dictionary with the name of the service for the VPN connection (`vpn`), whose `condition` property is `service_healthy`; this means that Docker Compose will wait for the `vpn` service to report itself as healthy (fully working) before starting the `deluge` service.
 
+As well, you may notice that all configuration for port mappings, networks, and Traefik labels are specified under the `vpn` service and not the `deluge` service; this is because the `deluge` service uses the network space of the `vpn` service, meaning that any connections to/from applications within the `vpn` service have to be done through the `vpn` service. If other network-related settings are specified under the `deluge` service, it will result in an error at deploy-time.
+
+Note that `cap_add`, `devices`, and `sysctl` properties specified in the `vpn` service: the `NET_ADMIN` entry in the `cap_add` property allows the container to manage network interfaces and routes, the `/dev/net/tun:/dev/net/tun` entry in the `devices` property gives the container the virtual network device to use for managing virtual tunnels, and the `sysctls` property allows for more fine control over network settings, like disabling IPv6 for this connection. All of these properties are necessary for ensuring that the VPN container has what it needs for managing VPN connections.
+
+The environment variables provided to Gluetun are highly specific to the VPN server and its type of connection; for more information, please refer to [the official Gluetun wiki](https://github.com/qdm12/gluetun-wiki).
+
+### Volumes, mounting
+Docker containers are ephemeral, meaning that any data written within any of their directories that aren't backed up by external sources will be deleted when the container is taken down; containers are meant to be destroyed and recreated, like in the case of updates. You may have data created through the containers that you may want to keep (be persistent) between this cycle of destruction and creation, such as databases, records, and media.
+
+In this scenario, Docker volumes are used to solve this problem; volumes provide a safe place, decoupled from the container, to store data in, and are managed by Docker (and Docker Compose). Volumes get mounted to specific locations in a container when the container is created, so that all data accessed in that location is done through the volume. Typically, volumes are on local storage (on the host itself), but they can also be on other kinds of storage, like network shares; this will be covered in more depth in the next sections. As well, multiple containers can use the same volume at once, and have the volume mounted in different locations (between containers).
+
+To define a volume in a Compose stack file, you only need to specify its name as a key in the `volumes` top-level property; all options for a volume are optional. Here is an example of a volume being defined in a Compose stack file:
 ```yaml
 volumes:
   guac-db-data:
 ```
 
+To mount this volume to a specific location in a service's container, the volume's name, and the target directory, need to be specified as a mapping in an entry in the `volumes` key of a service (which is a sequence of strings), in the format of `VOLUME_NAME:/PATH/TO/DIRECTORY`, like in this Compose stack file:
 ```yaml
 services:
   guacdb:
@@ -903,6 +966,9 @@ services:
     ...
 ```
 
+Note that the convention is to not use quotes around the entry of a volume mapping.
+
+In addition to Docker volumes, directories (and files) on the host can also be mapped to locations on the container, in this format: `/LOCATION/ON/HOST:/LOCATION/ON/CONTAINER`. Here is an example of this in action, for a Compose stack file.
 ```yaml
 services:
   guacdb:
@@ -912,12 +978,19 @@ services:
     ...
 ```
 
-#### Mounting non-Compose config files (and Compose files not directly opened by Komodo!)
+Note that this approach is not as portable as using Docker volumes, as it is reliant on the directory structure of the host, which may differ between hosts. However, this approach may be the only option in cases where Docker volumes are unable to be used for a certain purpose.
+
+As well, like networks, which have different scopes between that of a Compose stack and within Docker's global context, volumes are also different between within a Compose stack file and in Docker itself. All Compose-defined volumes are mapped to Docker volumes at deploy-time, but it is Docker Compose that manages them; by default, the name of a Docker network for a Compose stack's network is in the format of `STACKNAME_VOLUMENAME` (where, again, `VOLUMENAME` stands for the Compose volume's name). If you want to make sure a volume's name stays the same, between stacks, specify `name` to tell Docker Compose that the Compose volume maps directly to a specific Docker volume, and not something else that is internally defined by Docker Compose; doing this is not as necessary for volumes as for networks, but this fact may be important to consider for specific cases.
+
+#### Mounting non-Compose config files
 - Docker Compose only takes in compose files, and while you can do a lot with them, you may still need to provide other configuration files, so volumes feature can be used here, mount files on repo to specific location in container
 - remember that containers don't have access to files unless given, and it has to be mounted in specific places (which can be to our advantage, since we can organize our stacks directory how we want, and we can map it to how program expects it)
 - stuff about making sure relative to root of stack directory
 - note about read-only, to avoid potential issues, since it is IaC
 
+One thing that mounting files from the host to a container is useful for is non-Compose config files that are tracked in the Git repository, in the same directory (or within a subdirectory of) the Compose stack's directory. Docker Compose can only (directly) be given Compose YAML files, and while the Compose YAML schema provides many features, there may be cases where you will need to provide another file from the repository to the container, such as scripts or other long configuration files. In such cases, file mounting is the only way to provide the file(s) to the container, as containers do not have access to files on the system, unless explicitly given. As well, file mounting provides us with the flexibility to structure the config files within a Compose stack's directory however we see fit, as each file can be mapped from anywhere on the host (our repository, in this case) to anywhere in the container's directory structure; the application(s) within the container may expect specific config files to be in specific locations, but this file mounting approach allows us to decouple that from how the directory in the repository is organized.
+
+This is an example Compose stack directory structure, to demonstrate how such non-Compose config files can be organized:
 ```
 Repository root (./.)
 │
@@ -937,6 +1010,9 @@ Repository root (./.)
 └─ ...
 ```
 
+Again, note how flexible the organization of config files can be. They can sit directly under the Compose stack directory, alongside the Compose YAML file(s), or be categorized together and placed in subdirectories. This allows for maximum readability and ease of navigation.
+
+To mount a config file from the Compose stack's directory, simply write an entry under the service's `volumes` top-level property, in the format of `./PATH/TO/FILE/ON/REPO:/PATH/EXPECTED/IN/CONTAINER:ro`. Here is an example of this being used in a Compose stack file:
 ```yaml
 services:
   velocity:
@@ -945,41 +1021,14 @@ services:
       - ./velocity-config/velocity.toml:/config/velocity.toml:ro
 ```
 
-```yaml
-services:
-  cpu: {}
-
-  nvenc:
-    deploy:
-      ... # Omitting for brevity
-  
-  ...
-```
-
-```yaml
-services:
-  immich-server:
-    ... # Omitting for brevity
-    extends:
-      file: ./extra/hwaccel.transcoding.yaml
-      service: quicksync
-```
+Note that the path on the host's side is relative (and not absolute), as the absolute path on the host may differ between deployments, but the current working directory should always be that of the directory of the Compose stack (this is configured on Komodo's side, through the Stack resource). As well, we append `:ro` at the end, as this marks this mount as read-only; since the Sapphic Homelab/Home Server uses the GitOps approach for Compose stacks, it should be the contents of the Git repository that dictate the state of an application, and not the other way around (as in the application changing the configuration), as the changes will be lost in a redeployment, so setting the mount as read-only enforces this approach.
 
 #### NAS storage mounts
-- for certain persistent storage needs, may not want to use a normal volume
-- normal volumes are stored locally (on the host)
-  - host may not have enough storage
-  - may just want to use the capacity (and features) of a NAS
-  - maybe data is already on NAS, or want the data to outlast stack setup
-  - maybe you just don't want the data on the host at all
-- for this, can read and write data on a NAS, and use NFS!
-- make sure on NAS, that volume works, that an NFS share is there, and that the hostname of the docker host with the stack is allowed to connect to it (NFS doesn't have much security, so try to at least limit the IP addresses that can access it)
-  - note: for truenas, format may be "/mnt/DATAPOOL/DATASET[/SUBDATASET][/SUBDIR]"
-- describe the volume part, make sure to describe the boilerplate, and why it exists, and then also try to push towards nfsvers=4
-- anyway, in the services, it just acts like any volumes
-- also you can have as many volumes as you like that reference the same directory on the NAS (or their subdirectories)
-- note about if NAS is down, the service will stall (lock up) when accessing file on NAS until NAS goes back up, so be careful
+For certain persistent storage needs, you may not want to use a normal Docker volume. Normal Docker volumes, without any further configuration, are stored locally, on the host, in the directory that Docker is configured to store volumes in. However, the host may simply not have enough storage for your needs, you may want to take advantage of the capacity and features of a NAS, the data you want to use may already be on a NAS, you may want the data to outlast a Stack (or even a Server), or, for some other reason, you just don't want the data to be stored on the host at all. In such scenarios, you can make use of the NFS volume driver to create a Docker volume that's actually backed by a NAS; all data in this volume will have to be read from and written to the NAS.
 
+When creating a volume to be backed by a NAS, you will need to have a specific location on the NAS to store its data, and an NFS share through which the Komodo host can access its contents. For example, in TrueNAS, you may need to create a dataset on a specific datapool, intended for use with NFS, and then create a NFS share that exposes the location (and contents) of that dataset to other clients; note that it is best practice to limit the IP addresses/hostnames that can access the NFS share to those of the Komodo hosts running the relevant Compose stacks.
+
+An NFS-backed Compose volume is mostly treated the same as a normal Compose volume, but with special configuration options under the entry for that volume, under the `volumes` top-level property, like in this Compose stack file:
 ```yaml
 volumes:
   ... # Omitting for brevity
@@ -990,6 +1039,11 @@ volumes:
       device: ":/mnt/saphnet-nas1c/netboot-assets"
 ```
 
+All relevant options are under the `driver_opts` property of the volume's entry, to configure the volume to use the NFS driver. The `type` property is specified as `nfs`, as the volume uses NFS. The `o` property (a string) represents all the options (relevant to NFS mounts), separated by commas, that are passed to the `mount` command (when mounting the NFS share to the volume's directory on the host) with the `-o` argument, like in `mount -t nfs -o OPTIONS DEVICE TARGET`. Under `o`, we specify `addr` as the hostname of the NAS (`nas1.int-net.saphnet.xyz` in this case), `nolock` to disable file locking (to improve compatibility with the NFS server), `soft` to report errors to the program in case of NAS unreachability (instead of forcing the program to wait with `hard`), `rw` to enable both reads and writes, and `nfsvers=4` to set the NFS version to be version 4 (a more recent version of NFS, which we recommend). Generally, for most volumes using NFS shares, these options will suffice. The `device` property lists the the location of the NFS share on the NAS, in the format of `:/PATH/TO/SHARE/LOCATION` (note the `:` symbol in the beginning); for TrueNAS hosts, the format may be something similar to `/mnt/DATAPOOL/DATASET[/SUBDATASET...][/SUBDIR...]` (e.g. `/mnt/saphnet-nas1c/netboot-assets`).
+
+*For more information on the options that can be specified within `o`, refer to [this guide on the `mount` options for NFS file systems](https://docs.oracle.com/cd/E19253-01/816-4555/rfsrefer-16/index.html).*
+
+Mounting an NFS-backed volume to a service is the same as mounting any other volume to a service, where you add an entry to the `volumes` property of the service, as a string in the format of `VOLUME_NAME:/PATH/TO/DIRECTORY`. Here is an example of the volume in the previous example being mounted to a location in a service's container:
 ```yaml
 services:
   netbootxyz:
@@ -1000,10 +1054,14 @@ services:
       ...
 ```
 
-### Device mounting (e.g. GPUs)
-- hardware devices? can be easily added to containers, just provide their device location (linux stuff)
-- for GPUs, pretty simple, if not using nvidia, can just add /dev/dri
+As well, you can create as many volumes as desired that reference the same locations of the NFS shares (as well as their subdirectories), for the purpose of having different directory structures within different containers.
 
+Note that, if the NAS with the NFS share is down while a container is running, the container may stall (lock up) when attempting to access a file on the NFS share until the NFS server is running again, even with the `soft` option provided; try to keep this in mind when managing the NAS with the relevant share.
+
+### Device mounting (e.g. GPUs)
+Certain services in certain Compose stacks may require access to hardware devices for certain functionality, such as GPUs for accelerating transcodes. Providing access to these devices is as simple as listing their corresponding device files (for Linux) or their parent directories under the `devices` property of the service.
+
+For example, for non-NVIDIA GPUs, it is as simple as providing access to `/dev/dri` (the directory containing the device files for GPUs) to the service, like in this Compose stack file:
 ```yaml
 services:
   vertd:
@@ -1013,24 +1071,36 @@ services:
     ...
 ```
 
+For NVIDIA GPUs, however, it is more complicated. You will need to set the `runtime` property of the service as `nvidia`, and then set specific options under the `deploy` property of the service to provide access to the NVIDIA device, like in this Compose stack file:
+```yaml
+services:
+  vertd:
+    image: ... # Omitting for brevity
+    container_name: vertd
+    ...
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+    ...
+```
+
 ### Traefik
-- redirect them to traefik README
-- still, give them a basic explainer on what they need for bare minimum traefik setup
-- make sure traefik exists on server that stack is running on
-- make sure it's connected to `web_bridge` network, since that is what traefik uses to connect
-- traefik mostly works with labels
-  - need to have enable
-  - then a rule linking what hostname to connect it to, other things
-  - then a service so it knows how to redirect traffic
 
 *More on how to configure Traefik*: [Traefik README](stacks/traefik/README.md)
 
+In terms of website functionality (through HTTPS), the main way to have a Compose service be accessible to the outside world is to configure the service so that that Traefik can discover it and automatically provide an endpoint to access the service with; Traefik is the main reverse proxy used in the Sapphic Homelab/Home Server, and about all Komodo hosts should have an instance of it running. Here is an example of a Compose stack file with the bare essential options to create an secure endpoint for a service with Traefik:
 ```yaml
 services:
   jellyfin:
     image: ... # Truncating here
     networks:
       - web_bridge # Traefik, in this instance, connects to services via the web_bridge network, so we need to be reachable through it
+      ...
     labels:
       traefik.enable: true
       traefik.http.routers.jellyfin.rule: Host(`jellyfin.media.int.saphnet.xyz`)
@@ -1042,7 +1112,29 @@ services:
       traefik.http.services.jellyfin-svc.loadBalancer.server.port: "8096"
     ... # Again, truncating
     restart: unless-stopped
+
+networks:
+  web_bridge:
+    name: web_bridge
+    external: true
 ```
+
+First, note that there is a network, `web_bridge`, defined under the `networks` top-level property, using the specific Docker network, `web_bridge` (specified in the `name` property), marked as externally managed (through `external`); for any Komodo service, the network that Traefik uses is named `web_bridge` (in both its Compose stack and in Docker itself), and any service that is serviced by Traefik needs to connect to this network in order for Traefik to connect to it. As well, the `web_bridge` is listed as one of the network(s) under the `networks` property of the `jellyfin` service.
+
+Next, the main way Traefik works, within the context of a Komodo host, is through Docker labels; Traefik constantly scans new containers, looking for specific labels under the `traefik` label namespace. If it detects containers with labels that are marking them to be used with Traefik, it will use the values of those labels as its configuration to be used for those containers.
+
+Here are some labels of importance:
+- `traefik.enable`: If this is set to `true` for a container, Traefik will know that it is a container that it can service.
+- `traefik.http.routers.ROUTER_NAME`: These labels configure a specific router (each router has a unique name), the endpoint through which Traefik will listen to external traffic. Note that routers are generally named after the Compose services they service, for our repository.
+  - `traefik.http.routers.ROUTER_NAME.rule`: This sets the specific endpoints and conditions for which the router is configured. In this example, it is set to `` Host(`jellyfin.media.int.saphnet.xyz`) ``, which means that it will only listen to traffic directed to the host, `jellyfin.media.int.spahnet.xyz`.
+  - `traefik.http.routers.ROUTER_NAME.entrypoints`: This sets the entrypoint (the specific port(s) and what type of protocols they serve) for the router. For our repository, we generally set the entrypoint to `websecure`, which is defined on our Traefik instances to be HTTPS, on port 443.
+  - `traefik.http.routers.ROUTER_NAME.tls`: This determines whether TLS is enabled for this router, which it is (`true`); this generally should be `true` for routers using `websecure`.
+  - `traefik.http.routers.ROUTER_NAME.tls.certresolver`: This determines what certificate resolver is used for generating TLS certificates. Generally, for Compose stacks in this repository, it should be `letsencrypt` (like in this example), as it is already configured in our Traefik instances to use the Let's Encrypt service for generating such certificates.
+  - `traefik.http.routers.ROUTER_NAME.service`: This determines the Traefik service to direct traffic from the router to, as routers are only for managing endpoints. In this case, it is defined as the `jellyfin-svc` service, which is defined in the next label.
+- `traefik.http.services.SERVICE_NAME.loadBalancer.server.port`: This defines a Traefik service, which is a resource that defines to what backend servers traffic is directed to (in this case, a service with the name `jellyfin-svc`), and then provides it with the configuration for a server for the service's load balancer; in this case, the load balancer's server is just defined with the port on the specific container to direct traffic to (`8096`).
+  - Note that, for our repository, Traefik services are generally named after the routers they are connected to, but with `-svc` appended as a suffix.
+
+This section only scratches the surface of how a Compose stack service can be configured to be serviced by Traefik. For more information on how to configure Traefik for a Compose service, please read [the README of the Compose stacks for Traefik](stacks/traefik/README.md).
 
 ### Other custom functionality (entrypoints, scripts, init services)
 - Do add TODO note on this: https://docs.docker.com/compose/how-tos/init-containers
