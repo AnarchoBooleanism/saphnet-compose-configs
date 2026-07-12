@@ -132,7 +132,7 @@ If starting completely from scratch (e.g. when deploying applications that weren
 - **Is the application supposed to be connected to, via specific ports?** If so, make sure to add mappings of host ports to container ports as string entries in a sequence under the `ports` attribute of the service; the format for each mapping is `PORT_ON_HOST:PORT_ON_CONTAINER`.
 - **Does the application write/read persistent data to/from a specific location, particularly between runs?** If so, make sure to create a volume as a dictionary entry under the top-level `volumes` attribute, and then mount it as a directory to the service, as a string entry under the `volumes` attribute (a sequence) of the service, in the format of `VOLUME_NAME:/PATH/ON/CONTAINER`.
 - **Does the application expect to communicate with other applications that are started with it?** If so, create a network as a dictionary entry under the top-level `networks` attribute, and then, for each service that requires connectivity to other services, add the name of the network to the sequence that is the `networks` attribute of the service, as a string. As a note, make sure that each application is aware of the hostnames of the other services.
-- **Does the application require multiple commands, extra setup, etc. before running?** If so, modify the `entrypoint` attribute of the service to start a shell (e.g. `/bin/bash`), and then, under the `cmd` attribute of the service, specify the commands that are needed to perform the extra setup, and finally, specify the command that will run the main application. If the script is lengthy, you can have it as a separate script file that then gets mounted to the service (under the `volumes` attribute of the service), and then have the `entrypoint` attribute of the service refer to the location of the script (within the container). If the setup doesn't need to be done within the service itself (e.g. when what is being set up is external to the service), you can create a special sidecar service with a special script/entrypoint that runs before the main service.
+- **Does the application require multiple commands, extra setup, etc. before running?** If so, modify the `entrypoint` attribute of the service to start a shell (e.g. `/bin/bash`), and then, under the `command` attribute of the service, specify the commands that are needed to perform the extra setup, and finally, specify the command that will run the main application. If the script is lengthy, you can have it as a separate script file that then gets mounted to the service (under the `volumes` attribute of the service), and then have the `entrypoint` attribute of the service refer to the location of the script (within the container). If the setup doesn't need to be done within the service itself (e.g. when what is being set up is external to the service), you can create a special sidecar service with a special script/entrypoint that runs before the main service.
 
 No matter how you start writing your Compose file, you should try to follow the guidelines laid out in the following subsections.
 
@@ -353,7 +353,7 @@ services:
       - "8043:80" # 8043 on the host, 80 on the container
 ```
 
-In any case, when referring to environment variables provided to the Docker Compose command (anywhere in the Compose YAML file that will be interpreted), if the environment variable is being used for a value to a key that expects a string (e.g. labels and environment variables), try to ensure that it, or the entire string that it may be a part of, are surrounded in quotes to ensure that the value is *always* parsed as a string, like in this example:
+When defining environment variables and labels, which always are supposed to be strings, try to use quotes for strings that may possible be interpreted as non-strings (e.g. booleans and integers). It may be possible that a YAML parser may incorrectly parse such value, if non-voted, as non-string literals, and cause unexpected behavior where the value of the environment variable/label is different to what was originally written. Here is an example of this being used for a Compose stack file:
 ```yaml
 services:
   example:
@@ -362,7 +362,18 @@ services:
       ALWAYS_USE_EXAMPLE_OPTION: "true"
 ```
 
-In this example, the application may expect the value of "ALWAYS_USE_EXAMPLE_OPTION" to be "true" or "false", as environment variables are always strings. However, if there were no quotes around `true`, then the YAML parser will interpret it as a YAML boolean, and when the value is evaluated to create an environment variable from, it may be something unexpected, like `1` instead. Quotes are generally useful when defining strings, to reduce any ambiguity in such cases.
+For this example, the application may expect the value of "ALWAYS_USE_EXAMPLE_OPTION" to be `true` or `false` (as strings), as environment variables are always strings. However, if there were no quotes around `true`, then the YAML parser will interpret it as a YAML boolean, and when the value is evaluated to create an environment variable from, it may be something unexpected, like `1` instead. 
+
+In any case, when referring to environment variables provided to the Docker Compose command (anywhere in the Compose YAML file that will be interpreted), if the environment variable is being used for a value to a key that expects a string (e.g. labels and environment variables), try to ensure that it, or the entire string that it may be a part of, are surrounded in quotes to ensure that the value is *always* parsed as a string, like in this example:
+```yaml
+services:
+  example:
+    ...
+    environment:
+      SERVER_ID: "${SERVER_ID}"
+```
+
+The application in the above example service will always treat the `SERVER_ID` environment variable as environment variables are always strings. However, if there were no quotes around `${SERVER_ID}`, there may be some edge case where `SERVER_ID` (on Docker Compose's side) may look like a boolean or a number (e.g. `true` or `15`) that would cause a YAML parser to interpret it as a non-string literal, leading to the resulting value of the environment variable being something unexpected, instead, such as `1` when `SERVER_ID` is `true`. Quotes are generally useful when defining strings, to reduce any ambiguity in such cases.
 
 #### Note on the `version` key
 
@@ -433,7 +444,7 @@ The `command` key is specified as a sequence of strings: `/app/entrypoint.sh` an
 In any case, before modifying the `command` (and/or `entrypoint`) key of a service, be sure to review the Dockerfile of the image being used, so that there are no misunderstandings of what is being modified.
 
 ### Environment variables, fragments, and overall plumbing
-Sometimes, for a Compose stack file, you may have values that you do not want in plaintext (e.g. secrets), but still need a way to provide those values to a certain container. In many cases, you may want to determine certain options and values only at deploy-time (as opposed to being defined within the Compose stack file), to allow for flexibility between different deployment instances (e.g. multi-server stack setups). For these scenarios, environment variables (and interpolation with environment variables) are a way to accommodate these needs in a simple and secure manner. Here is an example of environment variables in action for a Compose stack file:
+Sometimes, for a Compose stack file, you may have values that you do not want in plaintext (e.g. secrets), but still need a way to provide those values to a certain container. In many cases, you may want to determine certain options and values only at deploy time (as opposed to being defined within the Compose stack file), to allow for flexibility between different deployment instances (e.g. multi-server stack setups). For these scenarios, environment variables (and interpolation with environment variables) are a way to accommodate these needs in a simple and secure manner. Here is an example of environment variables in action for a Compose stack file:
 ```yaml
 services:
   postgres:
@@ -500,7 +511,7 @@ services:
 
 When `${TARGET_PORT}` is interpolated (e.g. as `3000`), the quotes around it will ensure that it looks like `"3000"`, so that the YAML parser treats it as a string, which environment variables expect.
 
-When using environment variables within a Compose stack file, it is generally good practice to have comments specifying all of the environment variables that need (or may need) to be set, as well as any instructions for or important notes on their values, within the first lines of the file, like this: 
+When using environment variables within a Compose stack file, it is generally good practice to have comments specifying all of the environment variables that need (or may need) to be set, as well as any instructions for (or important notes) on their values, within the first lines of the file, like this: 
 ```yaml
 # Environment variables to set:
 # - MAIL_PASSWORD
@@ -644,7 +655,7 @@ services:
       ...
 ```
 
-In the above file, `${MAIL_PASSWORD}` will first be interpolated with the value of the `MAIL_PASSWORD` environment variable; the value of this will then be used to define the `N8N_SMTP_PASS` attribute of the `mail` fragment, which will be imported into the `environment` property of the `n8n` service. This allows for both the definition of reusable blocks and the ability to defer the value definition of certain properties to deploy-time.
+In the above file, `${MAIL_PASSWORD}` will first be interpolated with the value of the `MAIL_PASSWORD` environment variable; the value of this will then be used to define the `N8N_SMTP_PASS` attribute of the `mail` fragment, which will be imported into the `environment` property of the `n8n` service. This allows for both the definition of reusable blocks and the ability to defer the value definition of certain properties to deploy time.
 
 Finally, it is possible for the values of fragments to reference other fragments; the parser will resolve all required anchors until there are none left (this does mean that you should avoid circular dependencies). Here is an example that utilizes this:
 ```yaml
@@ -673,7 +684,7 @@ x-services: # Base instances of services to customize
 In the above example, there is an `x-common` top-level property, that defines various fragments that are used in the other sections, including the `x-services` top-level property. The `x-services` top-level property, which defines fragments to be used in the definition of multiple services, then references these fragments in its on defition; various services later on in the file will, in turn, import the values defined in `x-services`.
 
 #### Secrets
-There may exist certain values for your stack that are required for its functioning, but also cannot be stored in plaintext, whether in the Compose stack file, or in a Stack resource file for Komodo, due to their exposure potentially leading to misuse and unauthorized access; these types of values are called **secrets**, which encompass data such as passwords, API keys, and tokens. The main tool used for handling secrets in the Sapphic Homelab/Home Server is SOPS (short for Secrets OPerationS), which encrypts sensitive values in configuration files with public keys before writing them to a file; this allows us to store these secrets publicly (e.g. in a Git repository) without worrying about exposing them, as long as the private keys involved are kept secure. To decrypt these secrets before using them, SOPS is also used, being called by Komodo when calling Docker Compose to deploy a Compose stack; each server should have a unique private key that only it has access to, provided at server deploy-time, to use with SOPS. Note that a Compose stack file can only see the values of secrets-related environment variables, and not where they come from, or how they were created; the direct use of SOPS is only within the scope of Stack resources in Komodo itself.
+There may exist certain values for your stack that are required for its functioning, but also cannot be stored in plaintext, whether in the Compose stack file, or in a Stack resource file for Komodo, due to their exposure potentially leading to misuse and unauthorized access; these types of values are called **secrets**, which encompass data such as passwords, API keys, and tokens. The main tool used for handling secrets in the Sapphic Homelab/Home Server is SOPS (short for Secrets OPerationS), which encrypts sensitive values in configuration files with public keys before writing them to a file; this allows us to store these secrets publicly (e.g. in a Git repository) without worrying about exposing them, as long as the private keys involved are kept secure. To decrypt these secrets before using them, SOPS is also used, being called by Komodo when calling Docker Compose to deploy a Compose stack; each server should have a unique private key that only it has access to, provided at server deploy time, to use with SOPS. Note that a Compose stack file can only see the values of secrets-related environment variables, and not where they come from, or how they were created; the direct use of SOPS is only within the scope of Stack resources in Komodo itself.
 
 For our Compose stacks, there is a standard way to store SOPS secrets. All SOPS secrets are in the .env format, separated into files by Server-specific instances, named after the name of the Server resource being targeted for the instance, all ending in the extension `.enc.env` (to differentiate it from a normal `.env` file); all of these files (per stack) are then stored in the `secrets` subdirectory of the Compose stack directory (the directory holding the Compose YAML files). This is an example of what this would look like for a Compose stack:
 ```
@@ -750,7 +761,7 @@ services:
 ...
 ```
 
-The convention in our repository is that the environment variable with the path of the decrypted SOPS secrets file is named as `SOPS_SECRETS_PATH`, and that the variable references in Compose stack files using this approach are configured to fail if the environment variable is unset at deploy-time.
+The convention in our repository is that the environment variable with the path of the decrypted SOPS secrets file is named as `SOPS_SECRETS_PATH`, and that the variable references in Compose stack files using this approach are configured to fail if the environment variable is unset at deploy time.
 
 Furthermore, the way SOPS secrets files are written for this approach are slightly different: it still uses the strict `KEY=VALUE` format, but the file is parsed, like in a shell script, when Docker Compose processes it before passing its contents to the environment of the container. This means that quotes are stripped from values, and that environment variable references will be interpolated in the evaluation of these values, unless the values are wrapped in single quotes (`'`'). Here is an example of a SOPS secrets file written with this in mind:
 ```sh
@@ -823,7 +834,7 @@ networks:
 
 Generally, the network name to use when connecting with the Traefik instance of a host (to use its reverse proxy features) is `web_bridge`; this will be covered in more depth in the Traefik section.
 
-Importantly, note that, from the perspective of the Compose service, the `web_bridge` network is simply a Compose-defined network, like any other, but the configuration of `web_bridge` defines it as a specific Docker network. Furthermore, note that the `web_bridge` network entry still has to specify the name of the Docker network, even though the network (within Compose) already has a name; this is because Compose-defined networks and Docker networks are different in scope. All Compose-defined networks are mapped to Docker networks at deploy-time, but it is Docker Compose that manages them; by default, the name of a Docker network for a Compose stack's network is in the format of `STACKNAME_NETWORKNAME` (where, again, `NETWORKNAME` stands for the Compose network's name). We specify `name` to tell Docker Compose that the Compose network maps directly to a specific Docker network, and not something else that is internally defined by Docker Compose. For this reason, when creating networks in Compose stacks to be connected to by services in other stacks, the `name` property should still be specified, to avoid surprises and mismatches.
+Importantly, note that, from the perspective of the Compose service, the `web_bridge` network is simply a Compose-defined network, like any other, but the configuration of `web_bridge` defines it as a specific Docker network. Furthermore, note that the `web_bridge` network entry still has to specify the name of the Docker network, even though the network (within Compose) already has a name; this is because Compose-defined networks and Docker networks are different in scope. All Compose-defined networks are mapped to Docker networks at deploy time, but it is Docker Compose that manages them; by default, the name of a Docker network for a Compose stack's network is in the format of `STACKNAME_NETWORKNAME` (where, again, `NETWORKNAME` stands for the Compose network's name). We specify `name` to tell Docker Compose that the Compose network maps directly to a specific Docker network, and not something else that is internally defined by Docker Compose. For this reason, when creating networks in Compose stacks to be connected to by services in other stacks, the `name` property should still be specified, to avoid surprises and mismatches.
 
 Again, multiple services within a Compose stack can be connected to the same Compose network; not only that, Compose services can be connected to multiple Compose networks, like in this Compose stack file:
 ```yaml
@@ -885,7 +896,7 @@ services: # To be connected to by Homepage
     ...
 ```
 
-In this specific example, environment variables (for Docker Compose) are used to specify the IP address of the interface to bind to, as it may be hard to know what the IP address before deploy-time, or as the IP address may be dynamic; in such cases, like in the example, there is also a default value used (if the environment variable is unset) of `0.0.0.0`, which simply means that all interfaces on the host can connect to the port. The convention for this repository is that the name of the environment variable is `HOST_IP`.
+In this specific example, environment variables (for Docker Compose) are used to specify the IP address of the interface to bind to, as it may be hard to know what the IP address before deploy time, or as the IP address may be dynamic; in such cases, like in the example, there is also a default value used (if the environment variable is unset) of `0.0.0.0`, which simply means that all interfaces on the host can connect to the port. The convention for this repository is that the name of the environment variable is `HOST_IP`.
 
 #### On VPN containers
 In certain cases, you may not want a service's container to connect to the Internet through the host's IP address (and routes), but rather, through that of another location/host. In such cases, you can use a VPN container to connect that container to. A VPN container is a special container that handles connections to/from the VPN, communicating with the kernel to set up the necessary routes (this means that you will need to provide it with certain capabilities). In general, you will want to use the [Gluetun client](https://github.com/passteque/gluetun) for VPN purposes, as it is a lightweight client, designed for Docker, that supports a plethora of VPN services and technologies.
@@ -939,7 +950,7 @@ services:
 
 In the entry for the service connecting through the VPN, the `network_mode` property is set as `service:vpn`; this means that it uses the network space of another service in the stack, which is `vpn` in this case. Furthermore, there is an entry in the `depends_on` property, which is a dictionary with the name of the service for the VPN connection (`vpn`), whose `condition` property is `service_healthy`; this means that Docker Compose will wait for the `vpn` service to report itself as healthy (fully working) before starting the `deluge` service.
 
-As well, you may notice that all configuration for port mappings, networks, and Traefik labels are specified under the `vpn` service and not the `deluge` service; this is because the `deluge` service uses the network space of the `vpn` service, meaning that any connections to/from applications within the `vpn` service have to be done through the `vpn` service. If other network-related settings are specified under the `deluge` service, it will result in an error at deploy-time.
+As well, you may notice that all configuration for port mappings, networks, and Traefik labels are specified under the `vpn` service and not the `deluge` service; this is because the `deluge` service uses the network space of the `vpn` service, meaning that any connections to/from applications within the `vpn` service have to be done through the `vpn` service. If other network-related settings are specified under the `deluge` service, it will result in an error at deploy time.
 
 Note that `cap_add`, `devices`, and `sysctl` properties specified in the `vpn` service: the `NET_ADMIN` entry in the `cap_add` property allows the container to manage network interfaces and routes, the `/dev/net/tun:/dev/net/tun` entry in the `devices` property gives the container the virtual network device to use for managing virtual tunnels, and the `sysctls` property allows for more fine control over network settings, like disabling IPv6 for this connection. All of these properties are necessary for ensuring that the VPN container has what it needs for managing VPN connections.
 
@@ -980,7 +991,7 @@ services:
 
 Note that this approach is not as portable as using Docker volumes, as it is reliant on the directory structure of the host, which may differ between hosts. However, this approach may be the only option in cases where Docker volumes are unable to be used for a certain purpose.
 
-As well, like networks, which have different scopes between that of a Compose stack and within Docker's global context, volumes are also different between within a Compose stack file and in Docker itself. All Compose-defined volumes are mapped to Docker volumes at deploy-time, but it is Docker Compose that manages them; by default, the name of a Docker network for a Compose stack's network is in the format of `STACKNAME_VOLUMENAME` (where, again, `VOLUMENAME` stands for the Compose volume's name). If you want to make sure a volume's name stays the same, between stacks, specify `name` to tell Docker Compose that the Compose volume maps directly to a specific Docker volume, and not something else that is internally defined by Docker Compose; doing this is not as necessary for volumes as for networks, but this fact may be important to consider for specific cases.
+As well, like networks, which have different scopes between that of a Compose stack and within Docker's global context, volumes are also different between within a Compose stack file and in Docker itself. All Compose-defined volumes are mapped to Docker volumes at deploy time, but it is Docker Compose that manages them; by default, the name of a Docker network for a Compose stack's network is in the format of `STACKNAME_VOLUMENAME` (where, again, `VOLUMENAME` stands for the Compose volume's name). If you want to make sure a volume's name stays the same, between stacks, specify `name` to tell Docker Compose that the Compose volume maps directly to a specific Docker volume, and not something else that is internally defined by Docker Compose; doing this is not as necessary for volumes as for networks, but this fact may be important to consider for specific cases.
 
 #### Mounting non-Compose config files
 - Docker Compose only takes in compose files, and while you can do a lot with them, you may still need to provide other configuration files, so volumes feature can be used here, mount files on repo to specific location in container
@@ -1041,7 +1052,7 @@ volumes:
 
 All relevant options are under the `driver_opts` property of the volume's entry, to configure the volume to use the NFS driver. The `type` property is specified as `nfs`, as the volume uses NFS. The `o` property (a string) represents all the options (relevant to NFS mounts), separated by commas, that are passed to the `mount` command (when mounting the NFS share to the volume's directory on the host) with the `-o` argument, like in `mount -t nfs -o OPTIONS DEVICE TARGET`. Under `o`, we specify `addr` as the hostname of the NAS (`nas1.int-net.saphnet.xyz` in this case), `nolock` to disable file locking (to improve compatibility with the NFS server), `soft` to report errors to the program in case of NAS unreachability (instead of forcing the program to wait with `hard`), `rw` to enable both reads and writes, and `nfsvers=4` to set the NFS version to be version 4 (a more recent version of NFS, which we recommend). Generally, for most volumes using NFS shares, these options will suffice. The `device` property lists the the location of the NFS share on the NAS, in the format of `:/PATH/TO/SHARE/LOCATION` (note the `:` symbol in the beginning); for TrueNAS hosts, the format may be something similar to `/mnt/DATAPOOL/DATASET[/SUBDATASET...][/SUBDIR...]` (e.g. `/mnt/saphnet-nas1c/netboot-assets`).
 
-*For more information on the options that can be specified within `o`, refer to [this guide on the `mount` options for NFS file systems](https://docs.oracle.com/cd/E19253-01/816-4555/rfsrefer-16/index.html).*
+*For more information on the options that can be specified within the `o` property, refer to [this guide on the `mount` options for NFS file systems](https://docs.oracle.com/cd/E19253-01/816-4555/rfsrefer-16/index.html).*
 
 Mounting an NFS-backed volume to a service is the same as mounting any other volume to a service, where you add an entry to the `volumes` property of the service, as a string in the format of `VOLUME_NAME:/PATH/TO/DIRECTORY`. Here is an example of the volume in the previous example being mounted to a location in a service's container:
 ```yaml
@@ -1137,15 +1148,9 @@ Here are some labels of importance:
 This section only scratches the surface of how a Compose stack service can be configured to be serviced by Traefik. For more information on how to configure Traefik for a Compose service, please read [the README of the Compose stacks for Traefik](stacks/traefik/README.md).
 
 ### Other custom functionality (entrypoints, scripts, init services)
-- Do add TODO note on this: https://docs.docker.com/compose/how-tos/init-containers
-- sometimes, before container runs, or while container runs, may need to do something so it can do its job properly that can't be easily done with default functionality or execution flow
-  - sometimes it needs to do stuff with files, databases, networks, create initial data, etc
-- For this, can use entrypoints, scripts (to feed into container if it supports that), and init containers
-- Entrypoints pretty simple since it is first command that container runs, but do make sure to investigate dockerfile so you know how to go back to regular function
-- Alternatively, can have init container with image of your choosing that does stuff, you can have main container wait for it to run, though this only works for stuff that is external to container (e.g. volumes, networks)
-- Either way, if script a bit lengthy, probably good idea to have it be separate file and mount it with volume
-- If image supports it, you can also mount script files with volumes, and have the container run the script alongside its own things
+For various Compose stacks, before (or during) the deployment of a service, specific tasks may need to be done first, such as creating files and databases, for the main service to be able to function completely (and as expected); often, these tasks cannot be done with the default functionality or execution flow of the application(s) run in the service's container. In such scenarios, custom entrypoints, custom scripts, and special init containers can be used for performing these tasks. 
 
+Custom entrypoints are generally simple to set up; simply configure the `entrypoint` property of the service as a sequence of strings representing the program to run as well as its arguments, like in this Compose stack file:
 ```yaml
 services:
   app:
@@ -1161,6 +1166,41 @@ services:
         /bin/su -s /bin/bash -c '/start-collabora-online.sh' cool
 ```
 
+The above example configures the entrypoint as a call to the Bash shell, with the main argument representing the list of commands to run under Bash, in the `bash -c COMMANDS` format; note that this means that we can have the entrypoint run a multi-line script, as while the entrypoint can only represent one command, this command can represent a payload being given to a shell that can run that payload. The multi-line script first downloads a file to a specific location in the container, and then runs the main entrypoint script provided by the image, to return to normal execution.
+
+Using a custom entrypoint allows you to do anything within the context of the service's container, including modifying its internal directory structure. However, please note that there are many caveats and considerations that exist with this approach.
+
+Firstly, the way the arguments are written, and separated, for the `entrypoint` property matter a lot. Each string, after being parsed by the YAML parser, will be processed literally (with no further parsing or whitespace stripping, like in a shell) and be treated as a complete argument (with no further splitting); if specific arguments are split (into separate YAML strings) incorrectly, or if there are any unexpected characters in any argument (e.g. extra whitespace at the end of a string), the called program may fail to work as expected. If you are unsure about how to split strings for a command, consider how you would write the command into a shell: if a space (or multiple) separates tokens (sequences of non-space characters, in this case), then those tokens should be considered as separate strings in the YAML sequence, and if any sequence of characters (spaces included) are wrapped in quotes to treat it as a single argument, then that sequence of characters should be treated as an unbroken string in the YAML sequence for `entrypoint`. Note that, like in the above example, individual arguments can span multiple lines, which can be represented with YAML multi-line strings; this is highly useful for passing multi-line scripts to `/bin/bash`.
+
+Importantly, the Docker image's default `ENTRYPOINT` values may be performing tasks (such is running specific scripts) that are highly important for the container's functioning. Before modifying the `entrypoint` property of your Compose service, be sure to consult the Dockerfile of the relevant image to understand what is being called, and if there are any scripts being imported into the Dockerfile and used for `ENTRYPOINT`, to understand their purpose. In many cases, you may just want your entrypoint to be a short script that performs special tasks before passing control to the regular entrypoint script in the image, which should allow you to only focus on stack-specific needs, while leaving the rest to what was already defined in the image; 
+
+As well, setting the `entrypoint` does not necessarily make values of `CMD` (the extra arguments attached to the end of a Docker image's `ENTRYPOINT`) empty. If the Docker image's default values for `CMD` are not empty, then they may be appended to the end of the `ENTRYPOINT` values (to form the full command to run the container with) and lead to unexpected behavior. In any case, make sure to read the Dockerfile of the relevant image to determine the necessary course of action, and whether the values of `CMD` provide anything that may need to be moved to another part of the Compose service's definition.
+
+Again, in any case, before modifying the `entrypoint` (and/or `command`) key of a service, be sure to review the Dockerfile of the image being used, so that there are no misunderstandings of what is being modified. In addition, the contents of the Dockerfile may be subject to change, including the contents of the `ENTRYPOINT` and `CMD` values, as well as of the scripts being referred to in the image, so be sure to check an image's Dockerfile before updating the image, in order to be able to prepare for potential changes.
+
+If the intended contents of the script span more than a few lines (or are otherwise long), it may be more desirable to write it as a separate script file that gets mounted to the container, with the entrypoint command being pointed to its location on the container; this allows us to avoid any potential limits on the length of a single command, and separate the concerns of the Compose stack file from that of the script. Here is an example of this in action, for a Compose stack file:
+```yaml
+services:
+  example:
+    ... # Omitting for brevity
+    volumes:
+      - ./custom-entrypoint.sh:/custom-entrypoint.sh:ro
+    entrypoint:
+      - /custom-entrypoint.sh
+```
+
+Here is what `custom-entrypoint.sh` would look like, for this example:
+```bash
+#!/bin/bash
+
+# This is an example of a command being run in the entrypoint
+mkdir /app/data
+# The rest of the file is just a Bash script
+```
+
+In the above example, the `custom-entrypoint.sh`, presumed to be in the root of the Compose stack directory, is mounted to `/custom-entrypoint.sh` on the container, so that it is accessible on the container. Note that `:ro` is appended to the end of the `volumes` entry; this is to prevent the script from being modified by containers (to only be modified through GitOps). Furthermore, any script file intended to be executed by a container should always be marked as executable; this can be done by running `chmod +x FILE_NAME`. Under the `entrypoint` property, the only entry is `/custom-entrypoint.sh`; this will instruct the container to directly run that script as an executable. Note that, when using the file directly, instead of passing it to a shell like `/bin/bash`, that the first line of the script should be in the format of `#!/PATH/TO/SHELL`, to instruct the operating system as to what shell executable to run the script with (e.g. `#!/bin/bash`).
+
+Certain images may already have functionality to run other scripts that exist in directories, allowing us to hook extra functionality without modifying the entrypoint; this depends on the speciifc Docker image, so please consult its Dockerfile or documentation for more information (e.g. the locations of the special directories). Here is an example of a Compose stack file that uses this functionality for a service with such an image:
 ```yaml
 services:
   postgres:
@@ -1171,6 +1211,7 @@ services:
     ...
 ```
 
+Here is what `init-data.sh` looks like for the above example:
 ```bash
 #!/bin/bash
 set -e;
@@ -1187,6 +1228,17 @@ else
 fi
 ```
 
+In the above example, the entrypoint script (of the image of the `postgres` service) runs any scripts in the `/docker-entrypoint-initdb.d` directory before starting the main application (PostgreSQL). The `init-data.sh` script does initial configuration for the Postgres database (to ensure that it is ready to use by other services); this script file is mounted into the `/docker-entrypoint-initdb.d` directory, so that the entrypoint automatically runs it. Note that neither the default execution flow nor the entrypoint have to be modified for the contents of `init-data.sh` to be run.
+
+This approach may be preferable to modifying the `entrypoint` property of a service, assuming the Docker image supports such an approach.
+
+> TODO rewrite (once Docker Compose is at version >=5.3.0 for all Komodo hosts) to use the approach described in https://docs.docker.com/compose/how-tos/init-containers
+
+Another approach to running custom tasks before/during the deployment of a service is to create a service for an init container: an init container is a special container, with its own image and tools, that is configured to perform specific tasks, and then exit, before another container can run. There is more plumbing involved, in terms of configuring the Compose stack and service, but it does mean that the contents of the container (or its entrypoint) do not need to be modified beforehand, which can lead to a cleaner (and more modular) setup. As well, using a separate image for the init container means that we can pick any image that suits our needs, with any amount of tools included.
+
+Note that init containers do not have access to the internal directory structure of the container that it complements, so they can only be used to configure anything external to the container (e.g. volumes and external databases); for anything specific to the container itself, you will need to use custom entrypoints and custom scripts mounted directly to the container, instead.
+
+Here is an example of a Compose stack file that uses an init container service to complement another service:
 ```yaml
 services:
   example-service: # Has volume that may need to be set up first
@@ -1214,54 +1266,47 @@ services:
         if [ ! -f /config/data/secret.txt ]; then
           tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 > /config/data/secret.txt
         fi
+    # NOTE: AVOID setting the restart property as "unless-stopped", as the
+    #       init container service should NOT be continuously running!
 
 volumes:
   example-service-data:
 ```
 
+In the above example, `init-helper` is defined as another Compose service; it uses the `alpine` package, as it is a lightweight image that works well for general-purpose needs, with most base Linux tools built in. As it is designed to work with a volume that the `example-service` service will use (`example-service-data`), the volume is mounted to somewhere within the `init-helper`; the location of such a mount is flexible, as long as the script that the container runs knows where it is, and as long as the mount doesn't conflict with pre-existing Linux directories (e.g. directly to `/etc`).
+
+Note that, unlike other types of services/containers, the init container service should NOT have its `restart` property to be configured as `unless-stopped`, as they are intended to run only once (not continuously).
+
+More importantly, the `init-helper` service has an entrypoint configured, that consists of a multi-line script being fed into the `/bin/bash` executable (of the image). For init containers, the `entrypoint` property is where its main purpose is defined; in this example, the entrypoint is for a Bash script that generates a file for a secret for the `example-service-data` volume, if it does not exist yet.
+
+Again, note that if the intended contents of the entrypoint script span more than a few lines (or are otherwise long), then it should be made into a separate script file and mounted to the init container, in the same process shown earlier in this section.
+
+For an init container service to work as an init container service, the Compose service(s) that need it to run first must be configured to wait for the init container service to successfully exit (with the exit code 0). This is done by listing the name of the Compose service for the init container as a dictionary key under the `depends-on` property of the dependent Compose service(s); under the dictionary entry for the init container service, under `depends-on`, the `condition` property must be set to `service_completed_completely`, to configure the dependent service(s) to start only after the init container has exited (as opposed to starting once the init container has started).
+
+As another note, when creating Stack resources for Komodo (which will be covered in further depth later in this guide), with Compose stacks that contain init container services, remember to configure the Stack to ignore the state of the init container service when determining the status of the Stack, as exited init containers may cause Komodo to incorrectly conclude that the Stack is unhealthy, when the init container has only done its job.
+
 ### Writing stacks to be run across multiple servers
-- a compose stack is just a blueprint, still needs to be run on server
-- in fact, you can deploy a compose stack as many times as you want
-- depending on applications, using the same file as-is may work
-- in some cases, may want to distinguish the instances or give them different data/arguments
-  - if simple enough, can just make them environment variables (for docker compose to interpolate) and have komodo feed them per Stack
-- however, setup may require more complex setup that can't just use env vars, like different structures and such
-- in that case, can have different compose stack files in stack dir
-  - however, please have them share as much as possible
-    - exist two ways to do this
-      - can have a base file and a server-specific file that komodo will specifically read (be given that) and merge
-      - can also have a file that serves as a template, and then server-specific file that directly references the service in that file, and extend and merge with its own data, komodo does not need to know about base file
-- first method
-  - komodo just merges things
-  - if key-value pairs, will just merge them recursively
-    - if any conflicting pairs though (whose values aren't just dictionaries or sequences), then will be overwritten by file specified last
-    - if sequence, will be appended in order of files
-    - however, shell commands, entrypoints, healthcheck: test will be overwritten
-    - can use !reset and !override if stuff
-- second method
-  - komodo doesn't know about the file, docker compose will handle it when reading the file that komodo gives
-  - less files to handle on komodo itself, but extends part is only per service and object, anything that extended object references will not be imported unless specified too in file komodo uses
-  - again, importing file overrides of imported file
+A Compose stack is only a blueprint; turning a Compose stack (deploying a stack) into actively running containers requires Docker Compose to be run, with the stack's files, potentially with environment variables provided to Docker Compose when deploying; this stage of running and configuring Docker Compose is what Komodo focuses on when managing Stack resources. Like a regular blueprint, you could theoretically build (deploy) it as many times as you would like; in certain cases, using the same Compose stack file(s), as-is, across multiple servers may work sufficiently for the needs of the stack.
 
-```
-Repository root (./.)
-│
-├─ ...
-├─ stacks
-│   ├─ (Your stack)
-│   │   ├─ ...
-│   │   ├─ secrets (optional)
-│   │   │   ├─ SERVER-NAME.enc.env (SERVER-NAME stands in for a Server resource's name)
-│   │   │   ├─ SERVER-NAME-2.enc.env
-│   │   │   └─ ...
-│   │   ├─ compose.yaml
-│   │   ├─ SERVER-NAME.yaml
-│   │   ├─ SERVER-NAME-2.yaml
-│   │   └─ ...
-│   └─ ...
-└─ ...
+However, you may want to distinguish each instance of the Compose stack, between servers, in some manner (e.g. unique identification), or provide each instance with different data and arguments for their specific needs. In some cases, using environment variables to define simple YAML values in Compose stack files that distinguish the instances of those Compose stacks may suffice, if those are the only types of values that differ between instances. Here is an example of a Compose stack file where this approach will work:
+```yaml
+services:
+  simple-service:
+    ... # Omitting for brevity
+    environment:
+      SERVER_ID: "${SERVER_ID}"
+    ...
 ```
 
+In the above example, the `simple-service` service requires the `SERVER_ID` environment variable (for the container) to be set, as this is what provides the applicaion within the container a way to identify itself. Since an environment variable is just a string, we can use another environment variable (from the scope of Docker Compose) to define its value, which is, again, `SERVER_ID`; since each instance of a Compose stack has to be defined by a Stack resource, which are specific to a Server (for Komodo), each Stack resource using the Compose stack files can have their own value for the `SERVER_ID` environment variable, allowing for instances to be easily distinguished without the use of extra Compose YAML files.
+
+On the other hand, certain Compose stack resources cannot be distinguished easily through simple YAML value swaps; there may be pieces of functionality that may only exist for one instance but not another, or different instances may require different structures for their data, like with labels. In that case, you will need to create extra Compose YAML files for each instance. Generally, a multi-instance Compose stack with this approach is split into a main Compose YAML file with configuration shared by all instances (e.g. image names) that all instances will use/reference, and then individual Compose YAML files for each instance (each named after the Komodo Server that they run on) with individualized configuration options for an instance's needs. For any instance of a Compose stack using this approach, the contents of the main YAML file and the instance-specific YAML file will be merged, by Docker Compose, when deploying the instance of the Compose stack.
+
+*For more information on Compose YAML file merging, refer to [the section of the official Compose specification on merging](https://github.com/compose-spec/compose-spec/blob/main/13-merge.md).*
+
+One way to handle this approach is to split the Compose YAML files into a base file (entirely designed to be only run alongside an instance file) and multiple instance files, where both types of file are provided to Docker Compose at deploy time; Docker Compose will recursively combine the values of the provided files, with precedence being determined by the order of the files provided (later files will be prioritized when there are conflicts).
+
+This is what the directory structure of a Compose stack using this approach would look like:
 ```
 Repository root (./.)
 │
@@ -1281,6 +1326,9 @@ Repository root (./.)
 └─ ...
 ```
 
+As shown in the example, the name of the base file should generally be `base.yaml`, to distinguish it from `compose.yaml`, as `compose.yaml` (for this repository) indicates a Compose stack file that can be run standalone. Furthermore, the name of the instance-specific files should be named after that of the Server (a Komodo resource) that they are intended to be deployed on, so a file intended for use with the `control-server` Server should be named as `control-server.yaml`. As well, any secrets files (under the `secrets` subdirectory) for instances should be also named after the name of the intended Server, so a secrets file for the `control-server` Server would be named `control-server.enc.env`, and placed under `secrets`.
+
+This is what a `base.yaml` file for a multi-instance Compose stack would look like:
 ```yaml
 # To be run, and merged, with another host-specific file (e.g. control-server.yaml)
 # Example command:
@@ -1311,6 +1359,7 @@ volumes:
       device: ":/mnt/saphnet-nas1c/docker-volume-backups"
 ```
 
+Notice that this file has almost everything needed to run an instance of the `docker-volume-rclone` stack, such as image names, some basic environment variables, and an NFS-backed volume. However, also notice that there are some missing values that need to be filled before the Compose stack can successfully be deployed: the `TARGET_SUBDIR_NAME` and `VOLUME_NAMES` environment variables. For this approach, the instance-specific files are what provide the missing values, and these values are what get combined with the configuration of the base file. This is an example of what an instance-specific file looks like (for control-server, in this case):
 ```yaml
 # To be run, and merged, with the base file
 # Example command:
@@ -1325,6 +1374,9 @@ services:
         komodo_mongo-data
 ```
 
+Notice that the `environment` property of the corresponding service includes values for the necessary missing environment variables.
+
+When combined, the final Compose YAML file for the Compose stack should look like this:
 ```yaml
 x-common:
   TIMEZONE: &timezone "America/Los_Angeles"
@@ -1353,6 +1405,33 @@ volumes:
       device: ":/mnt/saphnet-nas1c/docker-volume-backups"
 ```
 
+Again, when creating a Stack resource (for Komodo) that targets a Compose stack using this approach, make sure to include filenames for both the base YAML file and the instance-specific files in the `file_paths` property. As well, the order of the listing of the filenames matters is crucial; Docker Compose, when provided with multiple Compose YAML files, will recursively merge dictionary values, so that all unique keys under a certain property across the files will all be combined together in the final file, but when there are keys whose values are not dictionaries or sequences (e.g. strings), values defined in files listed later take override the values of earlier files for the same key. For sequences, when a key defined across multiple files as a sequence, the sequences will be appended to each other in order of file order, so the values of a (sequence type) key in a later file are listed after the values of that same key defined in an earlier file; the exceptions to this are for shell command properties of services, like `command`, `entrypoint`, and `healthcheck.test`, where definitions of the same key in later files override those of earlier files. For special circumstances, you can also use the `!reset` and `!override` YAML tags, in later YAML files, to reset and override the previous definitions of specific properties; these tags would be placed between the specification of the key (and the `:` symbol) and the specification of the value.
+
+The other way to handle this approach (for multi-instance Compose stacks) is to split the Compose YAML files into a base file that can run standalone (but still has all the values that all instances share) and multiple instance files that extend that base file (with the `extends` property for a service), where only one or the other types of file is provided to Docker Compose (not both); the values of the instance-specific file get overlaid on top of that of the base file, if used.
+
+This is what the directory structure of a Compose stack using this alternative approach would look like:
+```
+Repository root (./.)
+│
+├─ ...
+├─ stacks
+│   ├─ (Your stack)
+│   │   ├─ ...
+│   │   ├─ secrets (optional)
+│   │   │   ├─ SERVER-NAME.enc.env (SERVER-NAME stands in for a Server resource's name)
+│   │   │   ├─ SERVER-NAME-2.enc.env
+│   │   │   └─ ...
+│   │   ├─ compose.yaml
+│   │   ├─ SERVER-NAME.yaml
+│   │   ├─ SERVER-NAME-2.yaml
+│   │   └─ ...
+│   └─ ...
+└─ ...
+```
+
+Like in the example, the name of the base file should generally be `compose.yaml`, as opposed to `base.yaml`, to indicate it that can be run standalone. Furthermore, like the previous approach, the name of the instance-specific files should be named after that of the Server (a Komodo resource) that they are intended to be deployed on, and any secrets files for instances should be also named after the name of the intended Server, under the `secrets` subdirectory of the Compose stack directory.
+
+This is what a `compose.yaml` file for a multi-instance Compose stack (with this approach) would look like:
 ```yaml
 # NOTE: If you want this to be accessible via Traefik, have a separate Compose file that refers to
 # this file that has the labels included.
@@ -1376,6 +1455,9 @@ services:
     pid: host
 ```
 
+Notice that this file has virtually everything needed to run an instance of the `glances` stack, besides Traefik labels, which are completely optional. 
+
+This is an example of what an instance-specific file looks like, for this approach (for docker-host-core, in this case):
 ```yaml
 # No need to run this AND compose.yaml, this file imports it by default
 
@@ -1396,7 +1478,7 @@ services:
       traefik.http.services.glances-svc.loadBalancer.server.url: "http://host.docker.internal:61208"
 ```
 
-
+Notice that the comment mentions not to provide both the `compose.yaml` file and the instance-specific file to Docker Compose, as the instance-specific file already comes with a reference to `compose.yaml`. Furthermore, `glances` is defined as a service that is based off of the `glances` service in `compose.yaml`; the resulting service will be a combination of that referenced service's configuration and the extra configuration provided in `labels`, with conflicting values from the instance-specific file overriding those of `compose.yaml`. Note that this approach is more granular than the previous approach; you only pick specific services to extend and won't inherit any more of the configuration of the referenced file. This is an example of what Docker Compose might resolve the final YAML to be:
 ```yaml
 services:
   glances:
@@ -1426,13 +1508,18 @@ services:
     pid: host
 ```
 
-### Writing a README
-- tldr: basically write for someone who knows nothing about the stack, but wants to instantiate something for a specific server, though assume they know docker and such, give them enough to get something from scratch
-- give a quick description, this will be used in the Stack description too
-- give notes and warnings about things to watch out, dependencies, etc
-- describe environment variables to pass
-- if stack requires manual work after deploying, guide them through all the steps, the more they can copy and paste, the better
+Importantly, as stated before, note that the approach of using the `extends` property is much more granular than in the previous approach where all top-level properties of all provided files are merged and considered in the final Compose YAML file. This means that any volumes, networks, etc. that the extended service (the service being referred to by the instance-specific file) refers to and depends on will not also be imported (and be useable) in the final Compose YAML file; to use those resources, they will have to be individually re-defined in the instance-specific file, with `extends` defined for each one. In such a scenario, this may lead to a lot of unwanted, error-prone repetition, potentially across many files. If you still want to use this approach of still having a standalone base `compose.yaml` file without those problems, you are also able to use the previous approach that does not rely on `extends`, but ensure that the base file is named as `compose.yaml` and can run on its own.
 
+### Writing a README
+**TLDR**: For a README for a Compose stack, write for someone who may not know anything about the stack but still wants to instantiate it for a specific server (with a Komodo Stack resource)! You are welcome to assume that they understand Docker and other related technologies, but give them enough instruction to be able to create something from scratch with the stack.
+
+A README for a Compose stack generally starts with the name of the Compose stack, and the name should be decorated as Header 2 (using `##`). After the name should be a quick one-line description of what the stack is for and what it does; this will be the same description that will be used in Komodo Stacks that use the Compose stack. Generally, descriptions for stack aren't complete sentences, but rather a complete noun phrase (and other modifiers), capitalized like a sentence, and with a period at the end. Here is an example of what this looks like for the `vertd` stack:
+```markdown
+## vertd
+The daemon that handles video conversions for the VERT.sh service, with GPU acceleration.
+```
+
+After the description, if there are any environment variables, you should specify all of the environment variables that need (or may need) to be set, as well as any instructions for (or important notes) on their values. These should be in the same order as in the comments on environment variables in the Compose stack file; you are able to copy the descriptions from those comments, too. This is an example of what it looks like for the `velocity-vps` stack:
 ```markdown
 When deploying, make sure to set these environment variables with your secrets:
 - `VELOCITY_FORWARDING_SECRET` - The forwarding secret to use with Velocity, for the purposes of authentication
@@ -1440,6 +1527,8 @@ When deploying, make sure to set these environment variables with your secrets:
 - `SFTP_PASSWORD` - The password to login into the SFTP server as `velocity-user` with
 - `TAILSCALE_IP` - For the SFTP and RCON servers, set this if you want to restrict the interfaces from which it can be reached (e.g. restricting from public access)
 ```
+
+As well, if the Compose stack requires any more work to configure outside of any GitOps-tracked files within the stack directory, such as within the Komodo Stack configuration or in terms of manual work (e.g. account creation via a web portal), you should include instructions for (or important notes on) getting the stack and applications ready for use. This can be in the form of a step-by-step guide on how to navigate a web portal workflow, a set of commands to run in one part of the process, or a note on custom options you may want to set for your needs. In addition, if there are any important pieces of info that relate to what is required on the Komodo host, or the overall management of the stack, you should also list them as things to note.
 
 ## Setting up Stacks in Komodo resource file
 - add note on making sure any changes to compose, non-compose config, and environment variables ARE reflected in this! since komodo is what controls stuff and redeploys
@@ -1662,6 +1751,9 @@ environment = """
 TAILSCALE_IP = '[[TAILSCALE_IP_PVE3]]'
 """
 ```
+
+### Ignoring init containers
+- 
 
 ## Setting up new hosts/servers
 - for setting up new Server resource for new server, after setting up stuff in saphnet-komodo, saphnet-komodo will expect this file, and that it contains these
