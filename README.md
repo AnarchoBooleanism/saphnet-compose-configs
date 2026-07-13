@@ -994,11 +994,6 @@ Note that this approach is not as portable as using Docker volumes, as it is rel
 As well, like networks, which have different scopes between that of a Compose stack and within Docker's global context, volumes are also different between within a Compose stack file and in Docker itself. All Compose-defined volumes are mapped to Docker volumes at deploy time, but it is Docker Compose that manages them; by default, the name of a Docker network for a Compose stack's network is in the format of `STACKNAME_VOLUMENAME` (where, again, `VOLUMENAME` stands for the Compose volume's name). If you want to make sure a volume's name stays the same, between stacks, specify `name` to tell Docker Compose that the Compose volume maps directly to a specific Docker volume, and not something else that is internally defined by Docker Compose; doing this is not as necessary for volumes as for networks, but this fact may be important to consider for specific cases.
 
 #### Mounting non-Compose config files
-- Docker Compose only takes in compose files, and while you can do a lot with them, you may still need to provide other configuration files, so volumes feature can be used here, mount files on repo to specific location in container
-- remember that containers don't have access to files unless given, and it has to be mounted in specific places (which can be to our advantage, since we can organize our stacks directory how we want, and we can map it to how program expects it)
-- stuff about making sure relative to root of stack directory
-- note about read-only, to avoid potential issues, since it is IaC
-
 One thing that mounting files from the host to a container is useful for is non-Compose config files that are tracked in the Git repository, in the same directory (or within a subdirectory of) the Compose stack's directory. Docker Compose can only (directly) be given Compose YAML files, and while the Compose YAML schema provides many features, there may be cases where you will need to provide another file from the repository to the container, such as scripts or other long configuration files. In such cases, file mounting is the only way to provide the file(s) to the container, as containers do not have access to files on the system, unless explicitly given. As well, file mounting provides us with the flexibility to structure the config files within a Compose stack's directory however we see fit, as each file can be mapped from anywhere on the host (our repository, in this case) to anywhere in the container's directory structure; the application(s) within the container may expect specific config files to be in specific locations, but this file mounting approach allows us to decouple that from how the directory in the repository is organized.
 
 This is an example Compose stack directory structure, to demonstrate how such non-Compose config files can be organized:
@@ -1511,7 +1506,7 @@ services:
 Importantly, as stated before, note that the approach of using the `extends` property is much more granular than in the previous approach where all top-level properties of all provided files are merged and considered in the final Compose YAML file. This means that any volumes, networks, etc. that the extended service (the service being referred to by the instance-specific file) refers to and depends on will not also be imported (and be useable) in the final Compose YAML file; to use those resources, they will have to be individually re-defined in the instance-specific file, with `extends` defined for each one. In such a scenario, this may lead to a lot of unwanted, error-prone repetition, potentially across many files. If you still want to use this approach of still having a standalone base `compose.yaml` file without those problems, you are also able to use the previous approach that does not rely on `extends`, but ensure that the base file is named as `compose.yaml` and can run on its own.
 
 ### Writing a README
-**TLDR**: For a README for a Compose stack, write for someone who may not know anything about the stack but still wants to instantiate it for a specific server (with a Komodo Stack resource)! You are welcome to assume that they understand Docker and other related technologies, but give them enough instruction to be able to create something from scratch with the stack.
+**TL;DR**: For a README for a Compose stack, write for someone who may not know anything about the stack but still wants to instantiate it for a specific server (with a Komodo Stack resource)! You are welcome to assume that they understand Docker and other related technologies, but provide enough instruction for them to be able to create something from scratch with the stack.
 
 A README for a Compose stack generally starts with the name of the Compose stack, and the name should be decorated as Header 2 (using `##`). After the name should be a quick one-line description of what the stack is for and what it does; this will be the same description that will be used in Komodo Stacks that use the Compose stack. Generally, descriptions for stack aren't complete sentences, but rather a complete noun phrase (and other modifiers), capitalized like a sentence, and with a period at the end. Here is an example of what this looks like for the `vertd` stack:
 ```markdown
@@ -1519,7 +1514,7 @@ A README for a Compose stack generally starts with the name of the Compose stack
 The daemon that handles video conversions for the VERT.sh service, with GPU acceleration.
 ```
 
-After the description, if there are any environment variables, you should specify all of the environment variables that need (or may need) to be set, as well as any instructions for (or important notes) on their values. These should be in the same order as in the comments on environment variables in the Compose stack file; you are able to copy the descriptions from those comments, too. This is an example of what it looks like for the `velocity-vps` stack:
+After the description, if there are any environment variables, you should specify all of the environment variables that need (or may need) to be set, as well as any instructions for (or important notes) on their values. These should be in the same order as in the comments on environment variables in the Compose stack file; you are able to copy the descriptions from those comments, too. This is an example of what it looks like for the `velocity-vps1` stack:
 ```markdown
 When deploying, make sure to set these environment variables with your secrets:
 - `VELOCITY_FORWARDING_SECRET` - The forwarding secret to use with Velocity, for the purposes of authentication
@@ -1531,16 +1526,12 @@ When deploying, make sure to set these environment variables with your secrets:
 As well, if the Compose stack requires any more work to configure outside of any GitOps-tracked files within the stack directory, such as within the Komodo Stack configuration or in terms of manual work (e.g. account creation via a web portal), you should include instructions for (or important notes on) getting the stack and applications ready for use. This can be in the form of a step-by-step guide on how to navigate a web portal workflow, a set of commands to run in one part of the process, or a note on custom options you may want to set for your needs. In addition, if there are any important pieces of info that relate to what is required on the Komodo host, or the overall management of the stack, you should also list them as things to note.
 
 ## Setting up Stacks in Komodo resource file
-- add note on making sure any changes to compose, non-compose config, and environment variables ARE reflected in this! since komodo is what controls stuff and redeploys
-- Again, Compose stacks are just blueprints that are one step away from deployment, but something needs to deploy them and provide things like environment variables, etc
-- Komodo stack resources are what this is for, describes a Stack, the resource describing what the Compose stack looks like and how its managed
-- for our repo, stacks are added to resource file of the server it goes on
-- lot of boilerplate, which just means it can easily be updated and best practices for redeploying, as well as describing the repo
-- but also describes what files to give to docker compose, also environment variables, and how SOPS will provide secrets
-- since Komodo is what checks and redeploys, also want to provide it things like extra config files to track and monitor, so that changes outside compose files change things too
-- do add note on adding things to resource sync too
-- again, make sure you add stack in alphabetical order
 
+Importantly, as stated before, Compose stack files are solely blueprints that are just one step removed from an active deployment (as running containers); something needs to perform the final step of deploying the described Compose stack, while providing the missing pieces of data, like values for environment variables. The **Stack**, a type of resource in Komodo, are what describe this final stretch of plumbing: they are objects that correspond to Compose stacks, describing the files used, the values used for environment resources, and how the Compose stack, as a whole, is managed by Komodo. As well, it provides various options on how the Docker Compose command that directly deploys a Compose stack can be set up, as well as what is run before and after; for example, this is where we call SOPS to decrypt Stack secrets and pass them to Docker Compose. The complete description of a Stack allows for Komodo to completely deploy a Compose stack, with no further manual input, as all previously-missing information gets filled in by a Stack.
+
+In the Sapphic Homelab/Home Server, following the GitOps approach, all Stacks in Komodo are described in individual entries in TOML resource files, which Komodo will then read and apply to the corresponding Stack(s) (through custom-defined Procedures). These entries, in our repository, are grouped into resource files by the Server (a Komodo resource corresponding to host servers) that is being targeted, with these files being named after the Server; for example, a resource file for Stacks on the `control-server` Server would be named `control-server.toml`. All of these Server-specific TOML resource files for Stacks should all be placed within the root directory of the repository.
+
+Here is an example of an entry for a Stack resource within a resource file:
 ```toml
 # glances
 [[stack]]
@@ -1561,6 +1552,50 @@ config_files = [
 ]
 ```
 
+Directly under the `[[stack]]` line (which creates a new entry for the `stack` array of tables for the TOML file) are attributes that describe all metadata for the Stack: the name, description, and tags (as an array of strings) are listed. Note that the name is what is used to identify the Stack, so it should be globally unique (in the context of all Komodo hosts), and not change (without any migration work). As well, tags are highly important for categorizing Stacks, such as in terms of requirements; at the very least, a Stack resource described in this repository should *always* have an `iac` tag (since anything written here is code that describes infrastructure).
+
+The `config` attribute of a `stack` entry describes the configuration of the Stack resource itself. For most Stacks, most of these lines are simply boilerplate, but each line is important for the Stack to be able to be managed properly! Here are a list of important properties of `config`:
+- `server`: This is the name of the Server that the Stack runs on.
+- `poll_for_updates`: This determines whether Komodo will regularly poll image registries for any new images (to update to) for each service in the Compose stack. This should be `true`!
+- `auto_update`: This determines whether Komodo will automatically redeploy the service(s) with new images when they are found. This should be `true`.
+- `auto_update_all_services`: This determines whether Komodo will also automatically redeploy the entire Stack when a service has a new image. This should be `true`.
+- `destroy_before_deploy`: This determines whether Komodo will destroy all running services (with a Docker Compose command) before deploying the Compose stack again, instead of just running the command to deploy the Compose stack, letting Docker Compose handle the replacement of services. This should be `true`.
+- `registry_provider` (optional): If using images from a private image registry, this is the domain of the registry (e.g. `ghcr.io`) being used for the involved images.
+- `registry_account` (optional): This is the username of the account being used to log into the private image registry specified in `registry_provider`. This should always be named when `registry_provider` is specified.
+- `ignore_services` (optional): This is an array of Compose services for Komodo to ignore when reporting the Stack's health; each entry is the name of the Compose service in question, defined in the Compose file. These are generally used for init services that exit early so that they don't mark the Stack as unhealthy. This attribute is described in further depth in a later section.
+- `linked_repo`: This is the name of the Repo (a Komodo resource, separate to a Git repository) that the Stack will use. This should be `saphnet-compose-configs`, as any Compose configurations referenced to in a resource file here will always be in the same repository as that file (which is here).
+- `run_directory`: This is the path of the directory that will be treated as the current working directory for the Stack, such as when Docker Compose is being run. This should be the path of the Compose stack being used, relative to the root directory of the repository. There is no need to prepend `./` to the path, as it is already assumed that the root will be the root directory of the repository.
+- `file_paths` (optional): This is an array of paths to Compose YAML files that will be directly passed to Docker Compose (in the `docker compose -f FILE_NAME [...] config` command). These paths are relative to the location of `run_directory`. Note that the contents of `file_paths` may differ based on the structure of the Compose stack and how it is designed for the instance in question. If this attribute is not specified, then this will be assumed to be just the path, `compose.yaml`, which should be the default name for any standalone Compose stack file in this repository.
+- `config_files` (optional): This is an array of tables, where each table describes a path to a file (`path`) and the action to take in case the file has new changes to keep the Stack up-to-date (`requires`). This is described in further depth in a later section; in general, this should include all non-Compose files used in the Compose stack, and all Compose files (in use by the Stack) that aren't listed in `file_paths`.
+- `compose_cmd_wrapper` (optional): This is the template for the complete command to use when running Docker Compose commands; note that this is not for describing specific arguments for Docker Compose, but rather, the complete command that will call the Docker Compose command. The text, `[[COMPOSE_COMMAND]]`, is what is used to stand in for a Docker Compose command, and typically, it should be wrapped in single quotes to avoid being prematurely parsed by a shell. This is often used when SOPS needs to be called to decrypt secrets for a Stack.
+- `compose_cmd_wrapper_include` (optional): This is the list of the Docker Compose commands that `compose_cmd_wrapper` will be used for. If using `compose_cmd_wrapper`, this should always be `["up", "config", "build", "pull", "run"]` (for all available Docker Compose commands).
+- `environment` (optional): This is a multi-line string representing environment variables with key-value pairs, all of which are provided to Docker Compose at deploy time. Each line is for one environment variable, and is in the format of "KEY = VALUE"; note that each line can have a space around `=` and will be parsed (including the stripping of whitespace and quotes), so any values that need to be taken literally should be wrapped in single quotes. Furthermore, Komodo variables can be referenced in `environment` in the format of `[[KOMODO_VARIABLE_NAME]]`; note that, even when wrapped with single quotes, these references will be interpolated with the value of the involved Komodo variable. This attribute is described in further depth in a later section.
+
+Importantly, any changes to what Compose/non-Compose files are used in a Stack should always be reflected here, in `file_paths` and `config_files`, and if the requirements for environment variables from a Compose stack file change, then any necessary change should be reflected in `environment`; it is best to bundle related changes across files (including a resource file) into single commits, even if a redeploy won't be performed between a set of related changes, to avoid potential issues with a Stack resource being out of sync with the contents of the Repo.
+
+In addition, it is best practice for all configurations for all Stacks within a TOML resource file for a Server to be listed in alphabetical order (of each Stack's names). All configurations for Stacks should be under the `## Stacks` line of the file, and there should be a comment just above the Stack configuration with the name of the stack. As well, there should be exactly one empty line between each Stack configuration. Here is an example of what this would look like for a TOML resource file:
+```toml
+... # Omitting for brevity
+## Stacks
+
+# docker-volume-rclone
+[[stack]]
+name = "docker-volume-rclone-core"
+...
+[stack.config]
+...
+
+# filestash
+[[stack]]
+name = "filestash"
+...
+[stack.config]
+...
+
+...
+```
+
+Furthermore, any Stack listed in a TOML resource file for a Server should have its name listed in the `redeploy-changed` Procedure for that Server, so that the Procedure can see it as an IaC-managed Stack that it should update (if changes exist) when the Procedure is run. More specifically, the name of the Stack would be listed in the list of patterns for the `BatchDeployStackIfChanged` execution. Note that all names of Stacks should be listed in alphabetical order. This is what this looks like for the Procedure for the `vps1` Server:
 ```toml
 ## Stack-related procedures
 
@@ -1583,10 +1618,9 @@ velocity-vps1
 ```
 
 ### On tags
-- note that all stacks defined here must have iac tag! to distinguish from manually created stacks
-- if stack is one of many in certain category (either from same stack files or do connected things), must have tag for that shared between them, before the iac tag
-- if stack requires something or works best in certain config (like gpu or high-availability), have tags for that after iac tag
+Tags are highly useful for categorizing and distinguishing Stacks based on their functions or needs. All Stacks defined in a TOML resource file, at least for this repository, must be given an `iac` tag, to distinguish it from manually-created Stacks that may not necessarily be managed as IaC.
 
+If a Stack is one of many in a certain broader category, such as when a Stack is an instance of a multi-instance Compose stack, or when it is closely connected to another Stack, then it should have a tag that marks that categorization, such as `docker-proxy` for all Stacks using the `docker-proxy` Compose stack. These category tags should come before the `iac` tag. Here is an example of a Stack that uses such tags:
 ```toml
 # docker-proxy
 [[stack]]
@@ -1597,6 +1631,7 @@ tags = ["docker-proxy", "iac"]
 ...
 ```
 
+If a Stack requires something specific from the host (e.g. GPU acceleration ability), or works best in a certain type of host (with a certain characteristic), then there should be a tag for that need or preference, listed after the `iac` tag. Here is an example of a Stack that lists such a need as a tag:
 ```toml
 # foldingathome
 [[stack]]
@@ -1607,11 +1642,15 @@ tags = ["iac", "gpu"]
 ...
 ```
 
+Commonly used tags for needs/preferences include `gpu` (for GPU acceleration ability) and `high-availability` (for the host having high availability functionality, like on Proxmox).
+
 ### On non-Compose config files
 - if compose file references other files in repo, or if there is secrets file that komodo reads, must add it to extra config files, so that komodo can track it and take right action (e.g. redeploy) if changes made to these files
 - if the file is read only at deploy time, do redeploy
 - if the file is read only at container start time, do restart
 - if it doesn't matter, but is file that is continuously dynamically read, do none
+- (from previous sections) `config_files` (optional): This is an array of tables, where each table describes a path to a file, as the `path` attribute, and the action that needs to be done in case the file has new changes to keep the Stack up-to-date, as the `requires` attribute. There should be an entry under `config_files` for every file that the Compose file(s) (listed under `file_paths`) refer to and/or mount (via the `volumes` property of a Compose service); generally, these include non-Compose files, such as secrets files, and Compose files that aren't directly specified under `file_paths`. Note that `path` is relative to the path described in `run_directory`. For `requires`, the value can be `Redeploy` (for redeploying the entire Stack) or `Restart` (for only restarting the Stack), or `requires` can be omitted if either of those actions are not needed. Generally, if the file is only read at deploy time, then it should be `Redeploy`, and if the file is only read when the service(s) is started, then it should be `Restart`.
+
 
 ```toml
 # n8n
@@ -1763,6 +1802,18 @@ TAILSCALE_IP = '[[TAILSCALE_IP_PVE3]]'
 - redeploy-changed procedure is bare minimum (make sure name matches server name), and is in exact format as described (saphnet-komodo procedure saphnet-run-iac-stack-sync designed to run all executions that end in _redeploy-changed)
 - in redeploy-changed, make sure list of stacks in execution pattern matches names of all stacks defined here
 - after that, is just list of stacks (each stack written like in the guide above), in alphabetical order, separated with "##" and newlines before and after
+
+```
+Repository root (./.)
+│
+├─ ...
+├─ stacks
+│   └─ ...
+├─ .sops.yaml
+├─ SERVER-NAME.toml (SERVER-NAME stands in for a Server resource's name)
+├─ SERVER-NAME-2.toml (Potentially, TOML files for other Servers)
+└─ ...
+```
 
 ```toml
 [[procedure]]
