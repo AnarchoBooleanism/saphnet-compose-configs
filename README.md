@@ -1554,7 +1554,7 @@ config_files = [
 
 Directly under the `[[stack]]` line (which creates a new entry for the `stack` array of tables for the TOML file) are attributes that describe all metadata for the Stack: the name, description, and tags (as an array of strings) are listed. Note that the name is what is used to identify the Stack, so it should be globally unique (in the context of all Komodo hosts), and not change (without any migration work). As well, tags are highly important for categorizing Stacks, such as in terms of requirements; at the very least, a Stack resource described in this repository should *always* have an `iac` tag (since anything written here is code that describes infrastructure).
 
-The `config` attribute of a `stack` entry describes the configuration of the Stack resource itself. For most Stacks, most of these lines are simply boilerplate, but each line is important for the Stack to be able to be managed properly! Here are a list of important properties of `config`:
+The `config` attribute of a `stack` entry describes the configuration of the Stack resource itself. For most Stacks, most of these lines are simply boilerplate, but each line is important for the Stack to be able to be managed properly! Here are a list of important properties of `config` (note that the attributes for any Stack should be in the order listed below):
 - `server`: This is the name of the Server that the Stack runs on.
 - `poll_for_updates`: This determines whether Komodo will regularly poll image registries for any new images (to update to) for each service in the Compose stack. This should be `true`!
 - `auto_update`: This determines whether Komodo will automatically redeploy the service(s) with new images when they are found. This should be `true`.
@@ -1645,13 +1645,7 @@ tags = ["iac", "gpu"]
 Commonly used tags for needs/preferences include `gpu` (for GPU acceleration ability) and `high-availability` (for the host having high availability functionality, like on Proxmox).
 
 ### On non-Compose config files
-- if compose file references other files in repo, or if there is secrets file that komodo reads, must add it to extra config files, so that komodo can track it and take right action (e.g. redeploy) if changes made to these files
-- if the file is read only at deploy time, do redeploy
-- if the file is read only at container start time, do restart
-- if it doesn't matter, but is file that is continuously dynamically read, do none
-- (from previous sections) `config_files` (optional): This is an array of tables, where each table describes a path to a file, as the `path` attribute, and the action that needs to be done in case the file has new changes to keep the Stack up-to-date, as the `requires` attribute. There should be an entry under `config_files` for every file that the Compose file(s) (listed under `file_paths`) refer to and/or mount (via the `volumes` property of a Compose service); generally, these include non-Compose files, such as secrets files, and Compose files that aren't directly specified under `file_paths`. Note that `path` is relative to the path described in `run_directory`. For `requires`, the value can be `Redeploy` (for redeploying the entire Stack) or `Restart` (for only restarting the Stack), or `requires` can be omitted if either of those actions are not needed. Generally, if the file is only read at deploy time, then it should be `Redeploy`, and if the file is only read when the service(s) is started, then it should be `Restart`.
-
-
+If a Stack's Compose stack file(s) references other files in the repository (e.g. other Compose files through `extends` or other config files), or if there is a secrets file that Komodo uses for the Stack, it must be added to its list of extra config files; this will allow Komodo to be able to track any changes to these files and take the right action (e.g. redeploy) when the Stack is brought up to date, depending on the file(s) changed. Here is an example of this being used for a Stack resource:
 ```toml
 # n8n
 [[stack]]
@@ -1665,16 +1659,12 @@ config_files = [
 ]
 ```
 
-### On environment variables (important caveats)
-- your stack files may expect environment variables to be provided when docker compose reads them
-- environment, a multi string "key = value" entry in stack.config is where you can define these (for non-secrets; sops is handled differently)
-- komodo reads these and provides them to docker compose for it to process (and pass it to container depending on stack config)
-- komodo saves these to ".env" (in current working dir) by default (but this can be changed too, with env_file_path), but can also refer to them in stack files being imported and run
-- unlike regular bash, you can put spaces around = symbol
-- however, note that single quote makes sure things are literal, since things WILL be parsed, if not using single quotes, then please escape $ with backslashes
-- generally good practice to use single quotes
-- also, you can use komodo variables here too (covered later)
+Each relevant config file is listed in `config_files`, an array, as a table specifying the path of the specific file (relative to the the Stack's working directory), as `path`, and the action required to bring the Stack up to date if the file in question has changes, as `requires`. Note that the config files being referred to include secrets files (as they are an integral part of a Stack's deployment) and other files that get mounted to service containers, like init scripts.
 
+For the `requires` attribute, if the config file in question is only read and used at deploy time (e.g. secrets files), then it should be set to `Redeploy`, for Komodo to redeploy the entire Stack when the file changes, and if the config file in question is read and used every time the service(s) start up, then it should be set to `Restart`, for Komodo to simply restart the services of the Compose stack; if none of these apply and the file is continuously read across a container's lifetime, then the `requires` attribute can be left out of the config file's entry altogether.
+
+### On environment variables (important caveats)
+A Stack's Compose files may expect specific environment variables to be provided when Docker Compose processes them. The `environment` attribute of a Stack resource's `config` attribute is where these environment variables can be defined; the `environment` attribute is a multi-line string, where each line represents an environment variable, in the format of `KEY=VALUE`. Note that secrets-related environment variables are handled differently, which will be covered in the next section. These values are evaluated by Komodo, at deploy time (for Komodo), and get provided to Docker Compose when it deploys the Compose stack files; depending on the Compose stack file, these environment variables may also be passed to the constituent service containers when being created. Here is an example of the `environment` attribute being configured for a Stack:
 ```toml
 [[stack]]
 name = "example-stack"
@@ -1688,19 +1678,18 @@ EXAMPLE_VAR_3 = 'abc$d1234$_5'
 """
 ```
 
-#### Passing in secrets (with sops)
-- always should be in secrets, as .enc.env file (we want this to be an environment variable file, like how komodo handles environment)
-- again, if secret file exists, make sure listed in config_files
-- make sure to do compose_cmd_wrapper AND compose_cmd_wrapper_include
-- two ways to pass sops env
-    - sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]' for when all environment variables being looked for are defined in file (normal way)
-        - this just puts everything in environment
-        - if doing this way, no quotes, or escaping $, because sops interpreting files very literally
-    - "sops exec-file --no-fifo secrets/docker-host-core.enc.env 'export SOPS_SECRETS_PATH={} && [[COMPOSE_COMMAND]]'" for when compose file doesn't list all environment variables but expects us to pass in anyways (useful for when there are many environment variables, are such)
-        - this puts everything into a file, passing in the path as environment variables, which compose file will pull as env file
-        - values won't be accessible to within compose file, though
-        - if doing this way, bash is parsing it, so should use quotes, and MUST escape $ with backslash (at least with double quotes? single quotes not a problem)
+The attribute allows you to define as many environment variables as needed. Note that how these environment variables are written are slightly different to in a typical .env file: spaces can be added before and after the `=` symbol. However, like in a shell environment, extra whitespace and any quotes will be stripped, and, importantly, any references to other environment variables (anything starting with `$`) will be dynamically evaluated and replaced. If you want a value to be interpreted literally (with no interpolation), then it should be wrapped in single quotes (`'`), like in the example; this is generally good practice for Stack resource files in this repository, too. If either using double quotes (`"`) or note quotes, then any `$` symbols that you don't want to have evaluated should be escaped with backslashes.
 
+As well, the values of variables defined can include the values of Komodo variables (a special Komodo resource that is globally defined for all Komodo hosts): to use them, write out their name, wrapped in double brackets, in the format of `[[KOMODO_VARIABLE_NAME]]`. This can be useful for deferring the definition of commonly used environment variables to a single source, within Komodo, and will be covered in a later section.
+
+Furthermore, the final result of the evaluation of the `environment` attribute will be stored in the `.env` file, in the working directory of the Stack; this can be referenced in Compose stack files to pass environment variables directly to service containers instead of using variable interpolation first. If you want to change the path (and name) of this file, you can configure the `env_file_path` attribute of a Stack resource's `config` attribute with the desired path, again, relative to the working directory of the Stack.
+
+#### Passing in secrets (with sops)
+Due to their sensitive nature, secrets are handled separately to other kinds of environment variables, so that no secrets are exposed as plaintext until they are used within a secure context; Komodo runs SOPS, passing secret files to it, at deploy time, which should have the necessary private keys to decrypt them and securely pass them to Docker Compose. Having this be done for a Stack requires some custom plumbing to be provided within its resource file (as custom Compose wrapper commands), but there are standard ways to do this for this repository, based on whether variable interpolation or .env files are desired for passing such secrets to the Compose services.
+
+One approach for passing secrets is the `sops exec-env` command, which passing secrets as environment variables within the environment of Docker Compose. This is useful for Stacks that use variable interpolation to pass secrets to service, and is especially useful when environment variables aren't directly referenced within service environment variable definitions, but elsewhere, such as labels.
+
+Here is an example of this in action for a Stack:
 ```toml
 # netbootxyz
 [[stack]]
@@ -1717,23 +1706,23 @@ compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 ...
 ```
 
-```yaml
-services:
-  netbootxyz:
-    ... # Omitting for brevity
-    labels:
-      ...
-      # Basic‑auth middleware
-      traefik.http.routers.netboot.middlewares: netboot-auth
-      traefik.http.middlewares.netboot-auth.basicauth.users: "${NETBOOT_LOGIN}"
-    ...
-```
+Again, note that all secrets files used for a Stack should be listed in the `config_files` attribute for a Stack resource's `config` attribute, with `requires` set to `Redeploy`.
 
+The most important piece of plumbing here is defined in the `compose_cmd_wrapper` attribute: it defines the complete command for Komodo to run when running Docker Compose. This runs the `sops exec-env` command, which decrypts a secrets file and then runs a provided command, passing the values of the decrypted secrets file to it as environment variables; here, the secrets file is named, relative to the working directory of the Stack (the directory of the Compose stack involved), then the command to ultimately run is named, which is `'[[COMPOSE_COMMAND]]'`. Note that `[[COMPOSE_COMMAND]]` is a stand-in for the Docker Compose command that will be run, and will be evaluated with the contents of the final Docker Compose command when the contents of `compose_cmd_wrapper` is executed by Komodo. As well, note that `[[COMPOSE_COMMAND]]` is wrapped in single quotes, so that it is treated as a single argument, representing the command for `sops exec-env` to run, with no extra interpolation being done by a shell (in case of any `$` symbols being used). Generally, the wrapper command to use for a Stack with this approach will be in the format of `sops exec-env secrets/YOUR_SERVER_NAME.enc.env '[[COMPOSE_COMMAND]]'`.
+
+Furthermore, `compose_cmd_wrapper_include` is configured as `["up", "config", "build", "pull", "run"]`: this just means that this `compose_cmd_wrapper`, instead of the default command, will be invoked for all types of Docker Compose commands run by Komodo. For Stacks using `compose_cmd_wrapper` for secrets, `compose_cmd_wrapper_include` should always be set to this.
+
+If using this approach, make sure that the contents of your environment variable have no extra quotes or escape characters (e.g. `\` before `$` characters), as the parser for the `sops exec-env` command will interpret secrets files VERY literally, with no extra parsing, unlike in a shell environment. This is an example of a secrets file written for this approach:
 ```ini
 EXAMPLE_VARIABLE=foobar
 EXAMPLE_VARIABLE_2=abcd$1234$=
 ```
 
+The upside of this approach is that we can be highly selective with what secrets get passed to what service, and it allows us to use the environment variables anywhere in a Compose stack file, including outside of service environment variable definitions. The downside of this approach is that each secrets-related environment variable has to be referenced twice, both in the Compose stack file(s) and in the secrets file, which can become tedious if the amount of environment variables being used changes often.
+
+The other approach for passing secrets is to create a .env file with the decrypted secrets with SOPS, and then pass the path of that file to the Docker Compose command as an environment variable, which can be listed in the `env_file` property of the relevant service(s). This approach is more complicated, but it is highly useful for Stacks where services have frequently changing (or long) lists of secrets-related environment variables.
+
+Here is an example of this in action for a Stack:
 ```toml
 # homepage
 [[stack]]
@@ -1752,6 +1741,11 @@ compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 ...
 ```
 
+Again, the command defined in `compose_cmd_wrapper` is more complicated than in the other approach, but should be standard between Stacks using this approach. The wrapper runs `sops exec-file`, which writes the decrypted secrets in the .env file format to either a named pipe or a file, and then runs a command, where `{}` is replaced with the named pipe/file; `sops exec-file` is provided with the `--no-fifo` command to use a file instead of a named pipe (as Docker Compose does not support using named pipes), the path of the secrets file to read, and then the command to run, which is a shell script that creates an environment variable for the path of the .env file and then runs the Compose command (represented with `[[COMPOSE_COMMAND]]`, which Komodo will replace before running this wrapper command), which will have access to the environment variable. As well, note that `export SOPS_SECRETS_PATH={} && [[COMPOSE_COMMAND]]` is wrapped in single quotes to be treated as a single argument to run as a complete command, without extra parsing or interpolation of environment variables. Generally, the wrapper command to use for a Stack with this approach will be in the format of `sops exec-file --no-fifo secrets/SERVER_NAME_HERE.enc.env 'export SOPS_SECRETS_PATH={} && [[COMPOSE_COMMAND]]'`.
+
+Like before, `compose_cmd_wrapper_include` is defined as `["up", "config", "build", "pull", "run"]` so that the wrapper command is used for all Docker Compose commands, by Komodo.
+
+When using this approach, make sure that, in the Compose stack file, that the value of the `SOPS_SECRETS_PATH` environment variable is listed under the `env_file` property for the relevant service(s), like in this example:
 ```yaml
 services:
   ... # Omitting for brevity
@@ -1765,20 +1759,22 @@ services:
 ...
 ```
 
+Note that the reference to `SOPS_SECRETS_PATH` is set to fail if it is unset or empty, as protection against incomplete configurations. As well, `env_file` can include multiple environment variable files, including `.env`, which is the default path for the file containing all Komodo-provided environment variables.
+
+If using this approach, note that this approach directly passes the .env files to Docker Compose, and that the way Docker Compose handles .env files is different to SOPS; the files will be parsed like in a shell environment, where quotes and whitespace will be stripped, and unescaped references to environment variables will be interpolated, unlike the previous approach. Therefore, the way you format your secrets files for Stacks using this approach will need to be different. Here is an example of a secrets file written for such a Stack:
 ```sh
 EXAMPLE_VARIABLE='foobar'
 EXAMPLE_VARIABLE_2='abcd$1234$='
 ```
 
-#### Using Komodo variables
-- if, across stacks, see yourself reusing same values in environment variables, may want to use komodo variables
-- komodo variables serve as single source of truth, write that and you update everything
-- they can be for non-secrets and secrets too
-- variables can be written in saphnet-komodo, for more iac everywhere
-- to use them, basically write their name wrapped in double brackets
-- again, convention is to use all caps, screaming snake case
-- also, good idea to wrap them in quotes to avoid potential parsing errors
+Note that the values for all secrets are wrapped in single quotes: it is generally good practice for secrets files under this approach to have their values wrapped in single quotes, to avoid being parsed. If using double quotes or no quotes, then any `$` symbols that shouldn't be interpreted as part of environment variables should be escaped with backslashes.
 
+The upsides of this approach are that secrets environment variables don't have to be referenced twice, and that the Compose stack file doesn't have to be concerned with the specific environment variables provided to services, as that will solely be between the secrets file and the Docker image behind the service. The downsides of this approach are that we cannot be selective with what secrets are provided to the services that are using them, as the contents of the entire secrets file will be provided wholesale, and that this approach does not allow us to easily use the values of specific secrets-related environment variables through variable interpolation (e.g. for labels), at least not without extra custom configuration to the wrapper command.
+
+#### Using Komodo variables
+If, across Stacks, you notice that the same values are being reused in environment variables, you may want to use Variables. Being a special type of Komodo resource, Variables serve as a single source of truth, where updating the value of a Variable is automatically reflected across the environment variables that reference it; generally, for the Sapphic Homelab/Home Server, Variables for Komodo are defined in the `saphnet-komodo` repository. Variables can be used for both secrets, and non-secrets, but for now, they are mostly used for non-secrets, as there still is no way yet, within the Sapphic Homelab/Home Server, to securely store the values of secrets to be used for Variables, with the GitOps approach. 
+
+To use a Variable within an environment variable (in the `environment` attribute of the `config` attribute of a Stack resource), specify the name of the environment variable, wrapped in double brackets, in the format of `[[KOMODO_VARIABLE]]`. Here is an example of a Variable being used within a Stack resource:
 ```toml
 # immich
 [[stack]]
@@ -1791,18 +1787,55 @@ TAILSCALE_IP = '[[TAILSCALE_IP_PVE3]]'
 """
 ```
 
+In the above example, the Variable, `TAILSCALE_IP_PVE3`, is used to define the value of the `TAILSCALE_IP` environment variable for the `immich` stack. Note that, like other environment variables, values referencing Variables should be wrapped in single quotes, to avoid unexpected parsing/interpolation.
+
+The convention for Komodo Variables (for the Sapphic Homelab/Home Server) is to use screaming snake case (e.g. `MY_VAR`), where all letters are in uppercase, and separate words are separated by underscores. 
+
 ### Ignoring init containers
-- 
+When writing a Stack, if the referenced Compose stack makes use of init container services (special services that perform certain tasks and exit before other services start), it should be configured so that the specific init container services are ignored when Komodo is reporting the health of the Stack; otherwise, the fact that the init container service is exited may cause Komodo to incorrectly report the Stack as unhealthy.
+
+Here is an example of a Compose stack file using an init container service:
+```yaml
+services:
+  example-service: # Has volume that may need to be set up first
+    ... # Omitting for brevity
+    depends-on:
+      init-helper: # Waits for init-helper to exit before running
+        condition: service_completed_completely
+    ...
+  init-helper:
+    image: alpine
+    ...
+    volumes:
+      - example-service-data:/config
+    ...
+    entrypoint:
+      ...
+
+volumes:
+  example-service-data:
+```
+
+In the above Compose stack file, the `init-helper` service is configured to be the init container service, targeting the `example-service` service.
+
+To configure a Stack to ignore a specific service, within the `ignore_services` attribute of the Stack's `config` attribute, which is an array of strings, list the name of the specific Compose service (in our case, this will be `init-helper`), like below:
+```toml
+# example-stack
+[[stack]]
+name = "example-stack"
+# Omitting for brevity
+[stack.config]
+...
+ignore_services = ["init-helper"]
+...
+```
+
+The above configuration will tell Komodo to ignore the `init-helper` Compose service when reporting the Stack's health.
 
 ## Setting up new hosts/servers
-- for setting up new Server resource for new server, after setting up stuff in saphnet-komodo, saphnet-komodo will expect this file, and that it contains these
-- file name generally is server-name.toml, it is komodo resource file
-- as well, you should have entry in .sops.yaml for server
-  - describe how to add it, and generate key (make sure the key is passed to komodo periphery when it runs, like in compose and nixos config)
-- redeploy-changed procedure is bare minimum (make sure name matches server name), and is in exact format as described (saphnet-komodo procedure saphnet-run-iac-stack-sync designed to run all executions that end in _redeploy-changed)
-- in redeploy-changed, make sure list of stacks in execution pattern matches names of all stacks defined here
-- after that, is just list of stacks (each stack written like in the guide above), in alphabetical order, separated with "##" and newlines before and after
+When setting up a new Server resource (for a new server running as a Komodo host), after completing all the steps to completely configure it within the `saphnet-komodo` repository, you will need to create a Komodo resource file, named after the name of the Server (for example, the file for the `control-server` Server would be `control-server.toml`), placed within the root of this repository; the resources of the `saphnet-komodo` repository will expect a resource file for the Server in the root of this repository. This resource file contains all of the configurations for Stacks that are run for that specific Server, as well as a Procedure that is configured to redeploy all stacks that the resource file manages, if there are changes. As well, there will need to be an entry within the `.sops.yaml` file that lists the public key for the server (for encrypting SOPS secrets) and a creation rule for secrets files for Compose stack instances for the Server. 
 
+This is a diagram of the repository that lists the locations of such files:
 ```
 Repository root (./.)
 │
@@ -1815,7 +1848,12 @@ Repository root (./.)
 └─ ...
 ```
 
+Note all the files involved here are within the root of the repository.
+
+When creating the resource file for the server (e.g. `example-server.toml` for the `example-server` Server), at the very minimum, you will need to include a Procedure resource, named after the Server's name, with `_redeploy-changed` at the end, tagged with `redeploy-changed` and `iac`, that runs an execution of the type `BatchDeployStackIfChanged`, for all Stacks that are managed within the resource file, like this:
 ```toml
+## Stack-related procedures
+
 [[procedure]]
 name = "example-server_redeploy-changed"
 description = "A procedure that redeploys all IaC stacks that have had changes to their config or config files, for example-server."
@@ -1830,8 +1868,21 @@ example-stack-1
 example-stack-2
 """, enabled = true }
 ]
-```
 
+## Stacks
+
+# stack-1
+...
+```
+As a note, all Stacks listed in the resource file should be in alphabetical order (by the name of each Stack).
+
+Most of the configuration for the `redeploy-changed` procedure is boilerplate that shouldn't been different between resource files, but what is important is the list of the names of Stacks: each Stack's complete name should be listed in individual lines, in the multi-line TOML string for `execution.params.pattern`, and listed in the same order as the Stack resources in the resource file (which should be alphabetical order).
+
+You are welcome to copy and paste the above configuration for your new Server, as long as all references to Servers are replaced with references to your Server, and that the list of stacks in the execution pattern for `BatchDeployStackIfChanged` are the same stacks as listed in the resource file (all Stacks being run on the Server and managed with GitOps).
+
+As well, note the extra comments added to the above example: before all Procedure configurations should be the line, `## Stack-related procedures`, and before all Stack configurations should be the line, `## Stacks`. Note that there are single empty lines between these lines and the resources being described; as well, there should be single empty lines between each individual resource being described.
+
+Finally, when setting up a new Server within this repository, the Server should have its own entries in the `.sops.yaml` file, for its public key and creation rule for secrets files for Compose stack instances for the Server. Here is an example of what this would look like, for a hypothetical `example-server`:
 ```yaml
 keys:
   - &admin age1ute399nzja7le5um48rzdg2nj4c7rf5jvhj7slh05mt5x79nr4wqqlwkdj
@@ -1845,3 +1896,9 @@ creation_rules:
       - *admin
       - *example-server
 ```
+
+Under the `keys` top-level property, which is a sequence of strings, the public key for the server is listed, alongside an anchor, named after the Server, which creates a reusable fragment. To create a keypair for SOPS, using age, run the command `age-keygen -o <DESIRED PATH TO AGE KEY>`; the comments of the resulting file should have the public key that you can use. Make sure that the private key is accessible to Komodo, in a location such as `/root/.config/sops/age/keys.txt`.
+
+Next is the `creation_rules` property, a sequence of dictionaries, where each dictionary represents a creation rule, which generally corresponds to a Server, for our purposes. `path_regex` is first listed, which is a regex expression that describes the paths of all files that fall under the creation rule; if a file being accessed with SOPS falls under a path described, then it will be encrypted with the keys described in the `key_groups` property. For our purposes, we generally use `(^|\/)secrets\/SERVER_NAME_HERE\.enc\.env$`; this just matches all paths that end with `.enc.env` and are under a `secrets` directory (which can be at any level), as all secrets files for a Stack correspond to Servers that the instances run on. Under the `key_groups` property, which is again a sequence of groups of public keys, we create an entry as a dictionary, with the only attribute being `age`, as we use age keys for this repository; `age` is a sequence of age public keys, and the public keys here are simply aliases that reference the public keys for `admin` and that of the server (e.g. `example-server).
+
+With all of those steps completed, this repository should be completely ready to handle all Komodo Stacks that run for the Server.
