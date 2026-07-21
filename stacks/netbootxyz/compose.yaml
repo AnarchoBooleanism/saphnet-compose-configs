@@ -5,10 +5,21 @@ services:
   netbootxyz:
     image: ghcr.io/netbootxyz/netbootxyz:latest@sha256:39bb40c85d1f6e500b3df1871460f88609215735c224b234b9e6e4e849faf92b
     container_name: netbootxyz
+    volumes:
+      - netboot-config:/config
+      - netboot-assets:/assets
+      - ./local-vars.ipxe:/config/menus/local-vars.ipxe
+    environment:
+      NGINX_PORT: "80" # optional
+      WEB_APP_PORT: "3000" # optional
+#     MENU_VERSION: "2.0.47" # optional
     ports:
       # - "3000:3000"  # optional, destination should match ${WEB_APP_PORT} variable above.
       - "69:69/udp"
       - "8080:80"  # optional, destination should match ${NGINX_PORT} variable above.
+    networks:
+      - web_bridge
+    restart: unless-stopped
     labels:
       traefik.enable: "true"
       traefik.http.routers.netboot.rule: Host(`netboot.int.saphnet.xyz`)
@@ -22,17 +33,6 @@ services:
       # Basic‑auth middleware
       traefik.http.routers.netboot.middlewares: netboot-auth
       traefik.http.middlewares.netboot-auth.basicauth.users: "${NETBOOT_LOGIN}"
-    environment:
-      NGINX_PORT: "80" # optional
-      WEB_APP_PORT: "3000" # optional
-#     MENU_VERSION: "2.0.47" # optional
-    volumes:
-      - netboot-config:/config
-      - netboot-assets:/assets
-      - ./local-vars.ipxe:/config/menus/local-vars.ipxe
-    networks:
-      - web_bridge
-    restart: unless-stopped
 
 volumes:
   netboot-config: # Boot menu files, web application config

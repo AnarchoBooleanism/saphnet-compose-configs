@@ -14,10 +14,28 @@ services:
   wing:
     image: ghcr.io/pyrohost/elytra:1.3.0@sha256:004c2826224f57f558b19703a0bbfc0a3b38a1991f3aba1e67b841739c9cc959
     container_name: pterodactyl-wing # Refer to the panel container this way
+    volumes: # Mapping things to elytra, but source directories will remain same as before
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers:/var/lib/docker/containers
+      - wings-config:/etc/elytra
+      - /var/lib/pterodactyl:/var/lib/pterodactyl # Some things still refer to /var/lib/pterodactyl...
+      - /var/lib/pterodactyl:/var/lib/elytra
+      - wings-logs:/var/log/elytra
+      - /tmp/pterodactyl:/tmp/elytra
+    environment:
+      TZ: *timezone
+      # For ease of setup, this is going to use root user.
+      WINGS_UID: "0"
+      WINGS_GID: "0"
+      WINGS_USERNAME: root
     ports:
       # - "8443:443" # Is port 8443 on this IP, but 443 on the inside and 443 on the reverse proxy
       - "2022:2022" # SFTP port
+    networks:
+      - ptero0
+      - web_bridge
     tty: true
+    restart: unless-stopped
     labels:
       traefik.enable: "true"
       traefik.http.routers.pterodactyl-wing.rule: Host(`pterodactyl-node-main.int-net.saphnet.xyz`)
@@ -36,24 +54,6 @@ services:
       traefik.http.routers.thevoidpact-map.tls.domains[0].main: map-int.thevoidpact.xyz
       traefik.http.routers.thevoidpact-map.service: thevoidpact-map-svc
       traefik.http.services.thevoidpact-map-svc.loadBalancer.server.url: http://host.docker.internal:63624
-    environment:
-      TZ: *timezone
-      # For ease of setup, this is going to use root user.
-      WINGS_UID: "0"
-      WINGS_GID: "0"
-      WINGS_USERNAME: root
-    volumes: # Mapping things to elytra, but source directories will remain same as before
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /var/lib/docker/containers:/var/lib/docker/containers
-      - wings-config:/etc/elytra
-      - /var/lib/pterodactyl:/var/lib/pterodactyl # Some things still refer to /var/lib/pterodactyl...
-      - /var/lib/pterodactyl:/var/lib/elytra
-      - wings-logs:/var/log/elytra
-      - /tmp/pterodactyl:/tmp/elytra
-    networks:
-      - ptero0
-      - web_bridge
-    restart: unless-stopped
 
 volumes:
   wings-config:

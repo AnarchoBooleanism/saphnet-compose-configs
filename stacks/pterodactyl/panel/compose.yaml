@@ -54,12 +54,12 @@ services:
   database:
     image: mariadb:12@sha256:628f228f0fd5913a220438693576b29b6fe4dc1fa0a1298c0e98579fae28635f
     command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - database-data:/var/lib/mysql
     environment:
       <<: *db-environment
       MYSQL_DATABASE: "panel"
       MYSQL_USER: "pterodactyl"
-    volumes:
-      - database-data:/var/lib/mysql
     networks:
       - pterodactyl_panel_internal
     restart: unless-stopped
@@ -73,18 +73,9 @@ services:
   panel:
     image: ghcr.io/pyrodactyl-oss/pyrodactyl:v5.0.6@sha256:3c1008e2b9337655e60100eaff0fc4dcda4cad4834ae3cced9ab3baf861ad955
     container_name: pterodactyl-panel # Refer to the panel container this way
-    # ports:
-    #   - "802:80" # Web port
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.pterodactyl.rule: Host(`pterodactyl.int.saphnet.xyz`)
-      traefik.http.routers.pterodactyl.entrypoints: websecure
-      traefik.http.routers.pterodactyl.tls: "true"
-      traefik.http.routers.pterodactyl.tls.certresolver: letsencrypt
-      traefik.http.routers.pterodactyl.tls.domains[0].main: int.saphnet.xyz
-      traefik.http.routers.pterodactyl.tls.domains[0].sans: "*.int.saphnet.xyz"
-      traefik.http.routers.pterodactyl.service: pterodactyl-svc
-      traefik.http.services.pterodactyl-svc.loadBalancer.server.port: "80"
+    volumes:
+      - panel-data:/app/var/
+      - panel-logs:/app/storage/logs
     environment:
       <<: [*panel-environment, *mail-environment, *backup-environment]
       DB_PASSWORD: *db-password
@@ -96,13 +87,22 @@ services:
       REDIS_HOST: "cache"
       DB_HOST: "database"
       DB_PORT: "3306"
-    volumes:
-      - panel-data:/app/var/
-      - panel-logs:/app/storage/logs
+    # ports:
+    #   - "802:80" # Web port
     networks:
       - web_bridge
       - pterodactyl_panel_internal
     restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.pterodactyl.rule: Host(`pterodactyl.int.saphnet.xyz`)
+      traefik.http.routers.pterodactyl.entrypoints: websecure
+      traefik.http.routers.pterodactyl.tls: "true"
+      traefik.http.routers.pterodactyl.tls.certresolver: letsencrypt
+      traefik.http.routers.pterodactyl.tls.domains[0].main: int.saphnet.xyz
+      traefik.http.routers.pterodactyl.tls.domains[0].sans: "*.int.saphnet.xyz"
+      traefik.http.routers.pterodactyl.service: pterodactyl-svc
+      traefik.http.services.pterodactyl-svc.loadBalancer.server.port: "80"
 
 volumes:
   database-data:

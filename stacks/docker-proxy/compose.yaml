@@ -2,6 +2,8 @@ services: # To be connected to by Homepage
   docker-proxy:
     image: ghcr.io/tecnativa/docker-socket-proxy:v0.4.2@sha256:1f3a6f303320723d199d2316a3e82b2e2685d86c275d5e3deeaf182573b47476
     container_name: docker-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
     environment:
       CONTAINERS: "1" # Allow access to viewing containers
       SERVICES: "1" # Allow access to viewing services (necessary when using Docker Swarm)
@@ -9,8 +11,6 @@ services: # To be connected to by Homepage
       POST: "0" # Disallow any POST operations (effectively read-only)
     ports:
       - "${HOST_IP:-0.0.0.0}:2375:2375"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
     restart: unless-stopped
 
 # NOTE: If using this on a host that has a publicly accessible IP address, make sure

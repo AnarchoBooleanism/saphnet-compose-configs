@@ -11,6 +11,19 @@ services:
   traefik: # Reverse proxy, with dashboard enabled
     image: traefik:v3.6.13@sha256:34d5089d0b414945342848518b383f11f5b3a645504ed87b77ffeb9d683d0e48
     container_name: traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certs:/letsencrypt
+    environment:
+      NAMECHEAP_API_USER: "${NAMECHEAP_API_USER}"
+      NAMECHEAP_API_KEY: "${NAMECHEAP_API_KEY}"
+    ports: # Port 8080 is for dashboard, but it should be through HTTPS anyway
+      - "80:80"
+      - "443:443"
+    networks:
+      - web_bridge
+    extra_hosts: # To connect to containers with network_mode as "host"
+      - "host.docker.internal:host-gateway"
     command:
       # Entrypoints
       - "--entrypoints.web.address=:80"
@@ -54,22 +67,9 @@ services:
 
       # Miscellaneous
       - "--global.sendAnonymousUsage=true"
-    ports: # Port 8080 is for dashboard, but it should be through HTTPS anyway
-      - "80:80"
-      - "443:443"
-    environment:
-      NAMECHEAP_API_USER: "${NAMECHEAP_API_USER}"
-      NAMECHEAP_API_KEY: "${NAMECHEAP_API_KEY}"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik-certs:/letsencrypt
-    networks:
-      - web_bridge
-    extra_hosts: # To connect to containers with network_mode as "host"
-      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
     security_opt:
       - no-new-privileges:true
-    restart: unless-stopped
 
 volumes:
   traefik-certs:

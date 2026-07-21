@@ -2,65 +2,22 @@ x-common:
   TIMEZONE: &timezone "America/Los_Angeles"
 
 services:
-  # vpn:
-  #   image: tailscale/tailscale:latest
-  #   container_name: vpn
-  #   cap_add:
-  #     - net_admin
-  #   devices:
-  #     - /dev/net/tun:/dev/net/tun
-  #   environment:
-  #     TS_AUTHKEY: XXX
-  #     TS_EXTRA_ARGS: --exit-node=XXX
-  #     TS_STATE_DIR: /var/lib/tailscale
-  #     TS_USERSPACE: false
-  #     TS_HOSTNAME: deluge-seedbox
-  #   ports:
-  #     - "8112:8112"
-  #     - "58846:58846"
-  #   volumes:
-  #     - tailscale-config:/var/lib/tailscale
-  #   restart: unless-stopped
-  #
-  # vpn:
-  #   image: ghcr.io/bubuntux/nordvpn@sha256:ac521b5a8d1387780d812a0ed46dd23aa3ee5e47d6d9f9eace39213ea1f56509
-  #   container_name: vpn
-  #   cap_add:
-  #     - NET_ADMIN               # Required
-  #     - NET_RAW                 # Required
-  #   sysctls:
-  #     - net.ipv6.conf.all.disable_ipv6=1  # Recomended if using ipv4 only
-  #   ports:
-  #     - "8112:8112"
-  #     - "58846:58846"
-  #   environment:                # Review https://github.com/bubuntux/nordvpn#environment-variables
-  #     TECHNOLOGY: NordLynx
-  #     NETWORK: "192.168.0.0/16"  # So it can be accessed within the local network
-  #     # Secrets to set in environment:
-  #     TOKEN: "$TOKEN"
-  #     CONNECT: "$CONNECT"
-  #   healthcheck: # Make sure it can access the internet
-  #     test: ["CMD", "curl", "-f", "https://www.google.com"]
-  #     interval: "30s"
-  #     timeout: "10s"
-  #     retries: 3
-  #     start_period: "15s" # Give the VPN time to establish the initial connection
-  #   restart: unless-stopped
-  
   vpn:
     image: qmcgaw/gluetun:latest@sha256:b0ee2135e6ba52ad3f102aae9663707cd1c9531485117067a380d3b2b6dd991d
     container_name: deluge-vpn
-    cap_add:
-      - NET_ADMIN
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=1 # Recomended if using ipv4 only
-    devices:
-      - /dev/net/tun:/dev/net/tun
+    environment:
+      VPN_SERVICE_PROVIDER: nordvpn
+      VPN_TYPE: openvpn
+      # Get credentials from https://my.nordaccount.com/dashboard/nordvpn/manual-configuration/service-credentials/
+      OPENVPN_USER: "${OPENVPN_USER}"
+      OPENVPN_PASSWORD: "${OPENVPN_PASSWORD}"
+      SERVER_HOSTNAMES: "${CONNECT}.nordvpn.com"
     ports:
       # - "8112:8112"
       - "58846:58846"
-    expose:
-      - "8112"
+    networks:
+      - web_bridge
+    restart: unless-stopped
     labels:
       traefik.enable: "true"
       traefik.http.routers.seedbox.rule: Host(`seedbox.int.saphnet.xyz`)
@@ -70,49 +27,47 @@ services:
       traefik.http.routers.seedbox.tls.domains[0].main: seedbox.int.saphnet.xyz
       traefik.http.routers.seedbox.service: seedbox-svc
       traefik.http.services.seedbox-svc.loadBalancer.server.port: "8112"
-    environment:
-      VPN_SERVICE_PROVIDER: nordvpn
-      VPN_TYPE: openvpn
-      # Get credentials from https://my.nordaccount.com/dashboard/nordvpn/manual-configuration/service-credentials/
-      OPENVPN_USER: "${OPENVPN_USER}"
-      OPENVPN_PASSWORD: "${OPENVPN_PASSWORD}"
-      SERVER_HOSTNAMES: "${CONNECT}.nordvpn.com"
-    networks:
-      - web_bridge
-    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    expose:
+      - "8112"
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1 # Recomended if using ipv4 only
 
   deluge:
     image: ghcr.io/linuxserver/deluge:2.2.0@sha256:33a939576f7ecfc1227db1a0cb2afce030ce983e620ec9d93c956e3700e21fe9 # To only update intentionally
     container_name: deluge
-    ulimits:
-      nofile:
-        soft: 65535
-        hard: 65535
+    depends_on:
+      vpn:
+        condition: service_healthy
+    volumes:
+      - deluge-config:/config
+      - seedbox-files:/seedbox-data
     environment:
       PUID: "1000"
       PGID: "1000"
       TZ: *timezone
       DELUGE_LOGLEVEL: error
-    volumes:
-      - deluge-config:/config
-      - seedbox-files:/seedbox-data
     network_mode: service:vpn
-    depends_on:
-      vpn:
-        condition: service_healthy
     restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
 
   deluge-sftp:
     image: ghcr.io/anarchobooleanism/saphnet-sftp:v0.1.1@sha256:bb164f405864b029fd3b3e5501bb347de0acd8a54436b3ffc79b9b456e3ce152
     container_name: deluge-sftp
-    ports:
-      - "2222:22"
-    environment:
-      SFTP_USERNAME: seedbox
-      SFTP_PASSWORD: "${SFTP_PASSWORD}"
     volumes:
       - sftp-ssh-data:/etc/ssh # For persistence of keys
       - seedbox-files:/home/seedbox/sftp
+    environment:
+      SFTP_USERNAME: seedbox
+      SFTP_PASSWORD: "${SFTP_PASSWORD}"
+    ports:
+      - "2222:22"
     restart: unless-stopped
 
 volumes:

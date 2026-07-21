@@ -24,19 +24,21 @@ x-services:
     # Set container_name here
     # For environment, set COOKIE_DOMAIN, PUBLIC_URL, and REDIRECT_DOMAINS,
     # and import anubis-environment!
-    # Make sure to set the right labels for your Anubis instance!
+    networks:
+      - web_bridge
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "anubis", "--healthcheck"]
       interval: "5s"
       timeout: "30s"
       retries: 5
       start_period: "500ms"
-    networks:
-      - web_bridge
-    restart: unless-stopped
 
 services:
   traefik:
+    volumes:
+      - thevoidpact-map-cache:/tmp/thevoidpact-map-cache
+      - thevoidpact-map-tiles-cache:/tmp/thevoidpact-map-tiles-cache
     labels:
       # Enable self‑routing
       traefik.enable: "true"
@@ -158,13 +160,13 @@ services:
       traefik.http.routers.jellyseerr.service: seerr-svc
       traefik.http.middlewares.jellyseerr-redirectregex.redirectregex.regex: "^https://jellyseerr\\.media\\.saphnet\\.xyz/(.*)"
       traefik.http.middlewares.jellyseerr-redirectregex.redirectregex.replacement: "https://seerr.media.saphnet.xyz/$${1}"
-    volumes:
-      - thevoidpact-map-cache:/tmp/thevoidpact-map-cache
-      - thevoidpact-map-tiles-cache:/tmp/thevoidpact-map-tiles-cache
 
   under-construction: # Serving "under construction" pages
     image: ghcr.io/palmergw/under-construction-page:latest@sha256:2fd2eab189cb8bef5ba7c1b6bc76f86c46dbbe68644bf1ae99e2b3c1f47389e7
     container_name: under-construction
+    networks:
+      - web_bridge
+    restart: unless-stopped
     labels:
       traefik.enable: "true"
       traefik.http.services.under-construction-svc.loadbalancer.server.port: "80"
@@ -189,13 +191,15 @@ services:
       traefik.http.routers.saphnet-www.service: under-construction-svc
       traefik.http.middlewares.saphnet-www-redirectregex.redirectregex.regex: "^https://www\\.saphnet\\.xyz/(.*)"
       traefik.http.middlewares.saphnet-www-redirectregex.redirectregex.replacement: "https://saphnet.xyz/$${1}"
-    networks:
-      - web_bridge
-    restart: unless-stopped
 
   anubis-thevoidpact:
     <<: *anubis
     container_name: anubis-main
+    environment:
+      <<: *anubis-environment
+      COOKIE_DOMAIN: "thevoidpact.xyz"
+      PUBLIC_URL: "https://anubis.thevoidpact.xyz"
+      REDIRECT_DOMAINS: "map.thevoidpact.xyz"
     labels:
       traefik.enable: "true"
       traefik.http.routers.anubis-thevoidpact.rule: Host(`anubis.thevoidpact.xyz`)
@@ -206,15 +210,16 @@ services:
       traefik.http.routers.anubis-thevoidpact.tls.domains[0].sans: *thevoidpact_domains_sans
       traefik.http.routers.anubis-thevoidpact.service: anubis-thevoidpact-svc
       traefik.http.services.anubis-thevoidpact-svc.loadbalancer.server.port: "8923"
-    environment:
-      <<: *anubis-environment
-      COOKIE_DOMAIN: "thevoidpact.xyz"
-      PUBLIC_URL: "https://anubis.thevoidpact.xyz"
-      REDIRECT_DOMAINS: "map.thevoidpact.xyz"
 
   anubis-saphnet:
     <<: *anubis
     container_name: anubis-saphnet
+    environment:
+      <<: *anubis-environment
+      COOKIE_DOMAIN: "saphnet.xyz"
+      PUBLIC_URL: "https://anubis.saphnet.xyz"
+      REDIRECT_DOMAINS: >-
+        jellyfin.media.saphnet.xyz,jellyseerr.media.saphnet.xyz,saphnet.xyz,immich.saphnet.xyz
     labels:
       traefik.enable: "true"
       traefik.http.routers.anubis-saphnet.rule: Host(`anubis.saphnet.xyz`)
@@ -225,12 +230,6 @@ services:
       traefik.http.routers.anubis-saphnet.tls.domains[0].sans: "www.saphnet.xyz,anubis.saphnet.xyz"
       traefik.http.routers.anubis-saphnet.service: anubis-saphnet-svc
       traefik.http.services.anubis-saphnet-svc.loadbalancer.server.port: "8923"
-    environment:
-      <<: *anubis-environment
-      COOKIE_DOMAIN: "saphnet.xyz"
-      PUBLIC_URL: "https://anubis.saphnet.xyz"
-      REDIRECT_DOMAINS: >-
-        jellyfin.media.saphnet.xyz,jellyseerr.media.saphnet.xyz,saphnet.xyz,immich.saphnet.xyz
 
 volumes:
   thevoidpact-map-tiles-cache:

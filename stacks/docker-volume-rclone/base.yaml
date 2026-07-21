@@ -8,6 +8,9 @@ x-common:
 services:
   docker-volume-rclone: &docker-volume-rclone # Is base service
     image: ghcr.io/anarchobooleanism/docker-volume-rclone:v0.1.1@sha256:9944901a7f4b59173725591893f587681b5caa85f4da572baa43bad669bc2f6c
+    volumes:
+      - /var/lib/docker/volumes:/volumes:ro
+      - nfs-target:/volumes-clone
     environment: &environment
       # Set TARGET_SUBDIR_NAME here
       # Set VOLUME_NAMES here, is space-delimited string, use ">-"
@@ -15,9 +18,6 @@ services:
       CRON_ARGUMENTS: "0 */4 * * *" # At minute 0, every 4 hours
       # RCLONE_OPTIONS:
       TZ: *timezone
-    volumes:
-      - /var/lib/docker/volumes:/volumes:ro
-      - nfs-target:/volumes-clone
 
 volumes:
   nfs-target:

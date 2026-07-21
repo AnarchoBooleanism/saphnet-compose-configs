@@ -5,15 +5,16 @@
 services:
   glances:
     image: nicolargo/glances:4.5.5@sha256:9ac5de7debffb1e5746654585daaf1d23179ea91fbdfd4c25a7a17945d9c74bf
-    pid: host
-    network_mode: host # Make sure to set firewall rules accordingly!
-    # ports:
-    #   - "61208:61208"
-    environment:
-      GLANCES_OPT: "-w"
+    container_name: glances
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       # Uncomment the below line if you want glances to display host OS detail instead of container's
       - /etc/os-release:/etc/os-release:ro
       - /etc/hostname:/etc/hostname:ro
+    environment:
+      GLANCES_OPT: "-w"
+    # ports:
+    #   - "61208:61208"
+    network_mode: host # Make sure to set firewall rules accordingly!
     restart: unless-stopped
+    pid: host

@@ -1,33 +1,43 @@
 services:
   guacdb:
-    container_name: guacamoledb
     image: mariadb:12@sha256:628f228f0fd5913a220438693576b29b6fe4dc1fa0a1298c0e98579fae28635f
+    container_name: guacamoledb
+    volumes:
+      - guac-db-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: MariaDBRootPass
       MYSQL_DATABASE: guacamole_db
       MYSQL_USER: guacamole_user
       MYSQL_PASSWORD: MariaDBUserPass
-    volumes:
-      - guac-db-data:/var/lib/mysql
     networks:
       - web_bridge
     restart: unless-stopped
 
   guacd:
-    container_name: guacd
     image: guacamole/guacd:latest@sha256:2d266a525a72ad55d8ea7cd4ca8342a1b44075759b03660d8684821b3636a922
+    container_name: guacd
     networks:
       - web_bridge
     restart: unless-stopped
 
   guacamole:
-    container_name: guacamole
     image: guacamole/guacamole:latest@sha256:8234a627f4fe8bbbdd8a93f3d6d9f81478f1b3dfc5f8be8e5013ea7a24329c39
+    container_name: guacamole
     depends_on:
       - guacdb
       - guacd
+    environment:
+      GUACD_HOSTNAME: guacd
+      MYSQL_HOSTNAME: guacdb
+      MYSQL_DATABASE: guacamole_db
+      MYSQL_USER: guacamole_user
+      MYSQL_PASSWORD: MariaDBUserPass
+      # TOTP_ENABLE: true
     # ports:
     #   - "8080:8080"
+    networks:
+      - web_bridge
+    restart: unless-stopped
     labels:
       traefik.enable: "true"
       traefik.http.routers.guacamole.rule: Host(`guacamole.int.saphnet.xyz`) && PathPrefix(`/guacamole/`)
@@ -50,16 +60,6 @@ services:
       traefik.http.middlewares.guacamole-root-redirect.redirectregex.replacement: "https://$${1}/guacamole/"
       traefik.http.middlewares.guacamole-root-redirect.redirectregex.permanent: "true"
       traefik.http.routers.guacamole-root.service: guacamole-svc
-    environment:
-      GUACD_HOSTNAME: guacd
-      MYSQL_HOSTNAME: guacdb
-      MYSQL_DATABASE: guacamole_db
-      MYSQL_USER: guacamole_user
-      MYSQL_PASSWORD: MariaDBUserPass
-      # TOTP_ENABLE: true
-    networks:
-      - web_bridge
-    restart: unless-stopped
 
 volumes:
   guac-db-data:

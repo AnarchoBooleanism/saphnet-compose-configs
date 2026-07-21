@@ -15,13 +15,13 @@ x-services: # Base instances of services to customize
   radarr: &radarr # For movies
     image: ghcr.io/linuxserver/radarr:6.2.1@sha256:28852d0eacababc206762af48fe86d78594a4f434cc46b358f9764a857098662
     # Set a unique container_name here
-    # For ports, link host port to container port's 7878
+    # For volumes, have volume mounted to /config, volume mounted to media folder (e.g. /movies),
+    # and volume mounted to /downloads (for Deluge downloads)
     environment:
       PUID: "1000"
       PGID: "1000"
       TZ: *timezone
-    # For volumes, have volume mounted to /config, volume mounted to media folder (e.g. /movies),
-    # and volume mounted to /downloads (for Deluge downloads)
+    # For ports, link host port to container port's 7878
     networks:
       - media-server
       - web_bridge
@@ -30,13 +30,13 @@ x-services: # Base instances of services to customize
   sonarr: &sonarr # For shows
     image: ghcr.io/linuxserver/sonarr:4.0.19@sha256:4b025354d338999e03bf6dbdadcdde94815d39d4a5aba5de3cdc86a56d7d6c51
     # Set a unique container_name here
-    # For ports, link host port to container port's 8989
+    # For volumes, have volume mounted to /config, volume mounted to media folder (e.g. /tv),
+    # and volume mounted to /downloads (for Deluge downloads)
     environment:
       PUID: "1000"
       PGID: "1000"
       TZ: *timezone
-    # For volumes, have volume mounted to /config, volume mounted to media folder (e.g. /tv),
-    # and volume mounted to /downloads (for Deluge downloads)
+    # For ports, link host port to container port's 8989
     networks:
       - media-server
       - web_bridge
@@ -45,13 +45,13 @@ x-services: # Base instances of services to customize
   bazarr: &bazarr # For subtitles
     image: ghcr.io/linuxserver/bazarr:1.6.0@sha256:5d916d07404296ec35ee726e13e0e558f05952724cf494a7f009d913fb2b12f3
     # Set a unique container_name here
-    # For ports, link host port to container port's 6767
+    # For volumes, have volume mounted to /config, volume mounted to /movies, and volume
+    # mounted to /tv
     environment:
       PUID: "1000"
       PGID: "1000"
       TZ: *timezone
-    # For volumes, have volume mounted to /config, volume mounted to /movies, and volume
-    # mounted to /tv
+    # For ports, link host port to container port's 6767
     networks:
       - media-server
       - web_bridge
@@ -61,13 +61,28 @@ services:
   jellyfin: # Media streaming
     image: jellyfin/jellyfin:10.11.11@sha256:aefb67e6a7ff1debdd154a78a7bbb780fd0c873d8639210a7f6a2016ad2b35db # To only update intentionally
     container_name: jellyfin
-    devices:
-      - /dev/dri:/dev/dri
+    volumes:
+      - jellyfin-config:/config # Also, self-signed cert files in here
+      - jellyfin-cache:/cache
+      - media-server-movies:/media/movies
+      - media-server-tv:/media/tv
+      - media-server-anime:/media/anime
+      - media-server-anime-movies:/media/anime-movies
+    environment:
+      # Optional - alternative address used for autodiscovery
+      JELLYFIN_PublishedServerUrl: https://jellyfin.media.int.saphnet.xyz
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:8096:8096"
       - "${TAILSCALE_IP:-0.0.0.0}:8920:8920"
       - "1900:1900"
       - "7359:7359"
+    networks:
+      - media-server
+      - web_bridge
+    # Optional - may be necessary for docker healthcheck to pass if running in host network mode
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    restart: unless-stopped
     labels:
       traefik.enable: "true"
       traefik.http.routers.jellyfin.rule: Host(`jellyfin.media.int.saphnet.xyz`)
@@ -114,30 +129,29 @@ services:
       traefik.http.middlewares.jellyfin-mw.headers.customFrameOptionsValue: "'allow-from https://jellyfin.media.int.saphnet.xyz'"
       ## HTTP Service
       traefik.http.services.jellyfin-svc.loadBalancer.server.port: "8096"
-    environment:
-      JELLYFIN_PublishedServerUrl: https://jellyfin.media.int.saphnet.xyz
-    volumes:
-      - jellyfin-config:/config # Also, self-signed cert files in here
-      - jellyfin-cache:/cache
-      - media-server-movies:/media/movies
-      - media-server-tv:/media/tv
-      - media-server-anime:/media/anime
-      - media-server-anime-movies:/media/anime-movies
-    # Optional - alternative address used for autodiscovery
-    networks:
-      - media-server
-      - web_bridge
-    # Optional - may be necessary for docker healthcheck to pass if running in host network mode
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    restart: unless-stopped
+    devices:
+      - /dev/dri:/dev/dri
 
   seerr:
     image: ghcr.io/seerr-team/seerr:v3.3.0@sha256:c92d2dc117f62185e7bcb88cd56efd374ea79210eaf433275449e8d5988eb5a8 # To only update intentionally
     container_name: seerr
-    init: true
+    volumes:
+      - seerr-config:/app/config
+    environment:
+      LOG_LEVEL: debug
+      TZ: *timezone
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:5055:5055"
+    networks:
+      - media-server
+      - web_bridge
+    restart: unless-stopped
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      start_period: "20s"
+      timeout: "3s"
+      interval: "15s"
+      retries: 3
     labels:
       traefik.enable: "true"
       traefik.http.routers.seerr.rule: Host(`seerr.media.int.saphnet.xyz`)
@@ -159,35 +173,21 @@ services:
       traefik.http.routers.jellyseerr.service: seerr-svc
       traefik.http.middlewares.jellyseerr-redirectregex.redirectregex.regex: "^https://jellyseerr\\.media\\.int\\.saphnet\\.xyz/(.*)"
       traefik.http.middlewares.jellyseerr-redirectregex.redirectregex.replacement: "https://seerr.media.int.saphnet.xyz/$${1}"
-    environment:
-      LOG_LEVEL: debug
-      TZ: *timezone
-    volumes:
-      - seerr-config:/app/config
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
-      start_period: "20s"
-      timeout: "3s"
-      interval: "15s"
-      retries: 3
-    networks:
-      - media-server
-      - web_bridge
-    restart: unless-stopped
+    init: true
 
   flaresolverr: # Handles CloudFlare prompts for Prowlarr
     image: ghcr.io/flaresolverr/flaresolverr:v3.5.0@sha256:139dfee1c6f89249c8d665d1333a42e8ec74ec0a86bc6bb1c8461e10d3a66a47
     container_name: flaresolverr
-    # ports:
-    #   - "8191:8191"
+    volumes:
+      - flaresolverr-config:/config
     environment:
       LOG_LEVEL: "${LOG_LEVEL:-info}"
       LOG_FILE: "${LOG_FILE:-none}"
       LOG_HTML: "${LOG_HTML:-false}"
       CAPTCHA_SOLVER: "${CAPTCHA_SOLVER:-none}"
       TZ: *timezone
-    volumes:
-      - flaresolverr-config:/config
+    # ports:
+    #   - "8191:8191"
     networks:
       - media-server
     restart: unless-stopped
@@ -195,8 +195,18 @@ services:
   prowlarr: # Handles trackers
     image: ghcr.io/linuxserver/prowlarr:2.4.0@sha256:536036aeb2c740d1a660ccf143b58a8bd6222f09010258fdfc10a538af7bec78
     container_name: prowlarr
+    volumes:
+      - prowlarr-config:/config
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: *timezone
     # ports:
     #   - "9696:9696"
+    networks:
+      - media-server
+      - web_bridge
+    restart: unless-stopped
     labels:
       traefik.enable: "true"
       traefik.http.routers.prowlarr.rule: Host(`prowlarr.media.int.saphnet.xyz`)
@@ -207,33 +217,27 @@ services:
       traefik.http.routers.prowlarr.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.prowlarr.service: prowlarr-svc
       traefik.http.services.prowlarr-svc.loadBalancer.server.port: "9696"
-    environment:
-      PUID: "1000"
-      PGID: "1000"
-      TZ: *timezone
-    volumes:
-      - prowlarr-config:/config
-    networks:
-      - media-server
-      - web_bridge
-    restart: unless-stopped
 
   recyclarr:
     image: ghcr.io/recyclarr/recyclarr:8.6.0@sha256:3c38ceeb54438dd8327e4e65c9b48ba601a6d20fff833342d93c9b0bc4b1930b
     container_name: recyclarr
-    user: "1000:1000"
+    volumes:
+      - recyclarr-config:/config
     environment:
       TZ: *timezone
       RECYCLARR_CREATE_CONFIG: "true"
-    volumes:
-      - recyclarr-config:/config
     networks:
       - media-server
     restart: unless-stopped
+    user: "1000:1000"
     
   radarr: # For movies
     <<: *radarr
     container_name: radarr
+    volumes:
+      - radarr-config:/config
+      - media-server-movies:/movies # Jellyfin movies folder
+      - seedbox-torrent-downloads:/downloads # Deluge complete downloads folder
     # ports:
     #   - "7878:7878"
     labels:
@@ -246,14 +250,14 @@ services:
       traefik.http.routers.radarr.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.radarr.service: radarr-svc
       traefik.http.services.radarr-svc.loadBalancer.server.port: "7878"
-    volumes:
-      - radarr-config:/config
-      - media-server-movies:/movies # Jellyfin movies folder
-      - seedbox-torrent-downloads:/downloads # Deluge complete downloads folder
   
   radarr-anime: # For anime movies
     <<: *radarr
     container_name: radarr-anime
+    volumes:
+      - radarr-anime-config:/config
+      - media-server-anime-movies:/anime-movies # Jellyfin movies folder
+      - seedbox-torrent-downloads:/downloads # Deluge complete downloads folder
     # ports:
     #   - "7879:7878"
     labels:
@@ -266,14 +270,14 @@ services:
       traefik.http.routers.radarr-anime.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.radarr-anime.service: radarr-anime-svc
       traefik.http.services.radarr-anime-svc.loadBalancer.server.port: "7878"
-    volumes:
-      - radarr-anime-config:/config
-      - media-server-anime-movies:/anime-movies # Jellyfin movies folder
-      - seedbox-torrent-downloads:/downloads # Deluge complete downloads folder
 
   sonarr: # For shows
     <<: *sonarr
     container_name: sonarr
+    volumes:
+      - sonarr-config:/config
+      - media-server-tv:/tv
+      - seedbox-torrent-downloads:/downloads
     # ports:
     #   - "8989:8989"
     labels:
@@ -286,14 +290,14 @@ services:
       traefik.http.routers.sonarr.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.sonarr.service: sonarr-svc
       traefik.http.services.sonarr-svc.loadBalancer.server.port: "8989"
-    volumes:
-      - sonarr-config:/config
-      - media-server-tv:/tv
-      - seedbox-torrent-downloads:/downloads
   
   sonarr-anime: # For anime
     <<: *sonarr
     container_name: sonarr-anime
+    volumes:
+      - sonarr-anime-config:/config
+      - media-server-anime:/anime
+      - seedbox-torrent-downloads:/downloads
     # ports:
     #   - "8990:8989"
     labels:
@@ -306,14 +310,14 @@ services:
       traefik.http.routers.sonarr-anime.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.sonarr-anime.service: sonarr-anime-svc
       traefik.http.services.sonarr-anime-svc.loadBalancer.server.port: "8989"
-    volumes:
-      - sonarr-anime-config:/config
-      - media-server-anime:/anime
-      - seedbox-torrent-downloads:/downloads
   
   bazarr: # For subtitles
     <<: *bazarr
     container_name: bazarr
+    volumes:
+      - bazarr-config:/config
+      - media-server-movies:/movies
+      - media-server-tv:/tv
     # ports:
     #   - "6767:6767"
     labels:
@@ -326,14 +330,14 @@ services:
       traefik.http.routers.bazarr.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.bazarr.service: bazarr-svc
       traefik.http.services.bazarr-svc.loadBalancer.server.port: "6767"
-    volumes:
-      - bazarr-config:/config
-      - media-server-movies:/movies
-      - media-server-tv:/tv
   
   bazarr-anime: # For anime subtitles
     <<: *bazarr
     container_name: bazarr-anime
+    volumes:
+      - bazarr-anime-config:/config
+      - media-server-anime-movies:/anime-movies
+      - media-server-anime:/anime
     # ports:
     #   - "6768:6767"
     labels:
@@ -346,10 +350,6 @@ services:
       traefik.http.routers.bazarr-anime.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.bazarr-anime.service: bazarr-anime-svc
       traefik.http.services.bazarr-anime-svc.loadBalancer.server.port: "6767"
-    volumes:
-      - bazarr-anime-config:/config
-      - media-server-anime-movies:/anime-movies
-      - media-server-anime:/anime
 
 volumes:
   seedbox-files:

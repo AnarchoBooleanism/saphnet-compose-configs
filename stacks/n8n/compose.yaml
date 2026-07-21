@@ -29,6 +29,8 @@ x-services: # Base instances of services to customize
         condition: service_healthy
       postgres:
         condition: service_healthy
+    volumes:
+      - n8n-storage:/home/node/.n8n
     environment:
       <<: [*mail]
       # Database
@@ -57,8 +59,6 @@ x-services: # Base instances of services to customize
       WEBHOOK_URL: https://n8n.int.saphnet.xyz/
       GENERIC_TIMEZONE: *timezone
       TZ: *timezone
-    volumes:
-      - n8n-storage:/home/node/.n8n
     networks: # When having more networks when merging this, be sure to include n8n_internal in the list too!
       - n8n_internal
     restart: unless-stopped
@@ -67,23 +67,23 @@ services:
   postgres:
     image: postgres:16@sha256:be01cf82fc7dbba824acf0a82e150b4b360f3ff93c6631d7844af431e841a95c
     container_name: n8n-postgres
-    ports:
-      - "5432:5432"
+    volumes:
+      - db-storage:/var/lib/postgresql/data
+      - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
     environment:
       <<: *postgres
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
       POSTGRES_NON_ROOT_PASSWORD: "${POSTGRES_NON_ROOT_PASSWORD}"
-    volumes:
-      - db-storage:/var/lib/postgresql/data
-      - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
+    ports:
+      - "5432:5432"
     networks:
       - n8n_internal
+    restart: unless-stopped
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -h localhost -U postgres -d n8n'] # Be sure to update this to reflect POSTGRES_USER and POSTGRES_DB!
       interval: 5s
       timeout: 5s
       retries: 10
-    restart: unless-stopped
 
   redis:
     image: redis:8-alpine@sha256:9d317178eceac8454a2284a9e6df2466b93c745529947f0cd42a0fa9609d7005
@@ -92,18 +92,21 @@ services:
       - redis-storage:/data
     networks:
       - n8n_internal
+    restart: unless-stopped
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 5s
       retries: 10
-    restart: unless-stopped
   
   n8n:
     <<: *n8n_common
     container_name: n8n
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:5678:5678"
+    networks:
+      - n8n_internal
+      - web_bridge
     labels:
       traefik.enable: "true"
       traefik.http.routers.n8n.rule: Host(`n8n.int.saphnet.xyz`)
@@ -121,16 +124,13 @@ services:
       traefik.http.middlewares.n8n.headers.STSIncludeSubdomains: "true"
       traefik.http.middlewares.n8n.headers.STSPreload: "true"
       traefik.http.routers.n8n.middlewares: n8n@docker
-    networks:
-      - n8n_internal
-      - web_bridge
   
   n8n-worker:
     <<: *n8n_common
     container_name: n8n-worker
-    command: worker
     depends_on:
       - n8n
+    command: worker
 
   n8n-runner:
     image: n8nio/runners:2.29.10@sha256:d519d92fc90116897671a7d84aae87b160b92fce0b4b02fc65f2221bbd827ef6
@@ -150,6 +150,17 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    environment:
+      POSTGRES_USER: *postgres_non_root_user
+      POSTGRES_PASSWORD: "${POSTGRES_NON_ROOT_PASSWORD}"
+      POSTGRES_HOST: n8n-postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: *postgres_db
+      ROOT_PATH_PREFIX: "/api/homepage-custom" # Since Traefik serves the API at a custom path, we need to pass this to FastAPI so it can be aware of it
+    networks:
+      - n8n_internal
+      - web_bridge
+    restart: unless-stopped
     labels:
       traefik.enable: "true"
       traefik.http.routers.n8n-homepage-api.rule: Host(`n8n.int.saphnet.xyz`) && Path(`/api/homepage-custom`)
@@ -162,17 +173,6 @@ services:
       traefik.http.routers.n8n-homepage-api.middlewares: n8n-homepage-api-stripprefix
       traefik.http.routers.n8n-homepage-api.service: n8n-homepage-api-svc
       traefik.http.services.n8n-homepage-api-svc.loadbalancer.server.port: "8000" # FastAPI listens to 8000 by default
-    environment:
-      POSTGRES_USER: *postgres_non_root_user
-      POSTGRES_PASSWORD: "${POSTGRES_NON_ROOT_PASSWORD}"
-      POSTGRES_HOST: n8n-postgres
-      POSTGRES_PORT: "5432"
-      POSTGRES_DB: *postgres_db
-      ROOT_PATH_PREFIX: "/api/homepage-custom" # Since Traefik serves the API at a custom path, we need to pass this to FastAPI so it can be aware of it
-    networks:
-      - n8n_internal
-      - web_bridge
-    restart: unless-stopped
 
 volumes:
   db-storage:

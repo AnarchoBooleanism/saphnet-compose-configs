@@ -5,6 +5,9 @@ services:
     ports:
       - "3000:3000"
       - "3001:3001"
+    networks:
+      - web_bridge
+    restart: unless-stopped
     labels:
       traefik.enable: "true"
       traefik.http.routers.speedtest.rule: Host(`speedtest.int.saphnet.xyz`)
@@ -15,9 +18,6 @@ services:
       traefik.http.routers.speedtest.tls.domains[0].sans: "*.int.saphnet.xyz"
       traefik.http.routers.speedtest.service: speedtest-svc
       traefik.http.services.speedtest-svc.loadBalancer.server.port: "3000"
-    networks:
-      - web_bridge
-    restart: unless-stopped
 
 networks:
   web_bridge:

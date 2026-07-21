@@ -5,14 +5,21 @@ services:
   foldingathome:
     image: ghcr.io/linuxserver/foldingathome:8.5.5@sha256:4471efd49e21c0ccc3a39d8390a283df3f3ef1233e77e5672f5842c66e2edf34
     container_name: foldingathome
-    deploy:
-      resources:
-        limits:
-          cpus: "3.2"
-    devices:
-      - /dev/dri/:/dev/dri/
+    volumes:
+      - foldingathome:/config
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: *timezone
+      MACHINE_NAME: docker-host-pve3
+      CLI_ARGS:  #optional
+      # Secrets to set in environment:
+      ACCOUNT_TOKEN: "$ACCOUNT_TOKEN"
     # ports:
     #   - "7396:7396"
+    networks:
+      - web_bridge
+    restart: unless-stopped
     labels:
       traefik.enable: "true"
       traefik.http.routers.fah.rule: Host(`fah.int.saphnet.xyz`)
@@ -22,19 +29,12 @@ services:
       traefik.http.routers.fah.tls.domains[0].main: fah.int.saphnet.xyz
       traefik.http.routers.fah.service: fah-svc
       traefik.http.services.fah-svc.loadBalancer.server.port: "7396"
-    environment:
-      PUID: "1000"
-      PGID: "1000"
-      TZ: *timezone
-      MACHINE_NAME: docker-host-pve3
-      CLI_ARGS:  #optional
-      # Secrets to set in environment:
-      ACCOUNT_TOKEN: "$ACCOUNT_TOKEN"
-    volumes:
-      - foldingathome:/config
-    networks:
-      - web_bridge
-    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "3.2"
+    devices:
+      - /dev/dri/:/dev/dri/
 
 volumes:
   foldingathome:

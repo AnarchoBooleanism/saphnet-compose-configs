@@ -2,15 +2,15 @@ services:
   docker-proxy:
     image: ghcr.io/tecnativa/docker-socket-proxy:v0.4.2@sha256:1f3a6f303320723d199d2316a3e82b2e2685d86c275d5e3deeaf182573b47476
     container_name: docker-proxy
-    ports:
-      - "0.0.0.0:2375:2375"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
     environment:
       CONTAINERS: "1" # Allow access to viewing containers
       SERVICES: "1" # Allow access to viewing services (necessary when using Docker Swarm)
       TASKS: "1" # Allow access to viewing tasks (necessary when using Docker Swarm)
       POST: "0" # Disallow any POST operations (effectively read-only)
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
+    ports:
+      - "0.0.0.0:2375:2375"
     networks:
       - web_bridge
     restart: unless-stopped
@@ -22,8 +22,18 @@ services:
     container_name: homepage
     depends_on:
       - docker-proxy
-#    ports:
-#      - "3000:3000"
+    # volumes:
+    #   - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: homepage.int.saphnet.xyz
+    env_file:
+      - ./.env
+      - ${SOPS_SECRETS_PATH:?Please set SOPS_SECRETS_PATH}
+    # ports:
+    # - "3000:3000"
+    networks:
+      - web_bridge
+    restart: unless-stopped
     labels:
       traefik.enable: "true"
       traefik.http.routers.homepage.rule: Host(`homepage.int.saphnet.xyz`)
@@ -44,16 +54,6 @@ services:
       traefik.http.routers.saphnet-int.service: homepage-svc
       traefik.http.middlewares.saphnet-int-redirectregex.redirectregex.regex: "^https://int\\.saphnet\\.xyz/(.*)"
       traefik.http.middlewares.saphnet-int-redirectregex.redirectregex.replacement: "https://homepage.int.saphnet.xyz/$${1}"
-    environment:
-      HOMEPAGE_ALLOWED_HOSTS: homepage.int.saphnet.xyz
-    env_file:
-      - ./.env
-      - ${SOPS_SECRETS_PATH:?Please set SOPS_SECRETS_PATH}
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
-    networks:
-      - web_bridge
-    restart: unless-stopped
 
 networks:
   web_bridge:

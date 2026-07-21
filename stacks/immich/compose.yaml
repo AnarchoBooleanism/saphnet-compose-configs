@@ -11,13 +11,30 @@ x-common:
 
 services:
   immich-server:
-    container_name: immich_server
-    image: ghcr.io/immich-app/immich-server:v3.0.2@sha256:14390f3dc9512dc3273b12ccee6363d9be16c388699abc3f3fe0498bb9829937  # To only update intentionally
     extends:
       file: ./extra/hwaccel.transcoding.yaml
       service: quicksync # set to one of [nvenc, quicksync, rkmpp, vaapi, vaapi-wsl] for accelerated transcoding
+    image: ghcr.io/immich-app/immich-server:v3.0.2@sha256:14390f3dc9512dc3273b12ccee6363d9be16c388699abc3f3fe0498bb9829937  # To only update intentionally
+    container_name: immich_server
+    depends_on:
+      - redis
+      - database
+    volumes:
+      - immich-data:/data
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      <<: *database
+      TZ: *timezone
+      DB_PASSWORD: "${DB_PASSWORD}"
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:2283:2283"
+    networks:
+      - immich-internal
+      - web_bridge
+    restart: unless-stopped
+    healthcheck:
+      disable: false
     labels:
       traefik.enable: "true"
       traefik.http.routers.immich.rule: Host(`immich.int.saphnet.xyz`)
@@ -27,62 +44,45 @@ services:
       traefik.http.routers.immich.tls.domains[0].main: immich.int.saphnet.xyz
       traefik.http.routers.immich.service: immich-svc
       traefik.http.services.immich-svc.loadBalancer.server.port: "2283"
-    environment:
-      <<: *database
-      TZ: *timezone
-      DB_PASSWORD: "${DB_PASSWORD}"
-      REDIS_PASSWORD: "${REDIS_PASSWORD}"
-    volumes:
-      - immich-data:/data
-      - /etc/localtime:/etc/localtime:ro
-    networks:
-      - immich-internal
-      - web_bridge
-    depends_on:
-      - redis
-      - database
-    healthcheck:
-      disable: false
-    restart: unless-stopped
 
   immich-machine-learning:
-    container_name: immich_machine_learning
-    # For hardware acceleration, add one of -[armnn, cuda, rocm, openvino, rknn] to the image tag.
-    # Example tag: ${IMMICH_VERSION:-release}-cuda
-    image: ghcr.io/immich-app/immich-machine-learning:v3.0.2-openvino@sha256:6b3c1f779df2e0f93be57bb2ad15681a43b7731cb325e8e66be7d984eca1949d
     extends: # uncomment this section for hardware acceleration - see https://docs.immich.app/features/ml-hardware-acceleration
       file: ./extra/hwaccel.ml.yaml
       service: openvino # set to one of [armnn, cuda, rocm, openvino, openvino-wsl, rknn] for accelerated inference - use the `-wsl` version for WSL2 where applicable
+    # For hardware acceleration, add one of -[armnn, cuda, rocm, openvino, rknn] to the image tag.
+    # Example tag: ${IMMICH_VERSION:-release}-cuda
+    image: ghcr.io/immich-app/immich-machine-learning:v3.0.2-openvino@sha256:6b3c1f779df2e0f93be57bb2ad15681a43b7731cb325e8e66be7d984eca1949d
+    container_name: immich_machine_learning
     volumes:
       - model-cache:/cache
     networks:
       - immich-internal
+    restart: unless-stopped
+    healthcheck:
+      disable: false
     deploy:
       resources:
         limits:
           memory: "8G"
-    healthcheck:
-      disable: false
-    restart: unless-stopped
 
   redis:
-    container_name: immich_redis
     image: docker.io/valkey/valkey:9@sha256:4963247afc4cd33c7d3b2d2816b9f7f8eeebab148d29056c2ca4d7cbc966f2d9
-    command:
-      - "--requirepass ${REDIS_PASSWORD}"
+    container_name: immich_redis
     ports:
       - "6379:6379"
     networks:
       - immich-internal
+    command:
+      - "--requirepass ${REDIS_PASSWORD}"
+    restart: unless-stopped
     healthcheck:
       test: redis-cli ping || exit 1
-    restart: unless-stopped
 
   database:
-    container_name: immich_postgres
     image: ghcr.io/immich-app/postgres:16-vectorchord0.4.3-pgvectors0.2.0@sha256:1a078b237c1d9b420b0ee59147386b4aa60d3a07a8e6a402fc84a57e41b043a4
-    ports:
-      - "5432:5432"
+    container_name: immich_postgres
+    volumes:
+      - immich-db-16:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
       POSTGRES_USER: *db_username
@@ -90,14 +90,14 @@ services:
       POSTGRES_INITDB_ARGS: '--data-checksums'
       # Uncomment the DB_STORAGE_TYPE: 'HDD' var if your database isn't stored on SSDs
       # DB_STORAGE_TYPE: 'HDD'
-    volumes:
-      - immich-db-16:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     networks:
       - immich-internal
-    shm_size: 128mb
+    restart: unless-stopped
     healthcheck:
       disable: false
-    restart: unless-stopped
+    shm_size: 128mb
 
 volumes:
   model-cache:

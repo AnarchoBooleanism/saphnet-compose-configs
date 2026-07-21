@@ -1,10 +1,9 @@
-# No need to run this AND compose.yaml, this file imports it by default
+# To be run, and merged, with the compose file
+# Example command:
+# docker compose -f base.yaml -f control-server.yaml up
 
 services:
   glances:
-    extends:
-      file: ./compose.yaml
-      service: glances
     labels:
       traefik.enable: "true"
       traefik.http.routers.glances.rule: Host(`glances.docker-host-pve3.int.saphnet.xyz`)
