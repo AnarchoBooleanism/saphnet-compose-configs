@@ -71,10 +71,10 @@ services:
     security_opt:
       - no-new-privileges:true
 
-volumes:
-  traefik-certs:
-
 networks:
   web_bridge:
     name: web_bridge
     attachable: true
+
+volumes:
+  traefik-certs:

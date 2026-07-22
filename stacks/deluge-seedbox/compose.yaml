@@ -70,6 +70,11 @@ services:
       - "2222:22"
     restart: unless-stopped
 
+networks:
+  web_bridge:
+    name: web_bridge
+    external: true
+
 volumes:
   # tailscale-config:
   deluge-config:
@@ -79,8 +84,3 @@ volumes:
       type: "nfs"
       o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
       device: ":/mnt/saphnet-nas1b/media-server/deluge"
-
-networks:
-  web_bridge:
-    name: web_bridge
-    external: true

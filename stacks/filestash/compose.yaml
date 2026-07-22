@@ -42,10 +42,10 @@ services:
     restart: unless-stopped
     user: root
 
-volumes:
-  filestash:
-
 networks:
   web_bridge:
     name: web_bridge
     external: true
+
+volumes:
+  filestash:

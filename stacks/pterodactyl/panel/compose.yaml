@@ -104,13 +104,13 @@ services:
       traefik.http.routers.pterodactyl.service: pterodactyl-svc
       traefik.http.services.pterodactyl-svc.loadBalancer.server.port: "80"
 
-volumes:
-  database-data:
-  panel-data:
-  panel-logs:
-
 networks:
   pterodactyl_panel_internal:
   web_bridge:
     name: web_bridge
     external: true
+
+volumes:
+  database-data:
+  panel-data:
+  panel-logs:

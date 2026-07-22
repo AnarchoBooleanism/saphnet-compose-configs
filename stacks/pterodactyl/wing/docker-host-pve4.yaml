@@ -55,10 +55,6 @@ services:
       traefik.http.routers.thevoidpact-map.service: thevoidpact-map-svc
       traefik.http.services.thevoidpact-map-svc.loadBalancer.server.url: http://host.docker.internal:63624
 
-volumes:
-  wings-config:
-  wings-logs:
-
 # This is Wings' Network. We don't need much depth here, all you need to know, is
 # that it allows the passthrough of the ports from Wings.
 networks:
@@ -70,3 +66,7 @@ networks:
     driver: bridge
     driver_opts:
       com.docker.network.bridge.name: ptero0
+
+volumes:
+  wings-config:
+  wings-logs:

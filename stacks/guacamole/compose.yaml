@@ -61,10 +61,10 @@ services:
       traefik.http.middlewares.guacamole-root-redirect.redirectregex.permanent: "true"
       traefik.http.routers.guacamole-root.service: guacamole-svc
 
-volumes:
-  guac-db-data:
-
 networks:
   web_bridge:
     name: web_bridge
     external: true
+
+volumes:
+  guac-db-data:

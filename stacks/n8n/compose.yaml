@@ -174,13 +174,13 @@ services:
       traefik.http.routers.n8n-homepage-api.service: n8n-homepage-api-svc
       traefik.http.services.n8n-homepage-api-svc.loadbalancer.server.port: "8000" # FastAPI listens to 8000 by default
 
-volumes:
-  db-storage:
-  n8n-storage:
-  redis-storage:
-
 networks:
   n8n_internal:
   web_bridge:
     name: web_bridge
     external: true
+
+volumes:
+  db-storage:
+  n8n-storage:
+  redis-storage:

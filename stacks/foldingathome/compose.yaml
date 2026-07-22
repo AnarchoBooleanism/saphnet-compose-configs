@@ -36,10 +36,10 @@ services:
     devices:
       - /dev/dri/:/dev/dri/
 
-volumes:
-  foldingathome:
-
 networks:
   web_bridge:
     name: web_bridge
     external: true
+
+volumes:
+  foldingathome:

@@ -351,6 +351,13 @@ services:
       traefik.http.routers.bazarr-anime.service: bazarr-anime-svc
       traefik.http.services.bazarr-anime-svc.loadBalancer.server.port: "6767"
 
+networks:
+  media-server: # Should be externally available
+    name: media-server
+  web_bridge:
+    name: web_bridge
+    external: true
+
 volumes:
   seedbox-files:
   jellyfin-config:
@@ -389,10 +396,3 @@ volumes:
     driver_opts:
       <<: *nas_nfs_driver_opts
       device: ":/mnt/saphnet-nas1b/media-server/deluge/torrent_downloads"
-
-networks:
-  media-server: # Should be externally available
-    name: media-server
-  web_bridge:
-    name: web_bridge
-    external: true
