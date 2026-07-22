@@ -49,10 +49,7 @@ auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/glances"
-file_paths = ["vps1.yaml"]
-config_files = [
-  { path = "compose.yaml", requires = "Redeploy" }
-]
+file_paths = ["compose.yaml", "vps1.yaml"]
 
 # traefik
 [[stack]]

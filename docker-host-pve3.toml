@@ -109,10 +109,7 @@ auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/glances"
-file_paths = ["docker-host-pve3.yaml"]
-config_files = [
-  { path = "compose.yaml", requires = "Redeploy" }
-]
+file_paths = ["compose.yaml", "docker-host-pve3.yaml"]
 
 # immich
 [[stack]]
