@@ -100,7 +100,6 @@ services:
       retries: 10
   
   n8n:
-    <<: *n8n_common
     container_name: n8n
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:5678:5678"
@@ -124,13 +123,14 @@ services:
       traefik.http.middlewares.n8n.headers.STSIncludeSubdomains: "true"
       traefik.http.middlewares.n8n.headers.STSPreload: "true"
       traefik.http.routers.n8n.middlewares: n8n@docker
+    <<: *n8n_common
   
   n8n-worker:
-    <<: *n8n_common
     container_name: n8n-worker
     depends_on:
       - n8n
     command: worker
+    <<: *n8n_common
 
   n8n-runner:
     image: n8nio/runners:2.31.4@sha256:ea1c18aeb644b673c927d19957269368a92de75fab7bb4748a79928c8ce12b6f

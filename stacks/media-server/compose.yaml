@@ -232,7 +232,6 @@ services:
     user: "1000:1000"
     
   radarr: # For movies
-    <<: *radarr
     container_name: radarr
     volumes:
       - radarr-config:/config
@@ -250,9 +249,9 @@ services:
       traefik.http.routers.radarr.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.radarr.service: radarr-svc
       traefik.http.services.radarr-svc.loadBalancer.server.port: "7878"
+    <<: *radarr
   
   radarr-anime: # For anime movies
-    <<: *radarr
     container_name: radarr-anime
     volumes:
       - radarr-anime-config:/config
@@ -270,9 +269,9 @@ services:
       traefik.http.routers.radarr-anime.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.radarr-anime.service: radarr-anime-svc
       traefik.http.services.radarr-anime-svc.loadBalancer.server.port: "7878"
+    <<: *radarr
 
   sonarr: # For shows
-    <<: *sonarr
     container_name: sonarr
     volumes:
       - sonarr-config:/config
@@ -290,9 +289,9 @@ services:
       traefik.http.routers.sonarr.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.sonarr.service: sonarr-svc
       traefik.http.services.sonarr-svc.loadBalancer.server.port: "8989"
+    <<: *sonarr
   
   sonarr-anime: # For anime
-    <<: *sonarr
     container_name: sonarr-anime
     volumes:
       - sonarr-anime-config:/config
@@ -310,9 +309,9 @@ services:
       traefik.http.routers.sonarr-anime.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.sonarr-anime.service: sonarr-anime-svc
       traefik.http.services.sonarr-anime-svc.loadBalancer.server.port: "8989"
+    <<: *sonarr
   
   bazarr: # For subtitles
-    <<: *bazarr
     container_name: bazarr
     volumes:
       - bazarr-config:/config
@@ -330,9 +329,9 @@ services:
       traefik.http.routers.bazarr.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.bazarr.service: bazarr-svc
       traefik.http.services.bazarr-svc.loadBalancer.server.port: "6767"
+    <<: *bazarr
   
   bazarr-anime: # For anime subtitles
-    <<: *bazarr
     container_name: bazarr-anime
     volumes:
       - bazarr-anime-config:/config
@@ -350,6 +349,7 @@ services:
       traefik.http.routers.bazarr-anime.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.bazarr-anime.service: bazarr-anime-svc
       traefik.http.services.bazarr-anime-svc.loadBalancer.server.port: "6767"
+    <<: *bazarr
 
 networks:
   media-server: # Should be externally available

@@ -193,7 +193,6 @@ services:
       traefik.http.middlewares.saphnet-www-redirectregex.redirectregex.replacement: "https://saphnet.xyz/$${1}"
 
   anubis-thevoidpact:
-    <<: *anubis
     container_name: anubis-main
     environment:
       <<: *anubis-environment
@@ -210,9 +209,9 @@ services:
       traefik.http.routers.anubis-thevoidpact.tls.domains[0].sans: *thevoidpact_domains_sans
       traefik.http.routers.anubis-thevoidpact.service: anubis-thevoidpact-svc
       traefik.http.services.anubis-thevoidpact-svc.loadbalancer.server.port: "8923"
+    <<: *anubis
 
   anubis-saphnet:
-    <<: *anubis
     container_name: anubis-saphnet
     environment:
       <<: *anubis-environment
@@ -230,6 +229,7 @@ services:
       traefik.http.routers.anubis-saphnet.tls.domains[0].sans: "www.saphnet.xyz,anubis.saphnet.xyz"
       traefik.http.routers.anubis-saphnet.service: anubis-saphnet-svc
       traefik.http.services.anubis-saphnet-svc.loadbalancer.server.port: "8923"
+    <<: *anubis
 
 volumes:
   thevoidpact-map-tiles-cache:
