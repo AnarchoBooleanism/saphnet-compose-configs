@@ -24,8 +24,8 @@ services:
     image: guacamole/guacamole:latest@sha256:7d2e6a1c16d3e89847500aaf7a59d7bd48b41b8ae7e0ede9c6ac022a17452dde
     container_name: guacamole
     depends_on:
-      - guacdb
       - guacd
+      - guacdb
     environment:
       GUACD_HOSTNAME: guacd
       MYSQL_HOSTNAME: guacdb

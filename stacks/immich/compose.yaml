@@ -14,8 +14,8 @@ services:
     image: ghcr.io/immich-app/immich-server:v3.0.2@sha256:14390f3dc9512dc3273b12ccee6363d9be16c388699abc3f3fe0498bb9829937  # To only update intentionally
     container_name: immich_server
     depends_on:
-      - redis
       - database
+      - redis
     volumes:
       - immich-data:/data
       - /etc/localtime:/etc/localtime:ro

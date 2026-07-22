@@ -281,7 +281,8 @@ All top-level properties for Compose YAML files should be listed in this order (
 
 All keys of a service should be listed in this order ([service-keys-order-rule](https://github.com/zavoloklom/docker-compose-linter/blob/main/docs/rules/service-keys-order-rule.md)): `image`, `build`, `container_name`, `depends_on`, `volumes`, `volumes_from`, `configs`, `secrets`, `environment`, `env_file`, `ports`, `networks`, `network_mode`, `extra_hosts`, `command`, `entrypoint`, `working_dir`, *`tty`*, `restart`, `healthcheck`, `logging`, `labels`, *`pid`*, `user`, `isolation`, `cap_add`, *`deploy`*, *`device_cgroup_rules`*, `devices`, `expose`, *`group_add`*, *`init`* *`security_opt`*, *`shm_size`*, `sysctls`, *`ulimits`*, `extends`, `<<` (all italicized keys are keys that were not originally in the list)
 
-Instead of ordering services in `services` in alphabetical order, however, this repository will have its services in each Compose YAML file be listed in order of importance (or significance), from most relevant to least relevant (for the main application(s) for which the stack exists).
+#### Ordering of services
+Instead of ordering services in `services` in alphabetical order, this repository will have its services in each Compose YAML file, at the top level, be listed in order of importance (or significance), from most relevant to least relevant (for the main application(s) for which the stack exists). However, for services listed in the `depends_on` property, the listing should be in alphabetical order.
 
 #### Choosing between sequences and dictionaries (e.g. environment variables)
 For certain keys in services, like labels and environment variables, you may have a choice between using sequences of strings, and dictionaries, for the key.
