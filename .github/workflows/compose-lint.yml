@@ -27,4 +27,10 @@ jobs:
         with:
           recursive: true
           exclude: .github
-        continue-on-error: true
+          # Rules being ignored for this repository, 
+          # we have specific needs
+          disable-rule: >-
+            no-unbound-port-interfaces
+            require-project-name-field
+            services-alphabetical-order
+        # continue-on-error: true
