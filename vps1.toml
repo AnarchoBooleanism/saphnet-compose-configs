@@ -80,7 +80,7 @@ DASHBOARD_LOGIN = '[[TRAEFIK_DASHBOARD_LOGIN]]'
 # velocity-vps1
 [[stack]]
 name = "velocity-vps1"
-description = "A modern reverse proxy for Minecraft servers, intended for public-facing vps1."
+description = "A modern reverse proxy for Minecraft servers, intended for public-facing vps1. To enter the server console, run 'rcon-cli'."
 tags = ["iac"]
 [stack.config]
 server = "vps1"
