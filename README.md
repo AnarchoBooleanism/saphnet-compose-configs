@@ -1241,7 +1241,7 @@ services:
     ... # Omitting for brevity
     depends_on:
       init-helper: # Waits for init-helper to exit before running
-        condition: service_completed_completely
+        condition: service_completed_successfully
     ...
     volumes:
       - example-service-data:/var/lib/example
@@ -1277,7 +1277,7 @@ More importantly, the `init-helper` service has an entrypoint configured, that c
 
 Again, note that if the intended contents of the entrypoint script span more than a few lines (or are otherwise long), then it should be made into a separate script file and mounted to the init container, in the same process shown earlier in this section.
 
-For an init container service to work as an init container service, the Compose service(s) that need it to run first must be configured to wait for the init container service to successfully exit (with the exit code 0). This is done by listing the name of the Compose service for the init container as a dictionary key under the `depends_on` property of the dependent Compose service(s); under the dictionary entry for the init container service, under `depends_on`, the `condition` property must be set to `service_completed_completely`, to configure the dependent service(s) to start only after the init container has exited (as opposed to starting once the init container has started).
+For an init container service to work as an init container service, the Compose service(s) that need it to run first must be configured to wait for the init container service to successfully exit (with the exit code 0). This is done by listing the name of the Compose service for the init container as a dictionary key under the `depends_on` property of the dependent Compose service(s); under the dictionary entry for the init container service, under `depends_on`, the `condition` property must be set to `service_completed_successfully`, to configure the dependent service(s) to start only after the init container has exited (as opposed to starting once the init container has started).
 
 As another note, when creating Stack resources for Komodo (which will be covered in further depth later in this guide), with Compose stacks that contain init container services, remember to configure the Stack to ignore the state of the init container service when determining the status of the Stack, as exited init containers may cause Komodo to incorrectly conclude that the Stack is unhealthy, when the init container has only done its job.
 
@@ -1802,7 +1802,7 @@ services:
     ... # Omitting for brevity
     depends_on:
       init-helper: # Waits for init-helper to exit before running
-        condition: service_completed_completely
+        condition: service_completed_successfully
     ...
   init-helper:
     image: alpine
