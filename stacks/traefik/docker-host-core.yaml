@@ -163,3 +163,13 @@ services:
       traefik.http.routers.router.tls.domains[0].sans: *saphnet_int_domains_sans
       traefik.http.routers.router.service: router-svc
       traefik.http.services.router-svc.loadbalancer.server.url: https://192.168.8.1:443
+      
+      # switch1.int.saphnet.xyz
+      traefik.http.switch1.router.rule: Host(`switch1.int.saphnet.xyz`)
+      traefik.http.switch1.router.entrypoints: websecure
+      traefik.http.switch1.router.tls: "true"
+      traefik.http.switch1.router.tls.certresolver: letsencrypt
+      traefik.http.switch1.router.tls.domains[0].main: *saphnet_int_domains_main
+      traefik.http.switch1.router.tls.domains[0].sans: *saphnet_int_domains_sans
+      traefik.http.switch1.router.service: switch1-svc
+      traefik.http.services.switch1-svc.loadbalancer.server.url: http://192.168.8.2:80
