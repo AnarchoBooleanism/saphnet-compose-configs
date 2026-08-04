@@ -18,7 +18,7 @@ services:
   # This expects to be given a path to a secrets file (by the "docker compose up" command)
   # to use for secrets as environment variables
   homepage:
-    image: ghcr.io/anarchobooleanism/saphnet-homepage:edge@sha256:9c37c5d836f60624d20513b26c1a5dedc7a46e2e3ebeb93274f0171d4d499437
+    image: ghcr.io/anarchobooleanism/saphnet-homepage:edge@sha256:8ca8c176c97512bf1e3b9fa6fa66554b490cf55492cd5f76c7009c4c8af29b8a
     container_name: homepage
     depends_on:
       - docker-proxy
