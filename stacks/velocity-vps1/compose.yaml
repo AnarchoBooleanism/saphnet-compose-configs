@@ -7,11 +7,11 @@
 
 # Variables you'll want to frequently change
 x-common:
-  VELOCITY_VERSION: &velocity-version "3.5.0-SNAPSHOT" # See: https://papermc.io/downloads/velocity
+  VELOCITY_VERSION: &velocity-version "4.1.0-SNAPSHOT" # See: https://papermc.io/downloads/velocity
 
 services:
   velocity:
-    image: itzg/mc-proxy:java21@sha256:e716bba317726491994210990dbb066d4349e6b3704d898207b993153a3f0a77
+    image: itzg/mc-proxy:java25@sha256:0dce2d0e7d08632a8e94c05f7801574bceac8d7f9a01b16ee55ef9662ff0f240
     container_name: velocity
     volumes:
       - ./velocity-config/velocity.toml:/config/velocity.toml:ro
