@@ -11,7 +11,7 @@ x-common:
 
 services:
   velocity:
-    image: itzg/mc-proxy:java21@sha256:e716bba317726491994210990dbb066d4349e6b3704d898207b993153a3f0a77
+    image: itzg/mc-proxy:java21@sha256:91de94748121ddbc465798ac0aac3d3b34b2fe81c1ddfd61dcf074161a1168b1
     container_name: velocity
     volumes:
       - ./velocity-config/velocity.toml:/config/velocity.toml:ro
