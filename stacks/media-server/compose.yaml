@@ -43,7 +43,7 @@ x-services: # Base instances of services to customize
     restart: unless-stopped
   
   bazarr: &bazarr # For subtitles
-    image: ghcr.io/linuxserver/bazarr:1.6.0@sha256:e464484e7e6cff8ee189036c9ba96977ab054104ea18067ecf6171d0f3f3f8f2
+    image: ghcr.io/linuxserver/bazarr:1.6.0@sha256:ac284d3fda9ee7da8b15197dc51f0d7a2a1da98549bee99a3d924d3e94a5e7ed
     # Set a unique container_name here
     # For volumes, have volume mounted to /config, volume mounted to /movies, and volume
     # mounted to /tv
