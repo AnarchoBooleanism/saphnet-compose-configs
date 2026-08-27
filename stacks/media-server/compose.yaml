@@ -13,7 +13,7 @@ x-common:
 
 x-services: # Base instances of services to customize
   radarr: &radarr # For movies
-    image: ghcr.io/linuxserver/radarr:6.3.0@sha256:a45b5ab0f850f39edb4cc9c95bbd967b52ddc3d4574a4dfb45561177db6c88f4
+    image: ghcr.io/linuxserver/radarr:6.3.0@sha256:119aaa4a4f7349bcd2a136c5373a0d7925b5479915c7dfe0c0ad352db2a6d438
     # Set a unique container_name here
     # For volumes, have volume mounted to /config, volume mounted to media folder (e.g. /movies),
     # and volume mounted to /downloads (for Deluge downloads)
@@ -28,7 +28,7 @@ x-services: # Base instances of services to customize
     restart: unless-stopped
   
   sonarr: &sonarr # For shows
-    image: ghcr.io/linuxserver/sonarr:4.0.19@sha256:373159ba768e23a3a1c497d9f2b936addf8fd5b1fdce7dd6a14080ac928bfda0
+    image: ghcr.io/linuxserver/sonarr:4.0.19@sha256:c19aa4ecdf03d73e1d5c901da33744cb7eb4d921f89bafed1ca264601d7fa224
     # Set a unique container_name here
     # For volumes, have volume mounted to /config, volume mounted to media folder (e.g. /tv),
     # and volume mounted to /downloads (for Deluge downloads)
