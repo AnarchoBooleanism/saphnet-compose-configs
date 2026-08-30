@@ -22,7 +22,7 @@ services:
       - /var/lib/pterodactyl:/var/lib/elytra
       - wings-logs:/var/log/elytra
       - /tmp/elytra:/tmp/elytra
-      - /run/elytra:/run/elytra # Elytra seems to need access to this to start servers
+      # - /run/elytra:/run/elytra # Currently disabled as machine-id is disabled, and NixOS doesn't have this as persistent
     environment:
       TZ: *timezone
       # For ease of setup, this is going to use root user.
