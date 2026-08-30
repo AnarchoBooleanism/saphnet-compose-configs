@@ -21,7 +21,7 @@ services:
       - /var/lib/pterodactyl:/var/lib/pterodactyl # Some things still refer to /var/lib/pterodactyl...
       - /var/lib/pterodactyl:/var/lib/elytra
       - wings-logs:/var/log/elytra
-      - /tmp/pterodactyl:/tmp/elytra
+      - /tmp/elytra:/tmp/elytra
     environment:
       TZ: *timezone
       # For ease of setup, this is going to use root user.
