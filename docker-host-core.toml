@@ -188,6 +188,8 @@ run_directory = "stacks/pterodactyl/panel"
 config_files = [
   { path = "secrets/docker-host-core.enc.env", requires = "Redeploy" }
 ]
+registry_provider = "ghcr.io" # Results in "unauthorized" if not specified
+registry_account = "AnarchoBooleanism"
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
