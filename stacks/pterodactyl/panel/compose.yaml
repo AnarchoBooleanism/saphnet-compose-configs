@@ -71,7 +71,7 @@ services:
     restart: unless-stopped
   
   panel:
-    image: ghcr.io/pyrodactyl-oss/pyrodactyl:v5.0.6@sha256:3c1008e2b9337655e60100eaff0fc4dcda4cad4834ae3cced9ab3baf861ad955
+    image: ghcr.io/blueprintframework/hydrodactyl:v6.3.2@sha256:ce59810e6711548fe88cd9bd83dc5697f6a0c1b2b36e11d6a4f075f53002fbff
     container_name: pterodactyl-panel # Refer to the panel container this way
     volumes:
       - panel-data:/app/var/
