@@ -6,6 +6,10 @@
 #                         https://docs.agamersgrind.com/guides/pterodactyl/creating-a-new-wings-node
 #                         https://dev.to/marrouchi/the-challenge-about-ssl-in-docker-containers-no-one-talks-about-32gh
 
+# Environment variables to set:
+# - PTERODACTYL_TOKEN_ID
+# - PTERODACTYL_TOKEN
+
 x-common:
   TIMEZONE: &timezone "America/Los_Angeles"
   # INSTANCE_DOMAIN: &instance-domain "pterodactyl-node-main.int-net.saphnet.xyz"
@@ -14,6 +18,9 @@ services:
   wing:
     image: ghcr.io/pyrohost/elytra:1.4.0@sha256:7aba9b21bd60bf1eead7e7cf51d8277c4e6c8a64a5dd08f04d7aa39be273bbe6
     container_name: pterodactyl-wing # Refer to the panel container this way
+    depends_on:
+      init-config: # So that config.yml is tracked but still can be modified during runtime
+        condition: service_completed_successfully
     volumes: # Mapping things to elytra, but source directories will remain same as before
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/containers:/var/lib/docker/containers
@@ -55,6 +62,22 @@ services:
       traefik.http.routers.thevoidpact-map.tls.domains[0].main: map-int.thevoidpact.xyz
       traefik.http.routers.thevoidpact-map.service: thevoidpact-map-svc
       traefik.http.services.thevoidpact-map-svc.loadBalancer.server.url: http://host.docker.internal:63624
+  
+  init-config:
+    build: ./init-config
+    volumes:
+      - ./init-config/config.yml.template:/config.yml.template
+      - wings-config:/wings-config
+    environment:
+      PTERODACTYL_TOKEN_ID: "${PTERODACTYL_TOKEN_ID}"
+      PTERODACTYL_TOKEN: "${PTERODACTYL_TOKEN}"
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        envsubst '$$PTERODACTYL_TOKEN_ID,$$PTERODACTYL_TOKEN' \
+          < /config.yml.template \
+          > /wings-config/config.yml
 
 # This is Wings' Network. We don't need much depth here, all you need to know, is
 # that it allows the passthrough of the ports from Wings.
@@ -69,5 +92,5 @@ networks:
       com.docker.network.bridge.name: ptero0
 
 volumes:
-  wings-config:
+  wings-config: # init-config creates config.yml, to be used by the wing service
   wings-logs:

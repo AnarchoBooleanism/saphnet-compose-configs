@@ -1,0 +1,36 @@
+debug: false
+uuid: my-uuid
+token_id: $PTERODACTYL_TOKEN_ID
+token: $PTERODACTYL_TOKEN
+api:
+  host: 0.0.0.0
+  port: 443
+  ssl:
+    enabled: false
+    cert: /etc/letsencrypt/live/pterodactyl-node-public.saphnet.xyz/fullchain.pem
+    key: /etc/letsencrypt/live/pterodactyl-node-public.saphnet.xyz/privkey.pem
+  upload_limit: 100
+system:
+  data: /var/lib/pterodactyl/volumes
+  sftp:
+    bind_port: 2022
+  backups:
+    rustic:
+      binary_path: rustic
+      repository_version: 2
+      tree_pack_size_mb: 4
+      data_pack_size_mb: 32
+      local: { enabled: true, repository_path: /var/lib/elytra/rustic-repos, use_cold_storage: false, hot_repository_path: '' }
+      s3: { enabled: true, endpoint: 'https://s3.nas1.int.saphnet.xyz', region: garage, bucket: pterodactyl-backups, use_cold_storage: false, hot_bucket: '', cold_storage_class: GLACIER, force_path_style: true, disable_ssl: false, ca_cert_path: '' }
+  machine_id:
+    enabled: false
+allowed_mounts: []
+remote: 'https://pterodactyl.int.saphnet.xyz'
+allowed_origins:
+  - 'https://pterodactyl.int.saphnet.xyz'
+docker:
+  network:
+    interfaces:
+      v4:
+        subnet: "10.55.230.0/24"
+        gateway: 10.55.230.1

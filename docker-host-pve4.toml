@@ -81,11 +81,13 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/pterodactyl/wing"
 file_paths = ["docker-host-pve4.yaml"]
-environment = """
-DNS_NAMECHEAP_USERNAME = '[[NAMECHEAP_USERNAME]]'
-DNS_NAMECHEAP_API_KEY = '[[NAMECHEAP_API_KEY]]'
-CERTBOT_EMAIL = '[[CERTBOT_EMAIL]]'
-"""
+config_files = [
+  { path = "init-config/config.yml.template", requires = "Redeploy" },
+  { path = "init-config/Dockerfile", requires = "Redeploy" },
+  { path = "secrets/docker-host-pve4.enc.env", requires = "Redeploy" },
+]
+compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve4.enc.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 
 # traefik
 [[stack]]
