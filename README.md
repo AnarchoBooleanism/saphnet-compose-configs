@@ -418,7 +418,7 @@ services:
       - /bin/sh
       - -c
       - |
-        echo -n '${VELOCITY_FORWARDING_SECRET}' > '/config/forwarding.secret'
+        printf '${VELOCITY_FORWARDING_SECRET}' > '/config/forwarding.secret'
         exec /usr/bin/run-bungeecord.sh
 ```
 
@@ -1220,7 +1220,7 @@ if [ -n "${POSTGRES_NON_ROOT_USER:-}" ] && [ -n "${POSTGRES_NON_ROOT_PASSWORD:-}
 		GRANT CREATE ON SCHEMA public TO ${POSTGRES_NON_ROOT_USER};
 	EOSQL
 else
-	echo "SETUP INFO: No Environment variables given!"
+	printf "SETUP INFO: No Environment variables given!\n"
 fi
 ```
 
