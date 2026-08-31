@@ -88,6 +88,7 @@ config_files = [
 ]
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve4.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
+ignore_services = ["init-config"]
 
 # traefik
 [[stack]]

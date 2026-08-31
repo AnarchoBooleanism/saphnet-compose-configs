@@ -75,6 +75,9 @@ services:
       - /bin/sh
       - -c
       - |
+        printf "Creating config.yml file...
+        PTERODACTYL_TOKEN_ID is $$PTERODACTYL_TOKEN_ID
+        PTERODACTYL_TOKEN is $$PTERODACTYL_TOKEN\n"
         envsubst '$$PTERODACTYL_TOKEN_ID,$$PTERODACTYL_TOKEN' \
           < /config.yml.template \
           > /wings-config/config.yml
