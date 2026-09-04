@@ -43,7 +43,7 @@ x-services: # Base instances of services to customize
     restart: unless-stopped
   
   bazarr: &bazarr # For subtitles
-    image: ghcr.io/linuxserver/bazarr:1.6.0@sha256:e464484e7e6cff8ee189036c9ba96977ab054104ea18067ecf6171d0f3f3f8f2
+    image: ghcr.io/linuxserver/bazarr:1.6.0@sha256:a20fb11a440d704a9d61c283aa26462aad33dc63223b173f8d8c77d33e8e9d59
     # Set a unique container_name here
     # For volumes, have volume mounted to /config, volume mounted to /movies, and volume
     # mounted to /tv
@@ -193,7 +193,7 @@ services:
     restart: unless-stopped
   
   prowlarr: # Handles trackers
-    image: ghcr.io/linuxserver/prowlarr:2.5.2@sha256:1295cff29d10b486c0d8324d1559a552140a5932bf8b3d87e398654414f63f92
+    image: ghcr.io/linuxserver/prowlarr:2.5.2@sha256:91844fa2c927ad6ede5630127183cc7868b175f6223e83e6a5da1fffea2aa782
     container_name: prowlarr
     volumes:
       - prowlarr-config:/config
@@ -219,7 +219,7 @@ services:
       traefik.http.services.prowlarr-svc.loadBalancer.server.port: "9696"
 
   recyclarr:
-    image: ghcr.io/recyclarr/recyclarr:8.7.1@sha256:73303ba5ee647b6492fee917d3a781c6e59b6cab08f9dfce9482a950846f564f
+    image: ghcr.io/recyclarr/recyclarr:8.7.2@sha256:6e69e009e1cd7493ff6093e8e187b5d3788c75b4a2c0c5127b6a1beda1c19728
     container_name: recyclarr
     volumes:
       - recyclarr-config:/config
