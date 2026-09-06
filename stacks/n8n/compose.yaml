@@ -23,7 +23,7 @@ x-common:
 
 x-services: # Base instances of services to customize
   N8N_COMMON: &n8n_common
-    image: n8nio/n8n:2.37.9@sha256:ed6bbab565eddbb688f394594cb2932d2b3b24f02240299a8fcce78bfe4201db
+    image: n8nio/n8n:2.37.10@sha256:307d6065be25619aa24cfc63a7c2f04ca56d084a08c05c8e9f189a89f353b1ec
     depends_on:
       redis:
         condition: service_healthy
@@ -133,7 +133,7 @@ services:
     <<: *n8n_common
 
   n8n-runner:
-    image: n8nio/runners:2.37.9@sha256:ce6697023bf12a48447fed0ed5d4f2fd0c2ce06fcc09a4359e0ccf569432c239
+    image: n8nio/runners:2.37.10@sha256:63bda67eac04e5a2a42683730e0d43deed7e463a92f5bfca2090d0189a909c42
     container_name: n8n-runner
     depends_on:
       - n8n
