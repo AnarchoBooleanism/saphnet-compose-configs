@@ -59,6 +59,9 @@ description = "A real-time monitoring tool for systems (e.g. processes and hardw
 tags = ["glances", "iac"]
 [stack.config]
 server = "docker-host-pve4"
+links = [
+  "https://glances.docker-host-pve4.int.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -74,6 +77,10 @@ description = "A server control plane for the Pterodactyl panel."
 tags = ["pterodactyl", "iac"]
 [stack.config]
 server = "docker-host-pve4"
+links = [
+  "https://pterodactyl-node-main.int-net.saphnet.xyz",
+  "https://map-int.thevoidpact.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -97,6 +104,9 @@ description = "A cloud-native reverse proxy and load balancer."
 tags = ["traefik", "iac"]
 [stack.config]
 server = "docker-host-pve4"
+links = [
+  "https://docker-host-pve4.int.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true

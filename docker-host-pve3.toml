@@ -31,6 +31,9 @@ description = "A torrent client for file sharing, behind a VPN, and an SFTP serv
 tags = ["iac"]
 [stack.config]
 server = "docker-host-pve3"
+links = [
+  "https://seedbox.int.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -83,6 +86,9 @@ description = "A program donating computing resources to science by simulating p
 tags = ["iac", "gpu"]
 [stack.config]
 server = "docker-host-pve3"
+links = [
+  "https://fah.int.saphnet.xyz",
+]
 auto_update = true
 auto_update_all_services = true
 destroy_before_deploy = true
@@ -103,6 +109,9 @@ description = "A real-time monitoring tool for systems (e.g. processes and hardw
 tags = ["glances", "iac"]
 [stack.config]
 server = "docker-host-pve3"
+links = [
+  "https://glances.docker-host-pve3.int.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -118,6 +127,11 @@ description = "A self-hosted photo and video management solution."
 tags = ["iac", "gpu"]
 [stack.config]
 server = "docker-host-pve3"
+links = [
+  "https://immich.int.saphnet.xyz",
+  # External
+  "https://immich.saphnet.xyz",
+]
 auto_update = true
 auto_update_all_services = true
 destroy_before_deploy = true
@@ -141,6 +155,24 @@ description = "A media server designed to integrate with the Deluge Seedbox, usi
 tags = ["iac", "gpu"]
 [stack.config]
 server = "docker-host-pve3"
+links = [
+  "https://jellyfin.media.int.saphnet.xyz",
+  "https://jellyfin.media.saphnet.xyz",
+  "https://seerr.media.int.saphnet.xyz",
+  "https://jellyseerr.media.int.saphnet.xyz",
+  "https://prowlarr.media.int.saphnet.xyz",
+  "https://radarr.media.int.saphnet.xyz",
+  "https://radarr-anime.media.int.saphnet.xyz",
+  "https://sonarr.media.int.saphnet.xyz",
+  "https://sonarr-anime.media.int.saphnet.xyz",
+  "https://bazarr.media.int.saphnet.xyz",
+  "https://bazarr-anime.media.int.saphnet.xyz",
+  # External
+  "https://media.saphnet.xyz",
+  "https://media.int.saphnet.xyz",
+  "https://seerr.media.saphnet.xyz",
+  "https://jellyseerr.media.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -158,6 +190,9 @@ description = "A cloud-native reverse proxy and load balancer."
 tags = ["traefik", "iac"]
 [stack.config]
 server = "docker-host-pve3"
+links = [
+  "https://docker-host-pve3.int.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -183,6 +218,9 @@ description = "The daemon that handles video conversions for the VERT.sh service
 tags = ["vert", "iac", "gpu"]
 [stack.config]
 server = "docker-host-pve3"
+links = [
+  "https://vertd.int.saphnet.xyz",
+]
 auto_update = true
 auto_update_all_services = true
 destroy_before_deploy = true

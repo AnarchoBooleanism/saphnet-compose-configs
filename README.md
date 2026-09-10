@@ -1541,6 +1541,9 @@ description = "A real-time monitoring tool for systems (e.g. processes and hardw
 tags = ["glances", "iac"]
 [stack.config]
 server = "vps1"
+links = [
+  "https://glances-vps1.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -1557,6 +1560,7 @@ Directly under the `[[stack]]` line (which creates a new entry for the `stack` a
 
 The `config` attribute of a `stack` entry describes the configuration of the Stack resource itself. For most Stacks, most of these lines are simply boilerplate, but each line is important for the Stack to be able to be managed properly! Here are a list of important properties of `config` (note that the attributes for any Stack should be in the order listed below):
 - `server`: This is the name of the Server that the Stack runs on.
+- `links`: This provides an array of links for Komodo to display for the Stack resource. These generally should be the URLs that can be used outside of the host to connect to the services in the Stack resource, and should appear in the order that they appear through Traefik labels in the corresponding stack file. If applicable, there should also be links that refer to the service from an external VPS (and an external Traefik instance), at the end of the array, labeled with an `# External` comment.
 - `poll_for_updates`: This determines whether Komodo will regularly poll image registries for any new images (to update to) for each service in the Compose stack. This should be `true`!
 - `auto_update`: This determines whether Komodo will automatically redeploy the service(s) with new images when they are found. This should be `true`.
 - `auto_update_all_services`: This determines whether Komodo will also automatically redeploy the entire Stack when a service has a new image. This should be `true`.
