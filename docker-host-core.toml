@@ -51,6 +51,9 @@ description = "A way to access various file servers via web UI."
 tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
+links = [
+  "https://filestash.int.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -65,6 +68,9 @@ description = "A real-time monitoring tool for systems (e.g. processes and hardw
 tags = ["glances", "iac"]
 [stack.config]
 server = "docker-host-core"
+links = [
+  "https://glances.docker-host-core.int.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -80,6 +86,9 @@ description = "A way to remotely access other machines via web UI."
 tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
+links = [
+  "https://guacamole.int.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -94,6 +103,9 @@ description = "A way to see the status of various services in one webpage."
 tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
+links = [
+  "https://homepage.int.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -120,6 +132,9 @@ description = "A workflow automation platform, with the flexibility of code and 
 tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
+links = [
+  "https://n8n.int.saphnet.xyz",
+]
 auto_update = true
 auto_update_all_services = true
 destroy_before_deploy = true
@@ -143,6 +158,9 @@ description = "A host for providing network access to different operating system
 tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
+links = [
+  "https://netboot.int.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -165,6 +183,9 @@ description = "A web tool for determining the speed and latency of a connection.
 tags = ["iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
+links = [
+  "https://speedtest.int.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -179,6 +200,9 @@ description = "A server management panel for games, e.g. Minecraft."
 tags = ["pterodactyl", "iac", "high-availability"]
 [stack.config]
 server = "docker-host-core"
+links = [
+  "https://pterodactyl.int.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -208,6 +232,23 @@ description = "A cloud-native reverse proxy and load balancer."
 tags = ["traefik", "iac"]
 [stack.config]
 server = "docker-host-core"
+links = [
+  "https://docker-host-core.int.saphnet.xyz",
+  "https://glances.int.saphnet.xyz",
+  "https://glances3.int.saphnet.xyz",
+  "https://glances4.int.saphnet.xyz",
+  "https://modem.int.saphnet.xyz",
+  "https://netdata.int.saphnet.xyz",
+  "https://netdata3.int.saphnet.xyz",
+  "https://netdata4.int.saphnet.xyz",
+  "https://netdata-vps1.int.saphnet.xyz",
+  "https://pve1.int.saphnet.xyz",
+  "https://pve3.int.saphnet.xyz",
+  "https://pve4.int.saphnet.xyz",
+  "https://proxmox.int.saphnet.xyz",
+  "https://router.int.saphnet.xyz",
+  "https://switch1.int.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true

@@ -43,6 +43,9 @@ description = "A real-time monitoring tool for systems (e.g. processes and hardw
 tags = ["glances", "iac"]
 [stack.config]
 server = "vps1"
+links = [
+  "https://glances-vps1.saphnet.xyz"
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
@@ -84,6 +87,19 @@ description = "A modern reverse proxy for Minecraft servers, intended for public
 tags = ["iac"]
 [stack.config]
 server = "vps1"
+links = [
+  "https://traefik-vps1.saphnet.xyz",
+  "https://immich.saphnet.xyz",
+  "https://map.thevoidpact.xyz",
+  "https://jellyfin.media.saphnet.xyz",
+  "https://media.saphnet.xyz",
+  "https://seerr.media.saphnet.xyz",
+  "https://jellyseerr.media.saphnet.xyz",
+  "https://saphnet.xyz",
+  "https://www.saphnet.xyz",
+  "https://anubis.thevoidpact.xyz",
+  "https://anubis.saphnet.xyz",
+]
 poll_for_updates = true
 auto_update = true
 auto_update_all_services = true
