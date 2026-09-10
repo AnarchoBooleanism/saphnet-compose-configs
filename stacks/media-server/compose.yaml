@@ -162,17 +162,6 @@ services:
       traefik.http.routers.seerr.tls.domains[0].sans: *media_domains_sans
       traefik.http.routers.seerr.service: seerr-svc
       traefik.http.services.seerr-svc.loadBalancer.server.port: "5055"
-
-      # Redirect jellyseerr to seerr
-      traefik.http.routers.jellyseerr.rule: "Host(`jellyseerr.media.int.saphnet.xyz`)"
-      traefik.http.routers.jellyseerr.middlewares: "jellyseerr-redirectregex"
-      traefik.http.routers.jellyseerr.tls: "true"
-      traefik.http.routers.jellyseerr.tls.certresolver: letsencrypt
-      traefik.http.routers.jellyseerr.tls.domains[0].main: *media_domains_main
-      traefik.http.routers.jellyseerr.tls.domains[0].sans: *media_domains_sans
-      traefik.http.routers.jellyseerr.service: seerr-svc
-      traefik.http.middlewares.jellyseerr-redirectregex.redirectregex.regex: "^https://jellyseerr\\.media\\.int\\.saphnet\\.xyz/(.*)"
-      traefik.http.middlewares.jellyseerr-redirectregex.redirectregex.replacement: "https://seerr.media.int.saphnet.xyz/$${1}"
     init: true
 
   flaresolverr: # Handles CloudFlare prompts for Prowlarr

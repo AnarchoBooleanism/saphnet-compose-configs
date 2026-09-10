@@ -151,7 +151,7 @@ TAILSCALE_IP = '[[TAILSCALE_IP_PVE3]]'
 # media-server
 [[stack]]
 name = "media-server"
-description = "A media server designed to integrate with the Deluge Seedbox, using Jellyfin, Jellyseerr, Prowlarr (suported with Flaresolverr), Radarr & Sonarr (supported with Recyclarr), and Bazarr. Note that there are two groups of Radarr/Sonarr-related containers, for anime and non-anime media."
+description = "A media server designed to integrate with the Deluge Seedbox, using Jellyfin, Seerr, Prowlarr (suported with Flaresolverr), Radarr & Sonarr (supported with Recyclarr), and Bazarr. Note that there are two groups of Radarr/Sonarr-related containers, for anime and non-anime media."
 tags = ["iac", "gpu"]
 [stack.config]
 server = "docker-host-pve3"
@@ -159,7 +159,6 @@ links = [
   "https://jellyfin.media.int.saphnet.xyz",
   "https://jellyfin.media.saphnet.xyz",
   "https://seerr.media.int.saphnet.xyz",
-  "https://jellyseerr.media.int.saphnet.xyz",
   "https://prowlarr.media.int.saphnet.xyz",
   "https://radarr.media.int.saphnet.xyz",
   "https://radarr-anime.media.int.saphnet.xyz",
@@ -171,7 +170,6 @@ links = [
   "https://media.saphnet.xyz",
   "https://media.int.saphnet.xyz",
   "https://seerr.media.saphnet.xyz",
-  "https://jellyseerr.media.saphnet.xyz",
 ]
 poll_for_updates = true
 auto_update = true

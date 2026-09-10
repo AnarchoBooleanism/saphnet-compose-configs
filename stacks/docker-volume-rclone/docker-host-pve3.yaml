@@ -14,7 +14,7 @@ services:
         media-server_bazarr-config
         media-server_flaresolverr-config
         media-server_jellyfin-config
-        media-server_jellyseerr-config
+        media-server_seerr-config
         media-server_radarr-config
         media-server_prowlarr-config
         media-server_radarr-anime-config
