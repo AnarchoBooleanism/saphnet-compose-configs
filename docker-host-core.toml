@@ -105,6 +105,7 @@ tags = ["iac", "high-availability"]
 server = "docker-host-core"
 links = [
   "https://homepage.int.saphnet.xyz",
+  "https://int.saphnet.xyz",
 ]
 poll_for_updates = true
 auto_update = true
