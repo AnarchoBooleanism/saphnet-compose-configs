@@ -13,7 +13,7 @@ x-common:
 
 x-services: # Base instances of services to customize
   radarr: &radarr # For movies
-    image: ghcr.io/linuxserver/radarr:6.3.0@sha256:119aaa4a4f7349bcd2a136c5373a0d7925b5479915c7dfe0c0ad352db2a6d438
+    image: ghcr.io/linuxserver/radarr:6.3.0@sha256:95ba0801df4d9d1d79d0d9a3849f656542497dab061d91b87ad4f53a71aff3ef
     # Set a unique container_name here
     # For volumes, have volume mounted to /config, volume mounted to media folder (e.g. /movies),
     # and volume mounted to /downloads (for Deluge downloads)
@@ -28,7 +28,7 @@ x-services: # Base instances of services to customize
     restart: unless-stopped
   
   sonarr: &sonarr # For shows
-    image: ghcr.io/linuxserver/sonarr:4.0.19@sha256:c19aa4ecdf03d73e1d5c901da33744cb7eb4d921f89bafed1ca264601d7fa224
+    image: ghcr.io/linuxserver/sonarr:4.0.19@sha256:4d9df314875e1249ab7d6170c2b9b3dc1d8e6383f168ceb10dc9a5ad9b324739
     # Set a unique container_name here
     # For volumes, have volume mounted to /config, volume mounted to media folder (e.g. /tv),
     # and volume mounted to /downloads (for Deluge downloads)
@@ -43,7 +43,7 @@ x-services: # Base instances of services to customize
     restart: unless-stopped
   
   bazarr: &bazarr # For subtitles
-    image: ghcr.io/linuxserver/bazarr:1.6.0@sha256:a20fb11a440d704a9d61c283aa26462aad33dc63223b173f8d8c77d33e8e9d59
+    image: ghcr.io/linuxserver/bazarr:1.6.0@sha256:84b6f05a7a4194fafe5a0bec062d32f6ae9ea74db33d43d678cb9a3191f31c24
     # Set a unique container_name here
     # For volumes, have volume mounted to /config, volume mounted to /movies, and volume
     # mounted to /tv
@@ -59,7 +59,7 @@ x-services: # Base instances of services to customize
 
 services:
   jellyfin: # Media streaming
-    image: jellyfin/jellyfin:10.11.11@sha256:aefb67e6a7ff1debdd154a78a7bbb780fd0c873d8639210a7f6a2016ad2b35db # To only update intentionally
+    image: jellyfin/jellyfin:12.0.20260908-012347@sha256:baba630419915985442f315f08b0cf46d9f4c8a0cc4bd38e94a6d35751dd5ef5 # To only update intentionally
     container_name: jellyfin
     volumes:
       - jellyfin-config:/config # Also, self-signed cert files in here
@@ -193,7 +193,7 @@ services:
     restart: unless-stopped
   
   prowlarr: # Handles trackers
-    image: ghcr.io/linuxserver/prowlarr:2.5.2@sha256:91844fa2c927ad6ede5630127183cc7868b175f6223e83e6a5da1fffea2aa782
+    image: ghcr.io/linuxserver/prowlarr:2.5.2@sha256:c7502a75b021d964481c129c84590b9cbc40f83aadd4e553f173871bc0deaa3c
     container_name: prowlarr
     volumes:
       - prowlarr-config:/config
