@@ -150,17 +150,6 @@ services:
       traefik.http.routers.seerr.service: seerr-svc
       traefik.http.services.seerr-svc.loadbalancer.server.url: http://docker-host-pve3:5055
 
-      # Redirect jellyseerr to seerr
-      traefik.http.routers.jellyseerr.rule: "Host(`jellyseerr.media.saphnet.xyz`)"
-      traefik.http.routers.jellyseerr.middlewares: "jellyseerr-redirectregex"
-      traefik.http.routers.jellyseerr.tls: "true"
-      traefik.http.routers.jellyseerr.tls.certresolver: letsencrypt
-      traefik.http.routers.jellyseerr.tls.domains[0].main: *saphnet_media_domains_main
-      traefik.http.routers.jellyseerr.tls.domains[0].sans: *saphnet_media_domains_sans
-      traefik.http.routers.jellyseerr.service: seerr-svc
-      traefik.http.middlewares.jellyseerr-redirectregex.redirectregex.regex: "^https://jellyseerr\\.media\\.saphnet\\.xyz/(.*)"
-      traefik.http.middlewares.jellyseerr-redirectregex.redirectregex.replacement: "https://seerr.media.saphnet.xyz/$${1}"
-
   under-construction: # Serving "under construction" pages
     image: ghcr.io/palmergw/under-construction-page:latest@sha256:2fd2eab189cb8bef5ba7c1b6bc76f86c46dbbe68644bf1ae99e2b3c1f47389e7
     container_name: under-construction
@@ -218,7 +207,7 @@ services:
       COOKIE_DOMAIN: "saphnet.xyz"
       PUBLIC_URL: "https://anubis.saphnet.xyz"
       REDIRECT_DOMAINS: >-
-        jellyfin.media.saphnet.xyz,jellyseerr.media.saphnet.xyz,saphnet.xyz,immich.saphnet.xyz
+        jellyfin.media.saphnet.xyz,seerr.media.saphnet.xyz,saphnet.xyz,immich.saphnet.xyz
     labels:
       traefik.enable: "true"
       traefik.http.routers.anubis-saphnet.rule: Host(`anubis.saphnet.xyz`)
