@@ -1,15 +1,17 @@
 {
+  // Renovate-specific
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:best-practices",
     "docker:enableMajor"
   ],
+  
+  // Scheduling
+  "timezone": "America/Los_Angeles",
+  "schedule": ["0 0 6 * * 1"], // Every Monday at 6:00 AM
   "prHourlyLimit": 0,
-  "packageRules": [
-    {
-      "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"]
-    }
-  ],
+
+  // Accounts, tokens
   "hostRules": [
     {
       "hostType" : "docker",
@@ -22,6 +24,13 @@
       "matchHost": "ghcr.io",
       "username": "AnarchoBooleanism",
       "password" : "{{ secrets.GHCR_TOKEN }}"
+    }
+  ],
+
+  // Packages
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"]
     }
   ],
   "customManagers": [ // TODO: Add velocity
