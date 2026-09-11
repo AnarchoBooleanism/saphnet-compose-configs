@@ -3,5 +3,19 @@
   "extends": [
     "config:recommended"
   ],
-  "prHourlyLimit": 0
+  "prHourlyLimit": 0,
+  "hostRules": [
+    {
+      "hostType" : "docker",
+      "matchHost": "docker.io",
+      "username": "anarchobooleanism",
+      "password" : "{{ secrets.DOCKERHUB_TOKEN }}"
+    },
+    {
+      "hostType" : "docker",
+      "matchHost": "ghcr.io",
+      "username": "AnarchoBooleanism",
+      "password" : "{{ secrets.GHCR_TOKEN }}"
+    }
+  ]
 }
