@@ -6,6 +6,11 @@
     "docker:pinDigests"
   ],
   "prHourlyLimit": 0,
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"]
+    }
+  ],
   "hostRules": [
     {
       "hostType" : "docker",
