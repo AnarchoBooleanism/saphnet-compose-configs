@@ -33,15 +33,26 @@
       "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"]
     }
   ],
-  "customManagers": [ // TODO: Add velocity
+  "customDatasources": {
+    "papermc": { // Use the official PaperMC API as authoritative source, as no other alternatives exist
+      "defaultRegistryUrlTemplate": "https://fill.papermc.io/v3/project/{{ packageName }}",
+      "format": "json",
+      "transformTemplates": [
+        "{ \"releases\": $reduce($each(versions, function($v) { $v }), $append) . { \"version\": $ } }"
+      ]
+    }
+  },
+  "customManagers": [
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "**/nixos_vms.yaml"
+        "stacks/velocity-vps1/compose.yaml"
       ],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)(?: versioning=(?<versioning>.*?))?\\s[a-z_]+_version:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
-      ]
+        // This pre-supposes the datasource, and we assume that we won't express versions without quotes in YAML (to avoid confusing parsers)
+        "# renovate\\[papermc\\]: depName=(?<depName>.*?)\\n[ \\t]*VELOCITY_VERSION:[ \\t]+&velocity-version[ \\t]+[\"'](?<currentValue>[^\"'\\s]+)[\"']"
+      ],
+      "datasourceTemplate": "custom.papermc"
     }
   ]
 }
