@@ -1,9 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
-    "docker:enableMajor",
-    "docker:pinDigests"
+    "config:best-practices",
+    "docker:enableMajor"
   ],
   "prHourlyLimit": 0,
   "packageRules": [
@@ -23,6 +22,17 @@
       "matchHost": "ghcr.io",
       "username": "AnarchoBooleanism",
       "password" : "{{ secrets.GHCR_TOKEN }}"
+    }
+  ],
+  "customManagers": [ // TODO: Add velocity
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "**/nixos_vms.yaml"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)(?: versioning=(?<versioning>.*?))?\\s[a-z_]+_version:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
+      ]
     }
   ]
 }
