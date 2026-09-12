@@ -1,0 +1,139 @@
+{
+  // Overall Renovate config
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    "docker:enableMajor"
+  ],
+  
+  // Scheduling
+  "timezone": "America/Los_Angeles",
+  "schedule": ["* 0 6 * * 1"], // Every Monday at 6:00 AM
+  "prHourlyLimit": 0,
+
+  // Accounts, tokens
+  "hostRules": [
+    {
+      "hostType" : "docker",
+      "matchHost": "docker.io",
+      "username": "anarchobooleanism",
+      "password" : "{{ secrets.DOCKERHUB_TOKEN }}"
+    },
+    {
+      "hostType" : "docker",
+      "matchHost": "ghcr.io",
+      "username": "AnarchoBooleanism",
+      "password" : "{{ secrets.GHCR_TOKEN }}"
+    }
+  ],
+
+  // Data sources
+  "customDatasources": {
+    "papermc": { // Use the official PaperMC API as authoritative source, as no other alternatives exist
+      "defaultRegistryUrlTemplate": "https://fill.papermc.io/v3/project/{{ packageName }}",
+      "format": "json",
+      "transformTemplates": [
+        "{ \"releases\": $reduce($each(versions, function($v) { $v }), $append) . { \"version\": $ } }"
+      ]
+    }
+  },
+
+  // Package rules
+  "packageRules": [
+    // Main
+    {
+      "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"]
+    },
+
+    // Package groups (for tightly-bound packages)
+    {
+      "groupName": "guacamole",
+      "matchFileNames": ["stacks/guacamole/compose.yaml"],
+      "matchPackageNames": [
+        "guacamole/guacd",
+        "guacamole/guacamole"
+      ]
+    },
+    {
+      "groupName": "immich",
+      "matchFileNames": ["stacks/immich/compose.yaml"],
+      "matchPackageNames": [
+        "ghcr.io/immich-app/immich-server",
+        "ghcr.io/immich-app/immich-machine-learning"
+      ]
+    },
+    { // Every container in media-server is practically special
+      "groupName": "media-server",
+      "matchFileNames": ["stacks/media-server/compose.yaml"]
+    },
+    {
+      "groupName": "n8n",
+      "matchFileNames": ["stacks/n8n/compose.yaml"],
+      "matchPackageNames": [
+        "n8nio/n8n",
+        "n8nio/runners",
+        "ghcr.io/anarchobooleanism/n8n-homepage-api"
+      ]
+    },
+    {
+      "groupName": "pterodactyl",
+      "matchFileNames": [
+        "stacks/pterodactyl/panel/compose.yaml",
+        "stacks/pterodactyl/wing/docker-host-pve4.yaml"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/blueprintframework/hydrodactyl",
+        "ghcr.io/pyrohost/elytra"
+      ]
+    },
+    {
+      "groupName": "vert",
+      "matchFileNames": [
+        "stacks/vert-sh/compose.yaml",
+        "stacks/vertd/compose.yaml"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/vert-sh/vert",
+        "ghcr.io/vert-sh/vertd"
+      ]
+    },
+
+    // Major/minor version pins
+    {
+      "matchFileNames": ["stacks/n8n/compose.yaml"],
+      "matchPackageNames": ["postgres"],
+      "allowedVersions": "^16.0.0"
+    }
+  ],
+
+  // Other custom managers
+  "customManagers": [
+    {
+      // Generic type to use for all custom version declarations
+      // Base:
+      // # renovate: datasource=<DATASOURCE> depName=<DEPNAME> [versioning=<VERSIONING>] [registryUrl=<REGISTRYURL>]
+      // [-] <VERSION_KEY_NAME>: [&<OPTIONAL-ANCHOR-NAME>] "<VERSION_VALUE>"
+      //
+      // Example:
+      // # renovate: datasource=github-releases depName=AnarchoBooleanism/nixos-cloud-init-installer versioning=semver
+      // NIXOS_CLOUDINIT_ISO_VERSION: &cloudinit-iso-version "v2.12.0"
+      // 
+      // You are able to use as much whitespace between tokens as possible, as long as it's valid YAML
+      // You're also able to use hyphens, beforehand, too, e.g.:
+      // - NIXOS_CLOUDINIT_ISO_VERSION: &cloudinit-iso-version "v2.12.0"
+      // 
+      // Assuming we only use keys that are strings
+      // And that keys and anchors don't need quotes (at least, avoid numbers and dashes as the first character)
+      // However, try to use quotes for version name strings in YAML files
+      "customType": "regex",
+      "managerFilePatterns": [
+        "**/*.yml",
+        "**/*.yaml"
+      ],
+      "matchStrings": [
+        "(?<comment>[ \\t]*#[ \\t]+renovate:[ \\t]+datasource=(?<datasource>[^\\s]+)[ \\t]+depName=(?<depName>[^\\s]+)(?:[ \\t]+versioning=(?<versioning>[^\\s]+))?(?:[ \\t]+registryUrl=(?<registryUrl>[^\\s]+))?\\n\\s*)(?<prefix>(?:-\\s+)?[a-zA-Z_][a-zA-Z0-9_-]*:[ \\t]+)(?<anchor>&[a-zA-Z_][a-zA-Z0-9_-]*[ \\t]+)?(?<quote>[\"'])?(?<currentValue>[^\"'\\s]+)(?:[\"'])?"
+      ],
+      "autoReplaceStringTemplate": "{{{comment}}}{{{prefix}}}{{{anchor}}}{{{quote}}}{{{newVersion}}}{{{quote}}}"
+    }
+  ]
+}

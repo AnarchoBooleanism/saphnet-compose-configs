@@ -8,7 +8,7 @@ Furthermore, be aware of the requirements of each Compose stack! Depending on th
 ## Repository structure
 
 This repository has four main parts to it:
-- `.github`: A directory containing the Dependabot config and various GitHub Actions workflows (e.g. for validation)
+- `.github`: A directory containing the Renovate config and various GitHub Actions workflows (e.g. for validation)
   - The contents of this directory are mostly supplemental to the other parts of the repository, and won't need to be touched on a regular basis.
 - `stacks`: A directory containing all configurations for Compose stacks
   - Each stack has its own subdirectory, either under `stacks`, or directly under a subdirectory under `stacks` (for stacks that are categorized together)
@@ -29,7 +29,7 @@ Repository root (./.)
 │   ├─ workflows
 │   │   ├─ compose-lint.yml
 │   │   └─ (Potentially, other workflows)
-│   └─ dependabot.yml
+│   └─ renovate.jsonc
 ├─ stacks
 │   ├─ (A typical stack)
 │   │   ├─ secrets (optional)
@@ -51,39 +51,93 @@ Repository root (./.)
 
 ## Updating Compose stacks
 
-Assuming that your stack's compose files use version pinning, the updating process should be relatively simple, with no setup required. On a weekly basis (every Monday), Dependabot will scan through all Compose files for outdated (or vulnerable) image versions, automatically creating pull requests with updates for all images that can be updated; it is also possible to configure Dependabot to group updates for certain image names together into one single pull request.
+Assuming that your stack's compose files use version pinning, the updating process should be relatively simple, with no setup required. On a weekly basis (every Monday), Renovate will scan through all Compose files for outdated (or vulnerable) image versions, automatically creating pull requests with updates for all images that can be updated; it is also possible to configure Renovate to group updates for certain image names together into one single pull request.
 
 It is generally a good idea to check for any breaking changes with new versions that require configuration changes or manual work, before merging such changes; if new versions require configuration changes (applicable to the files within the repository), make sure to push those changes to the branch for the pull request **before** merging it into the main branch!
 
-Once you are finished with merging all possible changes, you will still need to run specific procedures in Komodo so that the new changes can be deployed, as it is not fully automatic; this is to ensure there is a manual verification step before running new code. Within Komodo, run the `saphnet-repo-sync` Procedure, which will bring Komodo's copy of the repositories up to date, as well as update the `stack-sync` Resource Syncs. Then, after manually reviewing the changes in each `stack-sync` Resource Sync for each Server, confirming that there are no discrepancies or errors, run the `saphnet-run-iac-stack-sync` Procedure; this will bring all Stacks to the states specified in the repository's Resource Syncs and redeploy any Stacks that have changes.
+Generally, there is already a Procedure that automatically synchronizes the states of Komodo resources with the state of the repository every 5 minutes. However, there may be cases where you want any new merged changes to be deployed immediately. To do this, within Komodo, run the `saphnet-repo-sync` Procedure, which will bring Komodo's copy of the repositories up to date, as well as update the `stack-sync` Resource Syncs. Then, after manually reviewing the changes in each `stack-sync` Resource Sync for each Server, confirming that there are no discrepancies or errors, run the `saphnet-run-iac-stack-sync` Procedure; this will bring all Stacks to the states specified in the repository's Resource Syncs and redeploy any Stacks that have changes.
 
-### On Dependabot (configuration)
-Dependabot is equipped to work with any new stacks in subdirectory of the `stacks` directory (or a subdirectory of that subdirectory), as long as the YAML files (which can be given any name) for the Compose stacks are valid YAML, following the Compose schema. The default behavior is to create individual pull requests for each Docker image, which may be fine for certain types of needs. However, if you have multiple Docker images that are always upgraded together, you may want to update all of them at once in a single pull request; in that case, you are able to define groups in the Dependabot configuration (in `.github/dependabot.yml`) consisting of multiple Docker image names that will be considered together in pull requests.
+### On Renovate (configuration)
+Renovate is equipped to work with any Compose stacks in any subdirectory as long as the YAML files (which can be given any name) for the Compose stacks are valid YAML, following the Compose schema. It also works for Dockerfiles and other custom version declarations, which will be covered later.
 
-Here is an example of such a group in Dependabot:
-```yaml
-updates:
-  ... # Omitting for brevity
-  - package-ecosystem: "docker-compose"
+For more information, [you can read the official Renovate documentation here](https://docs.renovatebot.com/).
+
+#### Grouping Renovate packages for updates
+The default behavior is to create individual pull requests for each Docker image, which may be fine for certain types of needs. However, if you have multiple Docker images that are always upgraded together (e.g. their versions/functionality are tightly bound), you may want to update all of them at once in a single pull request. In that case, you are able to define groups as package rules in the Renovate configuration (in `.github/renovate.jsonc`); these rules match images by their names and the files in which they are specified, and group together their updates into singular pull requests.
+
+Here is an example of such a group in `renovate.jsonc`, for the `immich` Compose stack:
+```json
+{
+  ... // Omitted for brevity
+  // Package rules
+  "packageRules": [
     ...
-    groups:
-      guacamole:
-        patterns:
-          - "guacamole/guacd"
-          - "guacamole/guacamole"
-      ...
+    {
+      "groupName": "immich",
+      "matchFileNames": ["stacks/immich/compose.yaml"],
+      "matchPackageNames": [
+        "ghcr.io/immich-app/immich-server",
+        "ghcr.io/immich-app/immich-machine-learning"
+      ]
+    },
+    ...
+  ],
+  ...
+}
 ```
 
-Under the top-level attribute `updates`, in the entry for the `docker-compose` package ecosystem, in `groups`, a group named `guacamole` is defined, with the patterns `guacamole/guacd` and `guacamole/guacamole`; the patterns in this case just literally refer to the names of the Docker images referenced, but you are able to use the wildcard pattern (`*`) as well to refer to all images. Whenever both the `guacamole/guacd` and `guacamole/guacamole` images have updates when Dependabot runs, Dependabot will automatically combine their updates into a single pull request.
+Under the `packageRules` key, an entry is defined as a JSON object: `groupName` defines the name of this group of packages (`immich`), `matchFileNames` limits the scope of this rule to just the `stacks/immich/compose.yaml` file, and `matchPackageNames` defines the names of the packages (images) that will be grouped, which are the `ghcr.io/immich-app/immich-server` and `ghcr.io/immich-app/immich-machine-learning` images. Whenever both images have updates when Renovate runs, Renovate will automatically combine their updates into a single pull request.
 
-Note that, for the strings under `patterns`, that you only need to specify the repository name (and potentially the namespace name) for the image, in this format: `[NAMESPACE/]REPOSITORY` (note that `NAMESPACE` is shown as optional here). You should not add the registry host name (and port), even if the image does not come from the default image registry (e.g. `ghcr.io`). For example, an image that would be referred to with `ghcr.io/tecnativa/docker-socket-proxy` in a Compose file only needs to be written as `technativa/docker-socket-proxy` in the Dependabot configuration.
+You can also skip specifying package names if all images in a specific Compose stack should always be updated together, like this, for the `media-server` Compose stack:
+```json
+{
+  ... // Omitted for brevity
+  // Package rules
+  "packageRules": [
+    ...
+    { // Every container in media-server is practically special
+      "groupName": "media-server",
+      "matchFileNames": ["stacks/media-server/compose.yaml"]
+    },
+    ...
+  ],
+  ...
+}
+```
 
-Furthermore, it is only advised to group together images that are related or closely work together; if the image is also used in other unrelated stacks, the resulting pull requests from Dependabot may create undue coupling between stacks.
+In this case, any updates for any one image listed in the file for the `media-server` Compose stack will be included with updates for the other images in the same Compose stack in the same pull request.
 
-For more information, [you can read the official Dependabot options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference#groups--).
+Note that, for the strings under `patterns`, that you should specify the name of the image completely as written in the Compose file, as Renovate matches package names quite literally; if a registry is specified in the image name (e.g. `ghcr.io`), then it should be included.
 
-### Running Dependabot manually
-Generally, Dependabot runs on a weekly schedule, being on Mondays, at a random time. In the case that you need Dependabot to run again, outside of this schedule (e.g. to scan for images that were just recently updated), you are able to manually run Dependabot through the GitHub website. On the GitHub webpage for this repository, navigate to `Insights` on the top bar (for the repository), click on `Dependency graph` on the side menu bar, navigate to the `Dependabot` menu (under `Dependancy graph`), click on `Recent update jobs` for the entry that names a `compose.yaml` file, and, finally, click `Check for Updates`. You can confirm that Dependabot is running by navigating to `Actions` on the top bar and checking for workflows that are labeled with `Dependabot Updates`.
+Furthermore, it is also best practice to limit the scope of these package rules to specific files for which the grouping should apply; this should ensure that other stacks that use the same images will not be included in the group pull requests.
+
+#### Pinning image versions to specific major/minor versions
+For certain Compose stacks, you may want to pin certain images to specific major/minor versions, instead of keeping them at the most latest version; for example, you may have an image for a database Compose service supporting another main service, and this main service may expect the database to stay within a specific major version. In such a case, you can define a package rule in the Renovate configuration that matches its image name and file path and specifies the version(s) to pin to; the allowed version(s) is specified as the value (a string) of `allowedVersions`.
+
+Here is an example of this in action for the `postgres` image for the `n8n` Compose stack:
+```json
+{
+  ... // Omitted for brevity
+  // Package rules
+  "packageRules": [
+    ...
+    {
+      "matchFileNames": ["stacks/n8n/compose.yaml"],
+      "matchPackageNames": ["postgres"],
+      "allowedVersions": "^16.0.0"
+    }
+    ...
+  ],
+  ...
+}
+```
+
+In the above rule, within the `stacks/n8n/compose.yaml` file (defined in `matchFileNames`), the `postgres` package (defined in `matchPackageNames`) is kept to versions that meet the rule of `allowedVersions` (`^16.0.0`). Before specifying a full SemVer version to refer to, we specify the `^` symbol to limit updates to only ones that don't change the left-most non-zero element of the version number: this results in Renovate only updating to versions within the `16` major version.
+
+In addition to using the `^` symbol to keep the major version pinned to a specific number, you can also use the `<` or `<=` symbols to, respectively, only update to versions strictly under or not over the specified version to the right of the symbol. 
+
+#### Running Renovate manually
+Generally, Renovate runs on a weekly schedule: on Mondays, at 6:00 AM (in `America/Los_Angeles` time). In the case that you need Renovate to run again, outside of this schedule (e.g. to scan for images that were just recently updated), you are able to manually run Renovate through the Renovate issue. On the GitHub webpage for this repository, navigate to `Issues` on the top bar (for the repository), then click on the `Dependency Dashboard` issue (which should be pinned), and finally, click on the tick box next to `Check this box to trigger a request for Renovate to run again on this repository`. You can confirm that Renovate is running by navigating to [the page for this repository on the Mend.io Web Portal](https://developer.mend.io/github/AnarchoBooleanism/saphnet-compose-configs).
 
 ## Creating Compose stacks
 
@@ -139,7 +193,7 @@ No matter how you start writing your Compose file, you should try to follow the 
 ### Docker image version pinning (highly important!)
 For the purposes of Compose stacks in `saphnet-compose-configs`, all Docker images should be pinned to specific SHA-256 digests, unless there is a specific reason not to. This is because SHA-256 digests are immutable (unchangeable) hashes that represent an exact build of an image; images behind a (Docker) repository or even its specific tags can change silently, but an image cannot change without its hash being different, so changing image version requires changes to Compose files, which are easily audited. Exact image version pinning allows for exact reproducibility (as images can't change silently), easy rollbacks, in the case of problems (due to this reproducibility), the ability to control when new versions are introduced (and make any configuration changes before doing so), and increased security, as immutability renders silent supply chain attacks impossible.
 
-It is possible to use digests without version tags, and digests will take precedence over tags, but it is generally best practice to write both version tags and digests, so that humans can see the intent, that Dependabot can determine what images to upgrade to, and that the benefits of version pinning are maintained.
+It is possible to use digests without version tags, and digests will take precedence over tags, but it is generally best practice to write both version tags and digests, so that humans can see the intent, that Renovate can determine what images to upgrade to, and that the benefits of version pinning are maintained.
 
 Any image name used in Compose stack services will use this format: `[HOST[:PORT]/][NAMESPACE/]REPOSITORY_NAME]:TAG][@DIGEST]`
 - For `collabora/code:latest`, the namespace is `collabora`, the repository name is `code`, and the tag is `latest`; by default, the host and port are of the Docker Hub, and the digest will be inferred from the tag.
@@ -147,7 +201,7 @@ Any image name used in Compose stack services will use this format: `[HOST[:PORT
 - For `ghcr.io/netbootxyz/netbootxyz:latest`, the registry is `ghcr.io`, the namespace is `netbootxyz`, the repository name is `netbootxyz`, and the version tag is `latest`; the port is assumed to be `443`, the port for HTTPS (Docker generally prefers using HTTPS), and the digest will be inferred from the tag.
 - For `itzg/mc-proxy:java21@sha256:02803ab8390f89260e01693cc1fae519119fcae782d90e83ee3ea3ebd65567cc`, the namespace is `itzg`, the repository is `mc-proxy`, the tag is `java21`, and the digest is `sha256:02803ab8390f89260e01693cc1fae519119fcae782d90e83ee3ea3ebd65567cc`; the host and port are assumed to be that of the Docker Hub.
 
-Before determining a specific digest hash to pick for an image, first consider the tag you want to use for your image, as this will determine what digest you will use, and determine how Dependabot will update these digests, to either keep it up to date with the tag or upgrade the tag itself.
+Before determining a specific digest hash to pick for an image, first consider the tag you want to use for your image, as this will determine what digest you will use, and determine how Renovate will update these digests, to either keep it up to date with the tag or upgrade the tag itself.
 
 Ideally, you would want to specify the most specific version tag that corresponds to the `latest` tag of the repository, like this (at the time of writing, `26.04.1.4.1` matches up with the `latest` tag of `collabora/code`):
 ```yaml
@@ -158,7 +212,7 @@ services:
     ...
 ```
 
-This allows for maximum communicability and the ability for Dependabot to update the tag to meet the latest version. To determine what tag to use, read the version tags of the page for the image repository on the Docker image registry website, and find the most specific version tag that has the same digest hashes as the image with the `latest` tag; certain image registries (e.g. ghcr.io) make this easier by listing all applicable tags for each digest, while others (e.g. the Docker Hub) require more manual scanning. Furthermore, when determining the specific digest to use, try to use the index digest instead of a platform-specific manifest digest; this allows the image to be used across multiple CPU architectures, and is the practice that Dependabot uses when updating images. 
+This allows for maximum communicability and the ability for Renovate to update the tag to meet the latest version. To determine what tag to use, read the version tags of the page for the image repository on the Docker image registry website, and find the most specific version tag that has the same digest hashes as the image with the `latest` tag; certain image registries (e.g. ghcr.io) make this easier by listing all applicable tags for each digest, while others (e.g. the Docker Hub) require more manual scanning. Furthermore, when determining the specific digest to use, try to use the index digest instead of a platform-specific manifest digest; this allows the image to be used across multiple CPU architectures, and is the practice that Renovate uses when updating images. 
 
 Furthermore, if you want to stay up to date, but have to use a specific type of image (e.g. for a specific GPU), then this is also possible; again, do make sure your version tag's digest matches that of the latest version of the specific image type. Here is an example of this, for Immich's Machine Learning service:
 ```yaml
@@ -170,7 +224,7 @@ services:
     ...
 ```
 
-In this case, we use the `v2.7.5-openvino` tag; we use a specific version (`v2.7.5`) that corresponds to the latest version, and we specify a type, which is `openvino` in this case. Dependabot is still able to infer the intent of the tag, and update the tag and digest when new images come, if they are applicable; note that this depends on how the specific image repository tags their images, and it may not work for all repositories.
+In this case, we use the `v2.7.5-openvino` tag; we use a specific version (`v2.7.5`) that corresponds to the latest version, and we specify a type, which is `openvino` in this case. Renovate is still able to infer the intent of the tag, and update the tag and digest when new images come, if they are applicable; note that this depends on how the specific image repository tags their images, and it may not work for all repositories.
 
 However, for certain image repositories, there may not exist any version-specific tags (e.g. `v0.1.0`), or the images behind the version tags are far behind in updates/functionality compared to the images behind the `latest` tag; in such cases, it is acceptable to use the `latest` tag, provided that a SHA-256 digest hash is present in the image name, like this:
 ```yaml
@@ -180,20 +234,7 @@ services:
     ... # Omitting for brevity
 ```
 
-Even without a specific version specified, using the `latest` tag still gives Dependabot your intent in terms of upgrading the image, and it will still provide pull requests with image upgrades.
-
-In certain cases, you may not want to use the latest version of an image, but rather stay within a release version (whether major or minor), whether for reasons of compatibility or stability; if that release version is still receiving updates, you may want to have Dependabot still upgrade your image when new updates come for it. In such a case, you can provide a version tag that specifies only the major (or even major AND minor) release version; as long as you do not provide the most specific type of version name possible, Dependabot will be able to provide image updates only for that version tag, and not change the version tag.
-
-For example, here is an example of a Redis service sticking to version `8`, but nothing more specific, so that Dependabot doesn't upgrade the major version:
-```yaml
-services:
-  ... # Omitting for brevity
-  cache:
-    image: redis:8@sha256:2838d5524559494f6f1cd66e97e76b200d64a633a8614200620755ed395daf32
-    ...
-```
-
-This example allows for exact reproducibility, since Docker will only pull that specific image, and high stability while staying up to date, as Dependabot will ONLY provide updates to images that have the version tag for `8`.
+Even without a specific version specified, using the `latest` tag still gives Renovate your intent in terms of upgrading the image, and it will still provide pull requests with image upgrades.
 
 If you already have a tag in mind for a Docker image, but want to know the current index digest (not a platform-specific digest) for it, you can use this command, if you have buildx installed (`IMAGE_NAME` is in the previously described format for Docker image names, sans the digest): `docker buildx imagetools inspect IMAGE_NAME --format "{{json .Manifest}}" | jq -r .digest`
 

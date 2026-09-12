@@ -7,7 +7,8 @@
 
 # Variables you'll want to frequently change
 x-common:
-  VELOCITY_VERSION: &velocity-version "4.1.1" # See: https://papermc.io/downloads/velocity
+  # renovate: datasource=custom.papermc depName=velocity
+  VELOCITY_VERSION: &velocity-version "4.1.1"
 
 services:
   velocity:
