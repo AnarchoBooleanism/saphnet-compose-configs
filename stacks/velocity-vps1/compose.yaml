@@ -7,7 +7,7 @@
 
 # Variables you'll want to frequently change
 x-common:
-  # renovate[papermc]: depName=velocity
+  # renovate: datasource=custom.papermc depName=velocity
   VELOCITY_VERSION: &velocity-version "4.1.1"
 
 services:
