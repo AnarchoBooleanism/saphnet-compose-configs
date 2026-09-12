@@ -725,6 +725,97 @@ x-services: # Base instances of services to customize
 
 In the above example, there is an `x-common` top-level property, that defines various fragments that are used in the other sections, including the `x-services` top-level property. The `x-services` top-level property, which defines fragments to be used in the definition of multiple services, then references these fragments in its on defition; various services later on in the file will, in turn, import the values defined in `x-services`.
 
+#### Custom versions
+Outside of Docker images, there may be certain packages or pieces of software used in Compose stacks, whose version numbers you still want to specify (for reproducibility reasons). With Renovate, you can still have these version numbers be tracked and automatically updated, in a relatively uninvasive manner.
+
+Here is an example of what this can look like for a Compose stack:
+```yaml
+x-common:
+  # renovate: datasource=custom.papermc depName=velocity
+  VELOCITY_VERSION: &velocity-version "4.1.1"
+
+services:
+  velocity:
+    ... # Omitting for brevity
+    environment:
+      ...
+      VELOCITY_VERSION: *velocity-version
+```
+
+In this example, in the `x-common` fragment, the `VELOCITY_VERSION` attribute, representing the verion of Velocity to use, is specified as a certain version number. This value is referred to, via the `velocity-version` anchor, to define the `VELOCITY_VERSION` environment variable, which the `velocity` service will use to determine what version of Velocity to download and run. More importantly, however, is the comment just above this `VELOCITY_VERSION` attribute definition: it follows a specific format, starting with `# renovate:`, then specifying the datasource as `custom.papermc` and the dependency/package name as `velocity`. With a pre-defined custom package manager in the Renovate config file, Renovate will know that the value of `VELOCITY_VERSION` is something to be tracked and changed, using the info from the comment above; in consequent pull requests, the value of the `VELOCITY_VERSION` attribute will be updated to the latest version specified from the datasource for the package.
+
+In general, to activate this feature, you will only need to add the comment just above the key-value pair that defines the version number of a package; the amount of whitespace between tokens and lines is flexible, as well. You are also able to add this comment just above key-value pairs that have a hyphen before them, for the first line of a mapping that is an entry of an array, like this (note the extra whitespace before the beginning of lines, which are accepted):
+```yaml
+  # renovate: datasource=github-releases depName=AnarchoBooleanism/nixos-cloud-init-installer versioning=semver
+  - NIXOS_CLOUDINIT_ISO_VERSION: &cloudinit-iso-version "v2.12.0"
+```
+
+Here is the template for what Renovate will accept (again, the amount of whitespace between tokens and lines is flexible):
+```yaml
+# renovate: datasource=<DATASOURCE> depName=<DEPNAME> [versioning=<VERSIONING>] [registryUrl=<REGISTRYURL>]
+[-] <VERSION_KEY_NAME>: [&<OPTIONAL-ANCHOR-NAME>] "<VERSION_VALUE>"
+```
+
+At the very least for such a definition for Renovate, there should be a comment that starts with `# renovate: `, with a datasource specified (e.g. `github-releases`), the name of the dependency/package to look for within that datasource (e.g. `nixos-cloud-init-installer`), and then a key and value for the key-value pair that makes up the version definition. Additionally, you can specify a versioning type (e.g. `semver`) in `versioning`, a specific registry URL in `registryUrl`, and a YAML anchor name for the key-value pair; as well, this key-value pair can have a hyphen before it, for cases where they are within an entry of an array.
+
+For certain types of packages, you may not have an existing datasource (e.g. `github-releases`) that is officially supported by Renovate to use as an authoritative source of available versions. In such a scenario, you are able to define a custom datasource that converts an API response (or something else) into a standard JSON object that Renovate can recognize and use. Here is an example of this for the software releases of the PaperMC organization, as used in the above example for Velocity, in the Renovate config file:
+```json
+{
+  ... // Omitting for brevity
+  "customDatasources": {
+    "papermc": { // Use the official PaperMC API as authoritative source, as no other alternatives exist
+      "defaultRegistryUrlTemplate": "https://fill.papermc.io/v3/projects/{{ packageName }}",
+      "format": "json",
+      "transformTemplates": [
+        "{ \"releases\": $reduce($each(versions, function($v) { $v }), $append) . { \"version\": $ } }"
+      ]
+    }
+  },
+  ...
+}
+```
+
+In this example, under `customDatasources`, `papermc` is specified as a custom datasource: it pulls from a URL specified in `defaultRegistryUrlTemplate` (`packageName` is replaced with the name of the package, which is `velocity` in the previous example), which should be a JSON response (described to Renovate in `format`), and then converted into a JSON object that Renovate can use in `transformTemplates`. `https://fill.papermc.io/v3/projects/<PROJECT>` is the official endpoint by PaperMC that provides information on released software versions for a certain project. Calling it may result in something like this:
+```json
+{
+  "project": {
+    "id": "velocity",
+    "name": "Velocity"
+  },
+  "versions": {
+    "4.0.0": [
+      "4.1.2-SNAPSHOT",
+      "4.1.1",
+      ... // Omitting for brevity
+    ],
+    "3.0.0": [
+      "3.5.1",
+      ...
+    ],
+    ...
+  }
+}
+```
+
+However, Renovate expects an object from a datasource that is in this format, where each version is specified as a JSON object in an array specified in `releases`, with the version number specified in `version` for each object (there may be other values for each object, too, such as `releaseTimestamp` and `isDeprecated`):
+```json
+{
+  "releases": [
+    {
+      "version": "4.1.2-SNAPSHOT"
+    },
+    {
+      "version": "4.1.1"
+    },
+    ... // Omitting for brevity
+  ]
+} 
+```
+
+To remedy this, we provide a JSONata query under `transformTemplates` (for the custom datasource), `{ "releases": $reduce($each(versions, function($v) { $v }), $append) . { "version": $ } }`, which picks out the `versions` section of the API response, picks out all of the values from each key-value pair of `versions` as arrays of version numbers, flattens these arrays into one singular array, converts each string in the resulting array into individual JSON objects, where the `version` key maps to the version number, combines the objects into another array, and finally makes this array the value of `releases`. The above code snippet is derived from running this JSONata query on the previously-mentioned API response.
+
+For more information in using custom datasources and JSONata with Renovate, check out [the official Renovate documentation for custom datasources](https://docs.renovatebot.com/configuration-options/#customdatasources), and [this guide from secustor on custom datasources](https://secustor.dev/blog/renovate_custom_datasources/).
+
 #### Secrets
 There may exist certain values for your stack that are required for its functioning, but also cannot be stored in plaintext, whether in the Compose stack file, or in a Stack resource file for Komodo, due to their exposure potentially leading to misuse and unauthorized access; these types of values are called **secrets**, which encompass data such as passwords, API keys, and tokens. The main tool used for handling secrets in the Sapphic Homelab/Home Server is SOPS (short for Secrets OPerationS), which encrypts sensitive values in configuration files with public keys before writing them to a file; this allows us to store these secrets publicly (e.g. in a Git repository) without worrying about exposing them, as long as the private keys involved are kept secure. To decrypt these secrets before using them, SOPS is also used, being called by Komodo when calling Docker Compose to deploy a Compose stack; each server should have a unique private key that only it has access to, provided at server deploy time, to use with SOPS. Note that a Compose stack file can only see the values of secrets-related environment variables, and not where they come from, or how they were created; the direct use of SOPS is only within the scope of Stack resources in Komodo itself.
 
