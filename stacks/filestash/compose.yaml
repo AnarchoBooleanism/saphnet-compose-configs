@@ -1,6 +1,6 @@
 services:
   app:
-    image: machines/filestash:latest@sha256:1baf33e08c517e0cd3dd7d5cd1d09563900a70161b30d5bf206973ea29dce903
+    image: machines/filestash:latest@sha256:33657e4928b6c6ba864da9390d457aeecfca310652828ffd6f9da9310b114267
     container_name: filestash
     volumes:
       - filestash:/app/data/state/
