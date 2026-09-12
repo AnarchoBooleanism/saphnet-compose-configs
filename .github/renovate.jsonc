@@ -1,5 +1,5 @@
 {
-  // NOTE: This should be able to catch github-releases, dockerfile, docker-compose, and custom managers!
+  // NOTE: This should be able to catch github-actions, dockerfile, docker-compose, and custom managers!
 
   // Overall Renovate config
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
