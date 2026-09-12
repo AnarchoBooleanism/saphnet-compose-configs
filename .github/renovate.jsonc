@@ -31,7 +31,7 @@
   // Data sources
   "customDatasources": {
     "papermc": { // Use the official PaperMC API as authoritative source, as no other alternatives exist
-      "defaultRegistryUrlTemplate": "https://fill.papermc.io/v3/project/{{ packageName }}",
+      "defaultRegistryUrlTemplate": "https://fill.papermc.io/v3/projects/{{ packageName }}",
       "format": "json",
       "transformTemplates": [
         "{ \"releases\": $reduce($each(versions, function($v) { $v }), $append) . { \"version\": $ } }"
