@@ -133,7 +133,7 @@ services:
     <<: *n8n_common
 
   n8n-runner:
-    image: n8nio/runners:2.38.6@sha256:bcfe05819723fff194d5f2bbff31c99b4aae79502cc0d50d7434c181d329e1cf
+    image: n8nio/runners:2.39.4@sha256:6af63a7b0c0cde47993f66e46307528be44f36135d9c7a0fb7cfa38798a85a2f
     container_name: n8n-runner
     depends_on:
       - n8n
