@@ -27,12 +27,7 @@
     }
   ],
 
-  // Packages
-  "packageRules": [
-    {
-      "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"]
-    }
-  ],
+  // Data sources
   "customDatasources": {
     "papermc": { // Use the official PaperMC API as authoritative source, as no other alternatives exist
       "defaultRegistryUrlTemplate": "https://fill.papermc.io/v3/project/{{ packageName }}",
@@ -42,6 +37,76 @@
       ]
     }
   },
+
+  // Package rules
+  "packageRules": [
+    // Main
+    {
+      "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"]
+    },
+
+    // Package groups (for tightly-bound packages)
+    {
+      "groupName": "guacamole",
+      "matchFileNames": ["stacks/guacamole/compose.yaml"],
+      "matchPackageNames": [
+        "guacamole/guacd",
+        "guacamole/guacamole"
+      ]
+    },
+    {
+      "groupName": "immich",
+      "matchFileNames": ["stacks/immich/compose.yaml"],
+      "matchPackageNames": [
+        "ghcr.io/immich-app/immich-server",
+        "ghcr.io/immich-app/immich-machine-learning"
+      ]
+    },
+    { // Every container in media-server is practically special
+      "groupName": "media-server",
+      "matchFileNames": ["stacks/media-server/compose.yaml"]
+    },
+    {
+      "groupName": "n8n",
+      "matchFileNames": ["stacks/n8n/compose.yaml"],
+      "matchPackageNames": [
+        "n8nio/n8n",
+        "n8nio/runners",
+        "ghcr.io/anarchobooleanism/n8n-homepage-api"
+      ]
+    },
+    {
+      "groupName": "pterodactyl",
+      "matchFileNames": [
+        "stacks/pterodactyl/panel/compose.yaml",
+        "stacks/pterodactyl/wing/docker-host-pve4.yaml"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/blueprintframework/hydrodactyl",
+        "ghcr.io/pyrohost/elytra"
+      ]
+    },
+    {
+      "groupName": "vert",
+      "matchFileNames": [
+        "stacks/vert-sh/compose.yaml",
+        "stacks/vertd/compose.yaml"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/vert-sh/vert",
+        "ghcr.io/vert-sh/vertd"
+      ]
+    },
+
+    // Major/minor version pins
+    {
+      "matchFileNames": ["stacks/n8n/compose.yaml"],
+      "matchPackageNames": ["postgres"],
+      "allowedVersions": "^16.0.0"
+    }
+  ],
+
+  // Other custom managers
   "customManagers": [
     {
       // Generic type to use for all custom version declarations
