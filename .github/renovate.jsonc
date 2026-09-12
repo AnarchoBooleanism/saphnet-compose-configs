@@ -8,7 +8,7 @@
   
   // Scheduling
   "timezone": "America/Los_Angeles",
-  "schedule": ["0 0 6 * * 1"], // Every Monday at 6:00 AM
+  "schedule": ["* 0 6 * * 1"], // Every Monday at 6:00 AM
   "prHourlyLimit": 0,
 
   // Accounts, tokens
