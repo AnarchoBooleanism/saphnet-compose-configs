@@ -9,7 +9,7 @@ on:
     branches:
       - main
     paths-ignore:
-      - '.github/**' # Avoid issues with Dependabot
+      - '.github/**' # Avoid issues with .github files
       - '**/README.md' # Ignore documentation files
   push:
     branches:
