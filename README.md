@@ -66,7 +66,7 @@ For more information, [you can read the official Renovate documentation here](ht
 The default behavior is to create individual pull requests for each Docker image, which may be fine for certain types of needs. However, if you have multiple Docker images that are always upgraded together (e.g. their versions/functionality are tightly bound), you may want to update all of them at once in a single pull request. In that case, you are able to define groups as package rules in the Renovate configuration (in `.github/renovate.jsonc`); these rules match images by their names and the files in which they are specified, and group together their updates into singular pull requests.
 
 Here is an example of such a group in `renovate.jsonc`, for the `immich` Compose stack:
-```json
+```jsonc
 {
   ... // Omitted for brevity
   // Package rules
@@ -89,7 +89,7 @@ Here is an example of such a group in `renovate.jsonc`, for the `immich` Compose
 Under the `packageRules` key, an entry is defined as a JSON object: `groupName` defines the name of this group of packages (`immich`), `matchFileNames` limits the scope of this rule to just the `stacks/immich/compose.yaml` file, and `matchPackageNames` defines the names of the packages (images) that will be grouped, which are the `ghcr.io/immich-app/immich-server` and `ghcr.io/immich-app/immich-machine-learning` images. Whenever both images have updates when Renovate runs, Renovate will automatically combine their updates into a single pull request.
 
 You can also skip specifying package names if all images in a specific Compose stack should always be updated together, like this, for the `media-server` Compose stack:
-```json
+```jsonc
 {
   ... // Omitted for brevity
   // Package rules
@@ -115,7 +115,7 @@ Furthermore, it is also best practice to limit the scope of these package rules 
 For certain Compose stacks, you may want to pin certain images to specific major/minor versions, instead of keeping them at the most latest version; for example, you may have an image for a database Compose service supporting another main service, and this main service may expect the database to stay within a specific major version. In such a case, you can define a package rule in the Renovate configuration that matches its image name and file path and specifies the version(s) to pin to; the allowed version(s) is specified as the value (a string) of `allowedVersions`.
 
 Here is an example of this in action for the `postgres` image for the `n8n` Compose stack:
-```json
+```jsonc
 {
   ... // Omitted for brevity
   // Package rules
