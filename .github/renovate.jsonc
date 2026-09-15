@@ -67,6 +67,10 @@
       ]
     },
     {
+      "groupName": "netbootxyz",
+      "matchFileNames": ["stacks/netbootxyz/compose.yaml"]
+    },
+    {
       "groupName": "pterodactyl",
       "matchFileNames": [
         "stacks/pterodactyl/panel/compose.yaml",
