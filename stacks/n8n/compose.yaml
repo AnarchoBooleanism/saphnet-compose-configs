@@ -133,7 +133,7 @@ services:
     <<: *n8n_common
 
   n8n-runner:
-    image: n8nio/runners:2.38.6@sha256:bcfe05819723fff194d5f2bbff31c99b4aae79502cc0d50d7434c181d329e1cf
+    image: n8nio/runners:2.40.1@sha256:b0933d8f944b9f7045eb2a2d249a4456baa81a4255706ce625a31aae95236e87
     container_name: n8n-runner
     depends_on:
       - n8n
@@ -145,7 +145,7 @@ services:
     restart: unless-stopped
 
   n8n-homepage-api:
-    image: ghcr.io/anarchobooleanism/n8n-homepage-api:v0.24.0@sha256:87d0d6d58374623639dd4b495ef660421d022ec181d435dc53e3205b74d61d2e
+    image: ghcr.io/anarchobooleanism/n8n-homepage-api:v0.25.0@sha256:569e259f97bee935d010c17069c3917412e8c7c356a148c229c6e3a98d629f7d
     container_name: n8n-homepage-api
     depends_on:
       postgres:
