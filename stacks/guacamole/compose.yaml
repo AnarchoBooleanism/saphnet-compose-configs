@@ -1,6 +1,6 @@
 services:
   guacdb:
-    image: mariadb:12@sha256:759869cb6f003234a95c6384cdee245b4bce7de26913fe607a8110362c0c007d
+    image: mariadb:12@sha256:adbf5727f3d6ffa0ea11109f948247d88d110edd3f43f8d4c134c0a09060c5f3
     container_name: guacamoledb
     volumes:
       - guac-db-data:/var/lib/mysql

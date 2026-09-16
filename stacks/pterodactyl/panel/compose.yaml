@@ -52,7 +52,7 @@ x-common:
 
 services:
   database:
-    image: mariadb:12@sha256:a02fe89cb597d4375812b2eac90cf9d0775d4686daa7f7cc750ebbcad7525bbc
+    image: mariadb:12@sha256:adbf5727f3d6ffa0ea11109f948247d88d110edd3f43f8d4c134c0a09060c5f3
     volumes:
       - database-data:/var/lib/mysql
     environment:
