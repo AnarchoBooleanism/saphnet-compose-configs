@@ -165,7 +165,7 @@ services:
     init: true
 
   flaresolverr: # Handles CloudFlare prompts for Prowlarr
-    image: ghcr.io/flaresolverr/flaresolverr:v3.5.0@sha256:139dfee1c6f89249c8d665d1333a42e8ec74ec0a86bc6bb1c8461e10d3a66a47
+    image: ghcr.io/flaresolverr/flaresolverr:v3.5.2@sha256:c80ae007ce2ccdcd217a12426e4f039ef763ff90738c808d38810c3e59323767
     container_name: flaresolverr
     volumes:
       - flaresolverr-config:/config
@@ -182,7 +182,7 @@ services:
     restart: unless-stopped
   
   prowlarr: # Handles trackers
-    image: ghcr.io/linuxserver/prowlarr:2.5.2@sha256:c7502a75b021d964481c129c84590b9cbc40f83aadd4e553f173871bc0deaa3c
+    image: ghcr.io/linuxserver/prowlarr:2.5.2@sha256:aaa16ba7d66e413db6d0358d3b6c68d833578ba7f176f24a51807181e7637fce
     container_name: prowlarr
     volumes:
       - prowlarr-config:/config
