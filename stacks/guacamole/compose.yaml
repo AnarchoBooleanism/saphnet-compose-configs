@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
 
   guacamole:
-    image: guacamole/guacamole:latest@sha256:9499d4c82d37944b345fc8ccc0152f56c396a66165bce0c5f537f16dabd5c6cd
+    image: guacamole/guacamole:latest@sha256:320b09e10e205fb16c4b80db0320e7d7022faff308c7eff11944fd963ba5daf6
     container_name: guacamole
     depends_on:
       - guacd
