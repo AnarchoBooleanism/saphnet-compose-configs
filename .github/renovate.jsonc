@@ -95,9 +95,24 @@
 
     // Major/minor version pins
     {
+      "matchFileNames": ["stacks/deluge-seedbox/compose.yaml"],
+      "matchPackageNames": ["linuxserver/deluge"],
+      "allowedVersions": "^2.0.0" // Renovate gets tricked by the repo's tags
+    },
+    {
+      "matchFileNames": ["stacks/guacamole/compose.yaml"],
+      "matchPackageNames": ["mariadb"],
+      "allowedVersions": "^12.0.0" // 13 came out, staying here until we figure it out
+    },
+    {
       "matchFileNames": ["stacks/n8n/compose.yaml"],
       "matchPackageNames": ["postgres"],
       "allowedVersions": "^16.0.0"
+    },
+    {
+      "matchFileNames": ["stacks/pterodactyl/panel/compose.yaml"],
+      "matchPackageNames": ["mariadb"],
+      "allowedVersions": "^12.0.0" // 13 came out, staying here until we figure it out
     }
   ]
 }
