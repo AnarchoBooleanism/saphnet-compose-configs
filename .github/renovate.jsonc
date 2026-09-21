@@ -96,7 +96,7 @@
     // Major/minor version pins
     {
       "matchFileNames": ["stacks/deluge-seedbox/compose.yaml"],
-      "matchPackageNames": ["linuxserver/deluge"],
+      "matchPackageNames": ["ghcr.io/linuxserver/deluge"],
       "allowedVersions": "^2.0.0" // Renovate gets tricked by the repo's tags
     },
     {
