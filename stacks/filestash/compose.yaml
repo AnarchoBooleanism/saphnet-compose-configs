@@ -26,7 +26,7 @@ services:
       traefik.http.services.filestash-svc.loadBalancer.server.port: "8334"
 
   wopi_server:
-    image: collabora/code:26.04.3.2.1@sha256:379b8f1fc955dd6d01ba24adf61d1b177048ddaae179ae8c1e6a6342daccb282
+    image: collabora/code:24.04.13.3.1@sha256:c918662331cbd13b28ef2f7d2d7d91055948adfcadaff21c687cbbbe08258729
     container_name: filestash_wopi
     environment:
       extra_params: "--o:ssl.enable=false"

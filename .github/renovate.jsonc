@@ -100,6 +100,11 @@
       "allowedVersions": "^2.0.0" // Renovate gets tricked by the repo's tags
     },
     {
+      "matchFileNames": ["stacks/filestash/compose.yaml"],
+      "matchPackageNames": ["collabora/code"],
+      "allowedVersions": "<25" // 26.04 causes problems, and 24.04 is listed on the official Compose config
+    },
+    {
       "matchFileNames": ["stacks/guacamole/compose.yaml"],
       "matchPackageNames": ["mariadb"],
       "allowedVersions": "^12.0.0" // 13 came out, staying here until we figure it out
