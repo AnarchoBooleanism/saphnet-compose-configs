@@ -42,7 +42,6 @@ services:
     networks:
       - ptero0
       - web_bridge
-    tty: true
     restart: unless-stopped
     labels:
       traefik.enable: "true"
@@ -62,6 +61,7 @@ services:
       traefik.http.routers.thevoidpact-map.tls.domains[0].main: map-int.thevoidpact.xyz
       traefik.http.routers.thevoidpact-map.service: thevoidpact-map-svc
       traefik.http.services.thevoidpact-map-svc.loadBalancer.server.url: http://host.docker.internal:63624
+    tty: true
   
   init-config:
     build: ./init-config
