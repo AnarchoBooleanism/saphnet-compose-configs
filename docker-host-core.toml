@@ -40,8 +40,8 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-volume-rclone"
 file_paths = [
-  "base.yaml",
-  "docker-host-core.yaml"
+  "compose.base.yaml",
+  "compose.docker-host-core.yaml"
 ]
 
 # filestash
@@ -77,7 +77,10 @@ auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/glances"
-file_paths = ["compose.yaml", "docker-host-core.yaml"]
+file_paths = [
+  "compose.yaml",
+  "compose.docker-host-core.yaml"
+]
 
 # guacamole
 [[stack]]
@@ -257,8 +260,8 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/traefik"
 file_paths = [
-  "base.yaml",
-  "docker-host-core.yaml"
+  "compose.base.yaml",
+  "compose.docker-host-core.yaml"
 ]
 environment = """
 NAMECHEAP_API_USER = '[[NAMECHEAP_USERNAME]]'

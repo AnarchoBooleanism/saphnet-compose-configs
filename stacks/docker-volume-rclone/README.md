@@ -14,7 +14,7 @@ services:
         EXAMPLE_VOLUME_2
 ```
 
-To run this, use this file and `base.yaml` together, so that `base.yaml`'s structure, with the default configuration settings, is merged with your instance-specific structure; an example would be with `docker compose -f base.yaml -f control-server.yaml up`
+To run this, use a host-specific file and `compose.base.yaml` together, so that structure of `compose.base.yaml`, with the default configuration settings, is merged with your instance-specific structure; an example would be with `docker compose -f compose.base.yaml -f compose.control-server.yaml up`
 
 The main environment variables to set here are `TARGET_SUBDIR_NAME`, which is the (unique) hostname of the host running the service, and `VOLUME_NAMES`, which is a space-delimited list of Docker volumes on the host to back up.
 

@@ -1,6 +1,6 @@
-# To be run, and merged, with another host-specific file (e.g. docker-host-pve3.yaml)
+# To be run, and merged, with another host-specific file (e.g. compose.docker-host-pve3.yaml)
 # Example command:
-# docker compose -f base.yaml -f docker-host-pve3.yaml up
+# docker compose -f compose.base.yaml -f compose.docker-host-pve3.yaml up
 
 # Environment variables to set:
 # - NAMECHEAP_API_USER

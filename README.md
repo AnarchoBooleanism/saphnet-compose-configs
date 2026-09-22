@@ -254,20 +254,22 @@ Repository root (./.)
 
 In general, if there will only be one instance of a Compose stack, on one server, then the Compose YAML file should be named `compose.yaml`, since it is the default name of the latest Compose specification and Komodo will first look for Compose YAML files with that name,
 
-However, you may have multiple Compose files for multiple servers. In such a case, you will want to have a base Compose YAML file with all common configuration, and a Compose YAML for each server. The files for each server should be named after the server they're intended to run on, so a file intended for `control-server` would be named `control-server.yaml`. As well, if it is expected for Komodo to provide both the base and server-specific file to Docker Compose, the base file should be named `compose.yaml`, and if the server-specific files, instead, refer to the base file by using the `extends` attribute, then the base file should be named `base.yaml`. A directory for a Compose stack intended for multiple servers would look like this:
+However, you may have multiple Compose files for multiple servers. In such a case, you will want to have a base Compose YAML file with all common configuration, and a Compose YAML for each server. The files for each server should be named after the server they're intended to run on, so a file intended for `control-server` would be named `compose.control-server.yaml`. As well, if it is expected for Komodo to provide both the base and server-specific file to Docker Compose, the base file should be named `compose.yaml`, and if the server-specific files, instead, refer to the base file by using the `extends` attribute, then the base file should be named `compose.base.yaml`. A directory for a Compose stack intended for multiple servers would look like this:
 ```
 Repository root (./.)
 │
 ├─ ...
 ├─ stacks
 │   ├─ (Your stack)
-│   │   ├─ compose.yaml (or base.yaml)
-│   │   ├─ SERVER-NAME.yaml
-│   │   ├─ SERVER-NAME-2.yaml
+│   │   ├─ compose.yaml (or compose.base.yaml)
+│   │   ├─ compose.SERVER-NAME.yaml
+│   │   ├─ compose.SERVER-NAME-2.yaml
 │   │   └─ ...
 │   └─ ...
 └─ ...
 ```
+
+As you may notice, every YAML file to be used for Compose begins with `compose.` (and also ends with `.yaml`), even for base or server-specific files. This is to mark it as a Compose file, allowing other tools, such as Renovate, to look for them properly. Base files (non-standalone baseline Compose files) should generally be named `compose.base.yaml`, and server-specific files should be named in the format of `compose.SERVER-NAME.yaml`; for example, a Compose file for the `docker-host-pve3` Server would be named `compose.docker-host-pve3.yaml`.  
 
 You may have secrets that you may want to import with Komodo that are encrypted with SOPS. These secrets files should be per-server (for each server the Compose stack will run on), named after their respective servers, with a `.enc.env` extension (since they are supposed to be decrypted to become .env files); for example, a secrets file for a stack instance running on `docker-host-core` would be named `docker-host-core.enc.env`. Furthermore, all SOPS secrets files have to be placed within the `secrets` subdirectory of the Compose stack's directory, like in this chart:
 ```
@@ -281,7 +283,7 @@ Repository root (./.)
 │   │   │   ├─ SERVER-NAME.enc.env (SERVER-NAME stands in for a Server resource's name)
 │   │   │   ├─ SERVER-NAME-2.enc.env
 │   │   │   └─ ...
-│   │   ├─ compose.yaml (or base.yaml)
+│   │   ├─ compose.yaml (or compose.base.yaml)
 │   │   └─ ...
 │   └─ ...
 └─ ...
@@ -1446,21 +1448,21 @@ Repository root (./.)
 │   │   │   ├─ SERVER-NAME.enc.env (SERVER-NAME stands in for a Server resource's name)
 │   │   │   ├─ SERVER-NAME-2.enc.env
 │   │   │   └─ ...
-│   │   ├─ base.yaml
-│   │   ├─ SERVER-NAME.yaml
-│   │   ├─ SERVER-NAME-2.yaml
+│   │   ├─ compose.base.yaml
+│   │   ├─ compose.SERVER-NAME.yaml
+│   │   ├─ compose.SERVER-NAME-2.yaml
 │   │   └─ ...
 │   └─ ...
 └─ ...
 ```
 
-As shown in the example, the name of the base file should generally be `base.yaml`, to distinguish it from `compose.yaml`, as `compose.yaml` (for this repository) indicates a Compose stack file that can be run standalone. Furthermore, the name of the instance-specific files should be named after that of the Server (a Komodo resource) that they are intended to be deployed on, so a file intended for use with the `control-server` Server should be named as `control-server.yaml`. As well, any secrets files (under the `secrets` subdirectory) for instances should be also named after the name of the intended Server, so a secrets file for the `control-server` Server would be named `control-server.enc.env`, and placed under `secrets`.
+As shown in the example, the name of the base file should generally be `compose.base.yaml`, to distinguish it from `compose.yaml`, as `compose.yaml` (for this repository) indicates a Compose stack file that can be run standalone. Furthermore, the name of the instance-specific files should be named after that of the Server (a Komodo resource) that they are intended to be deployed on, so a file intended for use with the `control-server` Server should be named as `compose.control-server.yaml`. As well, any secrets files (under the `secrets` subdirectory) for instances should be also named after the name of the intended Server, so a secrets file for the `control-server` Server would be named `control-server.enc.env`, and placed under `secrets`.
 
-This is what a `base.yaml` file for a multi-instance Compose stack would look like:
+This is what a `compose.base.yaml` file for a multi-instance Compose stack would look like:
 ```yaml
-# To be run, and merged, with another host-specific file (e.g. control-server.yaml)
+# To be run, and merged, with another host-specific file (e.g. compose.control-server.yaml)
 # Example command:
-# docker compose -f base.yaml -f control-server.yaml up
+# docker compose -f compose.base.yaml -f control-server.yaml up
 
 x-common:
   TIMEZONE: &timezone "America/Los_Angeles"
@@ -1491,7 +1493,7 @@ Notice that this file has almost everything needed to run an instance of the `do
 ```yaml
 # To be run, and merged, with the base file
 # Example command:
-# docker compose -f base.yaml -f control-server.yaml up
+# docker compose -f compose.base.yaml -f compose.control-server.yaml up
 
 services:
   docker-volume-rclone:
@@ -1557,7 +1559,7 @@ Repository root (./.)
 └─ ...
 ```
 
-Like in the example, the name of the base file should generally be `compose.yaml`, as opposed to `base.yaml`, to indicate it that can be run standalone. Furthermore, like the previous approach, the name of the instance-specific files should be named after that of the Server (a Komodo resource) that they are intended to be deployed on, and any secrets files for instances should be also named after the name of the intended Server, under the `secrets` subdirectory of the Compose stack directory.
+Like in the example, the name of the base file should generally be `compose.yaml`, as opposed to `compose.base.yaml`, to indicate it that can be run standalone. Furthermore, like the previous approach, the name of the instance-specific files should be named after that of the Server (a Komodo resource) that they are intended to be deployed on, and any secrets files for instances should be also named after the name of the intended Server, under the `secrets` subdirectory of the Compose stack directory.
 
 This is what a `compose.yaml` file for a multi-instance Compose stack (with this approach) would look like:
 ```yaml

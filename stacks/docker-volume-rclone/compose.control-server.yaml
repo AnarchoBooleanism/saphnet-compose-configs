@@ -1,6 +1,6 @@
 # To be run, and merged, with the base file
 # Example command:
-# docker compose -f base.yaml -f control-server.yaml up
+# docker compose -f compose.base.yaml -f compose.control-server.yaml up
 
 services:
   docker-volume-rclone:

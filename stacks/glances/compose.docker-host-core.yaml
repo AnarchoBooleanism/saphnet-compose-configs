@@ -1,14 +1,16 @@
 # To be run, and merged, with the compose file
 # Example command:
-# docker compose -f base.yaml -f control-server.yaml up
+# docker compose -f compose.yaml -f compose.control-server.yaml up
 
 services:
   glances:
     labels:
       traefik.enable: "true"
-      traefik.http.routers.glances.rule: Host(`glances-vps1.saphnet.xyz`)
+      traefik.http.routers.glances.rule: Host(`glances.docker-host-core.int.saphnet.xyz`)
       traefik.http.routers.glances.entrypoints: websecure
       traefik.http.routers.glances.tls: "true"
       traefik.http.routers.glances.tls.certresolver: letsencrypt
+      traefik.http.routers.glances.tls.domains[0].main: docker-host-core.int.saphnet.xyz
+      traefik.http.routers.glances.tls.domains[0].sans: "*.docker-host-core.int.saphnet.xyz"
       traefik.http.routers.glances.service: glances-svc
       traefik.http.services.glances-svc.loadBalancer.server.url: "http://host.docker.internal:61208"
