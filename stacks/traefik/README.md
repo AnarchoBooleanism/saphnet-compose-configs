@@ -1,7 +1,7 @@
 ## Traefik
 A cloud-native reverse proxy and load balancer.
 
-To run this, use this file and `base.yaml` together, so that `base.yaml`'s structure, with the default configuration settings, is merged with your instance-specific structure; an example would be with `docker compose -f base.yaml -f control-server.yaml up`
+To run this, use a host-specific file and `compose.base.yaml` together, so that the structure of `compose.base.yaml`, with the default configuration settings, is merged with your instance-specific structure; an example would be with `docker compose -f compose.base.yaml -f compose.control-server.yaml up`
 
 When deploying Traefik, make sure to set these environment variables with your secrets:
 - `NAMECHEAP_API_USER` - Namecheap username to access Namecheap API with when generating SSL certificates with Let's Encrypt

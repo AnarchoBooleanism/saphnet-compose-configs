@@ -44,7 +44,7 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-volume-rclone"
 file_paths = [
-  "base.yaml",
-  "control-server.yaml"
+  "compose.base.yaml",
+  "compose.control-server.yaml"
 ]
 

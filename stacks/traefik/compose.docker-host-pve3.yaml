@@ -1,6 +1,6 @@
 # To be run, and merged, with the base file
 # Example command:
-# docker compose -f base.yaml -f docker-host-pve3.yaml up
+# docker compose -f compose.base.yaml -f compose.docker-host-pve3.yaml up
 
 # Extra environment variables to set (in addition to in base.yaml):
 # - DASHBOARD_LOGIN (create with htpasswd, is in format of username:passwordhash)

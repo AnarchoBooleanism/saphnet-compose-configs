@@ -1,6 +1,6 @@
 # To be run, and merged, with the base file
 # Example command:
-# docker compose -f base.yaml -f docker-host-pve3.yaml up
+# docker compose -f compose.base.yaml -f compose.docker-host-pve3.yaml up
 
 services:
   docker-volume-rclone:
