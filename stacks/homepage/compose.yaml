@@ -1,27 +1,11 @@
 services:
-  docker-proxy:
-    image: ghcr.io/tecnativa/docker-socket-proxy:v0.5.0@sha256:1f5038b54f06c3e18422902cf00ba21803d1c97805aae032e5e6673d532d3459
-    container_name: docker-proxy
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Mounted as read-only
-    environment:
-      CONTAINERS: "1" # Allow access to viewing containers
-      SERVICES: "1" # Allow access to viewing services (necessary when using Docker Swarm)
-      TASKS: "1" # Allow access to viewing tasks (necessary when using Docker Swarm)
-      POST: "0" # Disallow any POST operations (effectively read-only)
-    ports:
-      - "0.0.0.0:2375:2375"
-    networks:
-      - web_bridge
-    restart: unless-stopped
+  # Be sure to run docker-proxy on the same host! Should be accessible via "docker-proxy"
 
   # This expects to be given a path to a secrets file (by the "docker compose up" command)
   # to use for secrets as environment variables
   homepage:
     image: ghcr.io/anarchobooleanism/saphnet-homepage:edge@sha256:48f38f4e197ad89cd40f1aeb6dabdbf48ac8227fd7dc730b6feb285e2965fe5d
     container_name: homepage
-    depends_on:
-      - docker-proxy
     # volumes:
     #   - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
     environment:

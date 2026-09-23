@@ -1,0 +1,16 @@
+# To be run, and merged, with the compose file
+# Example command:
+# docker compose -f compose.yaml -f compose.docker-host-core.yaml up
+
+# Intended to be connected to directly by Homepage, through the "docker-proxy" hostname
+
+services:
+  docker-proxy:
+    networks:
+      # Yes, this is the main difference
+      - web_bridge
+
+networks:
+  web_bridge:
+    name: web_bridge
+    external: true
