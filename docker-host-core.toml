@@ -26,6 +26,24 @@ vert-sh
 
 ## Stacks
 
+# docker-proxy
+[[stack]]
+name = "docker-proxy-core"
+description = "A solution for regularly cloning Docker volumes to a remote NFS location."
+tags = ["docker-proxy", "iac"]
+[stack.config]
+server = "docker-host-core"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/docker-proxy"
+file_paths = [
+  "compose.yaml",
+  "compose.docker-host-core.yaml"
+]
+
 # docker-volume-rclone
 [[stack]]
 name = "docker-volume-rclone-core"
