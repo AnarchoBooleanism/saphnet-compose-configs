@@ -5,5 +5,5 @@ There is a `foldingathome` volume that you do need to keep in mind.
 
 For ideal results, make sure your virtual machine has access to a GPU (preferably NVIDIA).
 
-When deploying in Portainer, make sure to set these environmental variables with your secrets:
+When deploying in Komodo, make sure to set these environmental variables with your secrets:
 - `ACCOUNT_TOKEN` - Folding@home login token
