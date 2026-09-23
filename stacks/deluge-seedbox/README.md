@@ -1,7 +1,7 @@
 ## Deluge Seedbox
 A torrent client for file sharing, behind a VPN, and an SFTP server for accessing these files.
 
-When deploying in Portainer, make sure to set these environmental variables with your secrets:
+When deploying in Komodo, make sure to set these environmental variables with your secrets:
 - `TOKEN` - NordVPN token for account login
 - `CONNECT` - Name of NordVPN server to connect to
 - `SFTP_PASSWORD` - Password to use for authentication of the SFTP server
