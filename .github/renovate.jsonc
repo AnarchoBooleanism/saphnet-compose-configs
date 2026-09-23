@@ -36,49 +36,12 @@
 
   // Package rules
   "packageRules": [
-    // Package groups (for tightly-bound packages)
-    {
-      "groupName": "guacamole",
-      "matchFileNames": ["stacks/guacamole/compose.yaml"],
-      "matchPackageNames": [
-        "guacamole/guacd",
-        "guacamole/guacamole"
-      ]
-    },
-    {
-      "groupName": "immich",
-      "matchFileNames": ["stacks/immich/compose.yaml"],
-      "matchPackageNames": [
-        "ghcr.io/immich-app/immich-server",
-        "ghcr.io/immich-app/immich-machine-learning"
-      ]
-    },
-    { // Every container in media-server is practically special
-      "groupName": "media-server",
-      "matchFileNames": ["stacks/media-server/compose.yaml"]
-    },
-    {
-      "groupName": "n8n",
-      "matchFileNames": ["stacks/n8n/compose.yaml"],
-      "matchPackageNames": [
-        "n8nio/n8n",
-        "n8nio/runners",
-        "ghcr.io/anarchobooleanism/n8n-homepage-api"
-      ]
-    },
-    {
-      "groupName": "netbootxyz",
-      "matchFileNames": ["stacks/netbootxyz/compose.yaml"]
-    },
+    // Package groups (for related groups of stacks across subdirectories)
     {
       "groupName": "pterodactyl",
       "matchFileNames": [
         "stacks/pterodactyl/panel/compose.yaml",
         "stacks/pterodactyl/wing/docker-host-pve4.yaml"
-      ],
-      "matchPackageNames": [
-        "ghcr.io/blueprintframework/hydrodactyl",
-        "ghcr.io/pyrohost/elytra"
       ]
     },
     {
@@ -86,11 +49,42 @@
       "matchFileNames": [
         "stacks/vert-sh/compose.yaml",
         "stacks/vertd/compose.yaml"
-      ],
-      "matchPackageNames": [
-        "ghcr.io/vert-sh/vert",
-        "ghcr.io/vert-sh/vertd"
       ]
+    },
+
+    // Package groups (for groups of stacks within subdirectories)
+    // Generally, use this if your stack uses more than one image at a time
+    {
+      "groupName": "deluge-seedbox",
+      "matchFileNames": ["stacks/deluge-seedbox/compose.yaml"]
+    },
+    {
+      "groupName": "filestash",
+      "matchFileNames": ["stacks/filestash/compose.yaml"]
+    },
+    {
+      "groupName": "guacamole",
+      "matchFileNames": ["stacks/guacamole/compose.yaml"]
+    },
+    {
+      "groupName": "immich",
+      "matchFileNames": ["stacks/immich/compose.yaml"]
+    },
+    {
+      "groupName": "media-server",
+      "matchFileNames": ["stacks/media-server/compose.yaml"]
+    },
+    {
+      "groupName": "n8n",
+      "matchFileNames": ["stacks/n8n/compose.yaml"]
+    },
+    { // Treating vps1 as a separate group, as traefik is defined in compose.base.yaml
+      "groupName": "traefik-vps1",
+      "matchFileNames": ["stacks/traefik/compose.vps1.yaml"]
+    },
+    {
+      "groupName": "velocity",
+      "matchFileNames": ["stacks/velocity-vps1/compose.yaml"]
     },
 
     // Major/minor version pins
