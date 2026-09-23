@@ -7,7 +7,7 @@ x-common:
 
 services:
   docker-volume-rclone: &docker-volume-rclone # Is base service
-    image: ghcr.io/anarchobooleanism/docker-volume-rclone:v0.1.1@sha256:9944901a7f4b59173725591893f587681b5caa85f4da572baa43bad669bc2f6c
+    image: ghcr.io/anarchobooleanism/docker-volume-rclone:v0.5.0@sha256:dc7eb80f75af3742075d01696ffd1a9c93b5e2fd0aaed961274ca8626f66eb7e
     volumes:
       - /var/lib/docker/volumes:/volumes:ro
       - nfs-target:/volumes-clone
