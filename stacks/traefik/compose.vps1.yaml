@@ -105,8 +105,8 @@ services:
       traefik.http.routers.thevoidpact-map.service: thevoidpact-map-svc
       traefik.http.middlewares.thevoidpact-map-cache.plugin.cache.path: /tmp/thevoidpact-map-cache
       traefik.http.services.thevoidpact-map-svc.loadbalancer.server.url: http://docker-host-pve4:63624
-      # /tiles router
-      traefik.http.routers.thevoidpact-map-tiles.rule: Host(`map.thevoidpact.xyz`) && PathPrefix(`/tiles`)
+      # /maps router
+      traefik.http.routers.thevoidpact-map-tiles.rule: Host(`map.thevoidpact.xyz`) && PathPrefix(`/maps`)
       traefik.http.routers.thevoidpact-map-tiles.entrypoints: websecure
       traefik.http.routers.thevoidpact-map-tiles.tls: "true"
       traefik.http.routers.thevoidpact-map-tiles.tls.certresolver: letsencrypt
@@ -114,7 +114,7 @@ services:
       traefik.http.routers.thevoidpact-map-tiles.tls.domains[0].sans: *thevoidpact_domains_sans
       traefik.http.routers.thevoidpact-map-tiles.middlewares: anubis-thevoidpact@docker, thevoidpact-map-tiles-cache-header, thevoidpact-map-tiles-cache
       traefik.http.routers.thevoidpact-map-tiles.service: thevoidpact-map-svc
-      # Set max-age for tiles to 5 minutes, be consistent with how often Dynmap actually updates tiles
+      # Set max-age for tiles to 5 minutes, be consistent with how often Bluemap actually updates tiles
       traefik.http.middlewares.thevoidpact-map-tiles-cache-header.headers.customresponseheaders.Cache-Control: "max-age=300"
       # Cache plugin
       traefik.http.middlewares.thevoidpact-map-tiles-cache.plugin.cache.path: /tmp/thevoidpact-map-tiles-cache
