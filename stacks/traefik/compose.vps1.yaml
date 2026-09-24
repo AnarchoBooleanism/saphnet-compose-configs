@@ -86,7 +86,7 @@ services:
       # www.thevoidpact.xyz
       traefik.http.routers.thevoidpact-www.rule: "Host(`www.thevoidpact.xyz`)"
       traefik.http.routers.thevoidpact-www.middlewares: "thevoidpact-www-redirectregex"
-      traefik.http.routers.thevoidpact-www.tls: true
+      traefik.http.routers.thevoidpact-www.tls: "true"
       traefik.http.routers.thevoidpact-www.tls.certresolver: letsencrypt
       traefik.http.routers.thevoidpact-www.tls.domains[0].main: *thevoidpact_domains_main
       traefik.http.routers.thevoidpact-www.tls.domains[0].sans: *thevoidpact_domains_sans
