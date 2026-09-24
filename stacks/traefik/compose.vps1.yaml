@@ -11,8 +11,9 @@ x-common:
     WEBMASTER_EMAIL: "homelab@saphnet.xyz"
     TARGET: " " # This is HIGHLY important!!!! Prevents redirect loops (do NOT remove)
   certificate_groups:
-    THEVOIDPACT_DOMAINS_MAIN: &thevoidpact_domains_main "map.thevoidpact.xyz"
-    THEVOIDPACT_DOMAINS_SANS: &thevoidpact_domains_sans "anubis.thevoidpact.xyz"
+    # All comma-separated
+    THEVOIDPACT_DOMAINS_MAIN: &thevoidpact_domains_main "thevoidpact.xyz"
+    THEVOIDPACT_DOMAINS_SANS: &thevoidpact_domains_sans "www.thevoidpact.xyz,anubis.thevoidpact.xyz,map.thevoidpact.xyz"
     SAPHNET_DOMAINS_MAIN: &saphnet_domains_main "saphnet.xyz"
     SAPHNET_DOMAINS_SANS: &saphnet_domains_sans "www.saphnet.xyz,anubis.saphnet.xyz,immich.saphnet.xyz"
     SAPHNET_MEDIA_DOMAINS_MAIN: &saphnet_media_domains_main "media.saphnet.xyz"
@@ -69,6 +70,29 @@ services:
       traefik.http.routers.immich.middlewares: anubis-saphnet@docker
       traefik.http.routers.immich.service: immich-svc
       traefik.http.services.immich-svc.loadbalancer.server.url: http://docker-host-pve3:2283
+
+      # thevoidpact.xyz
+      traefik.http.routers.thevoidpact.rule: "Host(`thevoidpact.xyz`)"
+      traefik.http.routers.thevoidpact.middlewares: "thevoidpact-redirectregex"
+      traefik.http.routers.thevoidpact.tls: "true"
+      traefik.http.routers.thevoidpact.tls.certresolver: letsencrypt
+      traefik.http.routers.thevoidpact.tls.domains[0].main: *thevoidpact_domains_main
+      traefik.http.routers.thevoidpact.tls.domains[0].sans: *thevoidpact_domains_sans
+      traefik.http.routers.thevoidpact.service: thevoidpact-map-svc # Dummy service
+      # An "under construction" page wasn't fun enough...
+      traefik.http.middlewares.thevoidpact-redirectregex.redirectregex.regex: "^https://thevoidpact\\.xyz/(.*)"
+      traefik.http.middlewares.thevoidpact-redirectregex.redirectregex.replacement: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+
+      # www.thevoidpact.xyz
+      traefik.http.routers.thevoidpact-www.rule: "Host(`www.thevoidpact.xyz`)"
+      traefik.http.routers.thevoidpact-www.middlewares: "thevoidpact-www-redirectregex"
+      traefik.http.routers.thevoidpact-www.tls: true
+      traefik.http.routers.thevoidpact-www.tls.certresolver: letsencrypt
+      traefik.http.routers.thevoidpact-www.tls.domains[0].main: *thevoidpact_domains_main
+      traefik.http.routers.thevoidpact-www.tls.domains[0].sans: *thevoidpact_domains_sans
+      traefik.http.routers.thevoidpact-www.service: thevoidpact-map-svc
+      traefik.http.middlewares.thevoidpact-www-redirectregex.redirectregex.regex: "^https://www\\.thevoidpact\\.xyz/(.*)"
+      traefik.http.middlewares.thevoidpact-www-redirectregex.redirectregex.replacement: "https://thevoidpact.xyz/$${1}"
 
       # map.thevoidpact.xyz
       traefik.http.routers.thevoidpact-map.rule: Host(`map.thevoidpact.xyz`)
