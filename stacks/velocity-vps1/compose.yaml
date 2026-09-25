@@ -15,7 +15,6 @@ services:
     build: ./velocity-image
     container_name: velocity
     volumes:
-      - ./scripts/welcome.sh:/etc/profile.d/welcome.sh:ro
       - ./velocity-config/velocity.toml:/config/velocity.toml:ro
       - velocity-data:/server
     environment:
