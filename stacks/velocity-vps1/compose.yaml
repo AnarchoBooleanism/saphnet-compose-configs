@@ -9,11 +9,16 @@
 x-common:
   # renovate: datasource=custom.papermc depName=velocity
   VELOCITY_VERSION: &velocity-version "4.2.0"
+  # renovate: datasource=github-releases depName=TISUnion/VelocityWhitelist
+  VELOCITYWHITELIST_VERSION: &velocitywhitelist-version "v0.3.0"
 
 services:
   velocity:
     build: ./velocity-image
     container_name: velocity
+    depends_on:
+      init-velocitywhitelist:
+        condition: service_completed_successfully
     volumes:
       - ./velocity-config/velocity.toml:/config/velocity.toml:ro
       - velocity-data:/server
@@ -43,6 +48,17 @@ services:
         exec /usr/bin/run-bungeecord.sh
     restart: unless-stopped
   
+  # Best to not have an instant backdoor while setting up
+  init-velocitywhitelist:
+    build: ./init-velocitywhitelist
+    volumes:
+      - ./init-velocitywhitelist/setup.sh:/setup.sh:ro
+      - velocity-data:/velocity-data
+    environment:
+      VELOCITYWHITELIST_VERSION: *velocitywhitelist-version
+    entrypoint:
+      - /setup.sh
+
   velocity-sftp: 
     image: ghcr.io/anarchobooleanism/saphnet-sftp:v0.1.1@sha256:bb164f405864b029fd3b3e5501bb347de0acd8a54436b3ffc79b9b456e3ce152
     container_name: velocity-sftp
