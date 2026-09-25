@@ -12,7 +12,7 @@ x-common:
 
 services:
   velocity:
-    image: itzg/mc-proxy:java25@sha256:d06e5af9a545f90421202e6eebab04674068ed9a057ce61de5a4f83bca8f4b54
+    build: ./velocity-image
     container_name: velocity
     volumes:
       - ./scripts/welcome.sh:/etc/profile.d/welcome.sh:ro
