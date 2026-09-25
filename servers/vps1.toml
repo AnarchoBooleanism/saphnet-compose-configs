@@ -93,8 +93,9 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/velocity-vps1"
 config_files = [
+  { path = "scripts/welcome.sh", requires = "Restart" },
   { path = "secrets/vps1.enc.env", requires = "Redeploy" },
-  { path = "velocity-config/velocity.toml", requires = "Restart" }
+  { path = "velocity-config/velocity.toml", requires = "Restart" },
 ]
 compose_cmd_wrapper = "sops exec-env secrets/vps1.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
