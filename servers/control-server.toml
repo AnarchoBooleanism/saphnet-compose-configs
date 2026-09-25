@@ -1,20 +1,3 @@
-## Stack-related procedures
-
-[[procedure]]
-name = "control-server_redeploy-changed"
-description = "A procedure that redeploys all IaC stacks that have had changes to their config or config files, for control-server."
-tags = ["redeploy-changed", "iac"]
-
-[[procedure.config.stage]]
-name = "Stage 1"
-enabled = true
-executions = [ # Make sure to give all the names of all stacks here!
-  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = """
-docker-proxy-control
-docker-volume-rclone-control
-""", enabled = true }
-]
-
 ## Stacks
 
 # docker-proxy

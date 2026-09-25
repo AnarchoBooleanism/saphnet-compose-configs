@@ -10,6 +10,8 @@ Furthermore, be aware of the requirements of each Compose stack! Depending on th
 This repository has four main parts to it:
 - `.github`: A directory containing the Renovate config and various GitHub Actions workflows (e.g. for validation)
   - The contents of this directory are mostly supplemental to the other parts of the repository, and won't need to be touched on a regular basis.
+- `servers`: A directory containing Resource Sync files for all Komodo Servers
+  - `SERVER-NAME.toml` (where `SERVER-NAME` stands in for the various Komodo servers hosting the stacks): A Komodo resource file describing the Stacks that a specific Server will run ("S" is capitalized in this case to represent that this is the Komodo resource, named as a "Stack", as opposed to the Compose configuration behind it, the stack) and the configurations for how Komodo will deploy the stacks
 - `stacks`: A directory containing all configurations for Compose stacks
   - Each stack has its own subdirectory, either under `stacks`, or directly under a subdirectory under `stacks` (for stacks that are categorized together)
     - For example, the `pterodactyl` subdirectory has two subdirectories: `panel`, for the Pterodactyl Panel stack, and `wing`, for the Pterodactyl Wings stack(s).
@@ -19,7 +21,6 @@ This repository has four main parts to it:
     - Other config files, Compose or non-Compose (optional)
   - As well, each direct subdirectory of `stacks` has a `README.md` file for the stack(s) it contains.
 - `.sops.yaml`: A configuration file for sops, containing the public keys of all hosts and rules for locating secrets files
-- `SERVER-NAME.toml` (where `SERVER-NAME` stands in for the various Komodo servers hosting the stacks): A Komodo resource file describing Server-specific resource syncs, the Stacks that a specific Server will run ("S" is capitalized in this case to represent that this is the Komodo resource, named as a "Stack", as opposed to the Compose configuration behind it, the stack), and the configuration for how Komodo will deploy the stack
 
 This is what the directory structure should look like:
 ```
@@ -30,6 +31,9 @@ Repository root (./.)
 │   │   ├─ compose-lint.yml
 │   │   └─ (Potentially, other workflows)
 │   └─ renovate.jsonc
+├─ servers
+│   ├─ SERVER-NAME.toml (SERVER-NAME stands in for a Server resource's name)
+│   └─ (Other files for other servers)
 ├─ stacks
 │   ├─ (A typical stack)
 │   │   ├─ secrets (optional)
@@ -44,8 +48,6 @@ Repository root (./.)
 │   │   └─ (Other stack(s))
 │   └─ (Other stacks/groups of stacks)
 ├─ .sops.yaml
-├─ SERVER-NAME.toml (SERVER-NAME stands in for a Server resource's name)
-├─ (Potentially, TOML files for other Servers)
 └─ (Other repository-related files, including this README)
 ```
 
@@ -55,7 +57,7 @@ Assuming that your stack's compose files use version pinning, the updating proce
 
 It is generally a good idea to check for any breaking changes with new versions that require configuration changes or manual work, before merging such changes; if new versions require configuration changes (applicable to the files within the repository), make sure to push those changes to the branch for the pull request **before** merging it into the main branch!
 
-Generally, there is already a Procedure that automatically synchronizes the states of Komodo resources with the state of the repository every 5 minutes. However, there may be cases where you want any new merged changes to be deployed immediately. To do this, within Komodo, run the `saphnet-repo-sync` Procedure, which will bring Komodo's copy of the repositories up to date, as well as update the `stack-sync` Resource Syncs. Then, after manually reviewing the changes in each `stack-sync` Resource Sync for each Server, confirming that there are no discrepancies or errors, run the `saphnet-run-iac-stack-sync` Procedure; this will bring all Stacks to the states specified in the repository's Resource Syncs and redeploy any Stacks that have changes.
+Generally, there is already a Procedure that automatically synchronizes the states of Komodo resources with the state of the repository every 5 minutes. However, there may be cases where you want any new merged changes to be deployed immediately. To do this, within Komodo, run the `saphnet-repo-sync` Procedure, which will bring Komodo's copy of the repositories up to date, as well as update the `stack-sync` Resource Syncs. Then, after manually reviewing any changes in the `server-stack-syncs` Resource Sync for each Server, confirming that there are no discrepancies or errors, run the `saphnet-run-iac-stack-sync` Procedure; this will bring all Stacks to the states specified in the repository's Resource Syncs and redeploy any Stacks that have changes.
 
 ### On Renovate (configuration)
 Renovate is equipped to work with any Compose stacks in any subdirectory as long as the YAML files (which can be given any name) for the Compose stacks are valid YAML, following the Compose schema. It also works for Dockerfiles and other custom version declarations, which will be covered later.
@@ -1663,7 +1665,7 @@ As well, if the Compose stack requires any more work to configure outside of any
 
 Importantly, as stated before, Compose stack files are solely blueprints that are just one step removed from an active deployment (as running containers); something needs to perform the final step of deploying the described Compose stack, while providing the missing pieces of data, like values for environment variables. The **Stack**, a type of resource in Komodo, are what describe this final stretch of plumbing: they are objects that correspond to Compose stacks, describing the files used, the values used for environment resources, and how the Compose stack, as a whole, is managed by Komodo. As well, it provides various options on how the Docker Compose command that directly deploys a Compose stack can be set up, as well as what is run before and after; for example, this is where we call SOPS to decrypt Stack secrets and pass them to Docker Compose. The complete description of a Stack allows for Komodo to completely deploy a Compose stack, with no further manual input, as all previously-missing information gets filled in by a Stack.
 
-In the Sapphic Homelab/Home Server, following the GitOps approach, all Stacks in Komodo are described in individual entries in TOML resource files, which Komodo will then read and apply to the corresponding Stack(s) (through custom-defined Procedures). These entries, in our repository, are grouped into resource files by the Server (a Komodo resource corresponding to host servers) that is being targeted, with these files being named after the Server; for example, a resource file for Stacks on the `control-server` Server would be named `control-server.toml`. All of these Server-specific TOML resource files for Stacks should all be placed within the root directory of the repository.
+In the Sapphic Homelab/Home Server, following the GitOps approach, all Stacks in Komodo are described in individual entries in TOML resource files, which Komodo will then read and apply to the corresponding Stack(s) (through custom-defined Procedures). These entries, in our repository, are grouped into resource files by the Server (a Komodo resource corresponding to host servers) that is being targeted, with these files being named after the Server; for example, a resource file for Stacks on the `control-server` Server would be named `control-server.toml`. All of these Server-specific TOML resource files for Stacks should all be placed within the `servers` directory of the repository.
 
 Here is an example of an entry for a Stack resource within a resource file:
 ```toml
@@ -1689,7 +1691,7 @@ config_files = [
 ]
 ```
 
-Directly under the `[[stack]]` line (which creates a new entry for the `stack` array of tables for the TOML file) are attributes that describe all metadata for the Stack: the name, description, and tags (as an array of strings) are listed. Note that the name is what is used to identify the Stack, so it should be globally unique (in the context of all Komodo hosts), and not change (without any migration work). As well, tags are highly important for categorizing Stacks, such as in terms of requirements; at the very least, a Stack resource described in this repository should *always* have an `iac` tag (since anything written here is code that describes infrastructure).
+Directly under the `[[stack]]` line (which creates a new entry for the `stack` array of tables for the TOML file) are attributes that describe all metadata for the Stack: the name, description, and tags (as an array of strings) are listed. Note that the name is what is used to identify the Stack, so it should be globally unique (in the context of all Komodo hosts), and not change (without any migration work). As well, tags are highly important for categorizing Stacks, such as in terms of requirements; at the very least, a Stack resource described in this repository should *always* have an `iac` tag for the `server-stack-syncs` Resource Sync to recognize it.
 
 The `config` attribute of a `stack` entry describes the configuration of the Stack resource itself. For most Stacks, most of these lines are simply boilerplate, but each line is important for the Stack to be able to be managed properly! Here are a list of important properties of `config` (note that the attributes for any Stack should be in the order listed below):
 - `server`: This is the name of the Server that the Stack runs on.
@@ -1731,28 +1733,6 @@ name = "filestash"
 ...
 
 ...
-```
-
-Furthermore, any Stack listed in a TOML resource file for a Server should have its name listed in the `redeploy-changed` Procedure for that Server, so that the Procedure can see it as an IaC-managed Stack that it should update (if changes exist) when the Procedure is run. More specifically, the name of the Stack would be listed in the list of patterns for the `BatchDeployStackIfChanged` execution. Note that all names of Stacks should be listed in alphabetical order. This is what this looks like for the Procedure for the `vps1` Server:
-```toml
-## Stack-related procedures
-
-[[procedure]]
-name = "vps1_redeploy-changed"
-description = "A procedure that redeploys all IaC stacks that have had changes to their config or config files, for vps1."
-tags = ["redeploy-changed", "iac"]
-
-[[procedure.config.stage]]
-name = "Stage 1"
-enabled = true
-executions = [ # Make sure to give all the names of all stacks here!
-  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = """
-docker-proxy-vps1
-glances-vps1 <- This is where our glances-vps1 Stack is listed, so that the procedure knows to update it too
-traefik-vps1
-velocity-vps1
-""", enabled = true }
-]
 ```
 
 ### On tags
@@ -1988,37 +1968,11 @@ Repository root (./.)
 
 Note all the files involved here are within the root of the repository.
 
-When creating the resource file for the server (e.g. `example-server.toml` for the `example-server` Server), at the very minimum, you will need to include a Procedure resource, named after the Server's name, with `_redeploy-changed` at the end, tagged with `redeploy-changed` and `iac`, that runs an execution of the type `BatchDeployStackIfChanged`, for all Stacks that are managed within the resource file, like this:
-```toml
-## Stack-related procedures
-
-[[procedure]]
-name = "example-server_redeploy-changed"
-description = "A procedure that redeploys all IaC stacks that have had changes to their config or config files, for example-server."
-tags = ["redeploy-changed", "iac"]
-
-[[procedure.config.stage]]
-name = "Stage 1"
-enabled = true
-executions = [ # Make sure to give all the names of all stacks here!
-  { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = """
-example-stack-1
-example-stack-2
-""", enabled = true }
-]
-
-## Stacks
-
-# stack-1
-...
-```
 As a note, all Stacks listed in the resource file should be in alphabetical order (by the name of each Stack).
 
-Most of the configuration for the `redeploy-changed` procedure is boilerplate that shouldn't been different between resource files, but what is important is the list of the names of Stacks: each Stack's complete name should be listed in individual lines, in the multi-line TOML string for `execution.params.pattern`, and listed in the same order as the Stack resources in the resource file (which should be alphabetical order).
+You are welcome to copy and paste the above configuration for your new Server, as long as all references to Servers are replaced with references to your Server.
 
-You are welcome to copy and paste the above configuration for your new Server, as long as all references to Servers are replaced with references to your Server, and that the list of stacks in the execution pattern for `BatchDeployStackIfChanged` are the same stacks as listed in the resource file (all Stacks being run on the Server and managed with GitOps).
-
-As well, note the extra comments added to the above example: before all Procedure configurations should be the line, `## Stack-related procedures`, and before all Stack configurations should be the line, `## Stacks`. Note that there are single empty lines between these lines and the resources being described; as well, there should be single empty lines between each individual resource being described.
+As well, note the extra comments added to the above example: before all Stack configurations should be the line, `## Stacks`. Note that there are single empty lines between these lines and the resources being described; as well, there should be single empty lines between each individual resource being described.
 
 Finally, when setting up a new Server within this repository, the Server should have its own entries in the `.sops.yaml` file, for its public key and creation rule for secrets files for Compose stack instances for the Server. Here is an example of what this would look like, for a hypothetical `example-server`:
 ```yaml
