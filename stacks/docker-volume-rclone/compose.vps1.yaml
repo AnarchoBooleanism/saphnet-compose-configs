@@ -1,0 +1,16 @@
+# To be run, and merged, with the base file
+# Example command:
+# docker compose -f compose.base.yaml -f compose.vps1.yaml up
+
+services:
+  docker-volume-rclone:
+    environment:
+      TARGET_SUBDIR_NAME: vps1
+      VOLUME_NAMES: >-
+        velocity-vps1_velocity-data
+
+volumes:
+  nfs-target:
+    driver_opts:
+      # We are connecting via Tailscale
+      o: "addr=nas1,nolock,soft,rw,nfsvers=4"

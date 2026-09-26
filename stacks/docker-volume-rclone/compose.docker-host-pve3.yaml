@@ -9,9 +9,10 @@ services:
       VOLUME_NAMES: >-
         deluge-seedbox_deluge-config
         deluge-seedbox_sftp-config
-        deluge-seedbox_tailscale-config
         foldingathome_foldingathome
+        immich_immich-db-16
         media-server_bazarr-config
+        media-server_bazarr-anime-config
         media-server_flaresolverr-config
         media-server_jellyfin-config
         media-server_seerr-config
