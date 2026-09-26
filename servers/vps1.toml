@@ -17,6 +17,27 @@ environment = """
 HOST_IP = '[[TAILSCALE_IP_VPS1]]'
 """
 
+# docker-volume-rclone
+[[stack]]
+name = "docker-volume-rclone-vps1"
+description = "A solution for regularly cloning Docker volumes to a remote NFS location."
+tags = ["docker-volume-rclone", "iac"]
+[stack.config]
+server = "vps1"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/docker-volume-rclone"
+file_paths = [
+  "compose.base.yaml",
+  "compose.vps1.yaml"
+]
+environment = """
+TIMEZONE = '[[TIMEZONE]]'
+"""
+
 # glances
 [[stack]]
 name = "glances-vps1"
