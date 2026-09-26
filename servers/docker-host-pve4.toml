@@ -114,3 +114,31 @@ DASHBOARD_PASSWORD = '[[TRAEFIK_DASHBOARD_PASSWORD]]'
 DASHBOARD_LOGIN = '[[TRAEFIK_DASHBOARD_LOGIN]]'
 """
 
+# velocity-pve4
+[[stack]]
+name = "velocity-pve4"
+description = "A modern reverse proxy for Minecraft servers, intended for local-facing docker-host-pve4. To enter the server console, run 'rcon-cli'."
+tags = ["velocity", "iac"]
+[stack.config]
+server = "docker-host-pve4"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/velocity"
+file_paths = [
+  "compose.base.yaml",
+  "compose.docker-host-pve4.yaml"
+]
+config_files = [
+  { path = "init-velocitywhitelist/Dockerfile", requires = "Redeploy" },
+  { path = "init-velocitywhitelist/setup.sh", requires = "Redeploy" },
+  { path = "secrets/docker-host-pve4.enc.env", requires = "Redeploy" },
+  { path = "velocity-config/docker-host-pve4.toml", requires = "Restart" },
+  { path = "velocity-image/Dockerfile", requires = "Redeploy" },
+  { path = "velocity-image/welcome.sh", requires = "Redeploy" },
+]
+compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve4.enc.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
+ignore_services = ["init-velocitywhitelist"]

@@ -1,0 +1,15 @@
+# To be run, and merged, with the base file
+# Example command:
+# docker compose -f compose.base.yaml -f compose.vps1.yaml up
+
+services:
+  velocity:
+    volumes:
+      - ./velocity-config/docker-host-pve4.toml:/config/velocity.toml:ro
+    networks:
+      - pterodactyl_nw
+
+networks:
+  pterodactyl_nw: # Since we want to connect to the upstream server directly
+    name: pterodactyl_nw
+    external: true
