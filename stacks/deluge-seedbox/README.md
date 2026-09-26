@@ -5,6 +5,7 @@ When deploying in Komodo, make sure to set these environmental variables with yo
 - `TOKEN` - NordVPN token for account login
 - `CONNECT` - Name of NordVPN server to connect to
 - `SFTP_PASSWORD` - Password to use for authentication of the SFTP server
+- `TIMEZONE` - The name of a [tz time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) to use as the timezone (you can use the `TIMEZONE` Variable from Komodo)
 
 Make sure, in the `seedbox-files` NFS volume, that there are directories for in-progress downloads, completed downloads, and .torrent files, which should be reflected in the Deluge settings.
 

@@ -15,3 +15,4 @@ This setup is designed to work with an NFS server, with a central directory for 
 
 When deploying, make sure to set these environment variables with your secrets:
 - `TAILSCALE_IP` - For certain services with exposed ports that bypass Traefik, set this if you want to restrict the interfaces from which it can be reached (e.g. restricting from public access)
+- `TIMEZONE` - The name of a [tz time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) to use as the timezone (you can use the `TIMEZONE` Variable from Komodo)

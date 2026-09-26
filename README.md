@@ -566,6 +566,7 @@ When using environment variables within a Compose stack file, it is generally go
 # - RUSTIC_S3_BUCKET
 # - RUSTIC_S3_ENDPOINT (include "https://"!)
 # - HASHIDS_SALT (should be 20 characters, to generate this, run "head -c20 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9/.' | head -c20")
+# - TIMEZONE
 ```
 
 As a further aside, it is also good practice to list these environment variables (and instructions) within the README.md for the Compose stack being defined in the same order as in the comments.
@@ -1466,7 +1467,7 @@ This is what a `compose.base.yaml` file for a multi-instance Compose stack would
 # docker compose -f compose.base.yaml -f control-server.yaml up
 
 x-common:
-  TIMEZONE: &timezone "America/Los_Angeles"
+  TIMEZONE: &timezone "${TIMEZONE}"
 
 services:
   docker-volume-rclone: &docker-volume-rclone # Is base service
@@ -1510,7 +1511,7 @@ Notice that the `environment` property of the corresponding service includes val
 When combined, the final Compose YAML file for the Compose stack should look like this:
 ```yaml
 x-common:
-  TIMEZONE: &timezone "America/Los_Angeles"
+  TIMEZONE: &timezone "${TIMEZONE}"
 
 services:
   docker-volume-rclone: &docker-volume-rclone # Is base service

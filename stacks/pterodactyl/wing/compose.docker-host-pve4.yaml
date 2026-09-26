@@ -9,9 +9,10 @@
 # Environment variables to set:
 # - PTERODACTYL_TOKEN_ID
 # - PTERODACTYL_TOKEN
+# - TIMEZONE
 
 x-common:
-  TIMEZONE: &timezone "America/Los_Angeles"
+  TIMEZONE: &timezone "${TIMEZONE}"
   # INSTANCE_DOMAIN: &instance-domain "pterodactyl-node-main.int-net.saphnet.xyz"
 
 services:

@@ -1,8 +1,9 @@
 # Environment variables to set:
 # - TAILSCALE_IP, if you want to restrict access to certain ports to just Tailscale only (for external Traefik)
+# - TIMEZONE
 
 x-common:
-  TIMEZONE: &timezone "America/Los_Angeles"
+  TIMEZONE: &timezone "${TIMEZONE}"
   NAS_NFS_DRIVER_OPTS: &nas_nfs_driver_opts
     type: "nfs"
     o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"

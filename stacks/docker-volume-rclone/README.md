@@ -16,6 +16,9 @@ services:
 
 To run this, use a host-specific file and `compose.base.yaml` together, so that structure of `compose.base.yaml`, with the default configuration settings, is merged with your instance-specific structure; an example would be with `docker compose -f compose.base.yaml -f compose.control-server.yaml up`
 
-The main environment variables to set here are `TARGET_SUBDIR_NAME`, which is the (unique) hostname of the host running the service, and `VOLUME_NAMES`, which is a space-delimited list of Docker volumes on the host to back up.
+When deploying in Komodo, make sure to set these environmental variables with your secrets:
+- `TARGET_SUBDIR_NAME` - The (unique) hostname of the host running the service
+- `VOLUME_NAMES` - Space-delimited list of Docker volumes on the host to back up
+- `TIMEZONE` - The name of a [tz time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) to use as the timezone (you can use the `TIMEZONE` Variable from Komodo)
 
 For more details, make sure to refer to [the documentation of the image repo](https://github.com/AnarchoBooleanism/docker-volume-rclone).
