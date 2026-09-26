@@ -83,7 +83,7 @@ DASHBOARD_LOGIN = '[[TRAEFIK_DASHBOARD_LOGIN]]'
 [[stack]]
 name = "velocity-vps1"
 description = "A modern reverse proxy for Minecraft servers, intended for public-facing vps1. To enter the server console, run 'rcon-cli'."
-tags = ["iac"]
+tags = ["velocity", "iac"]
 [stack.config]
 server = "vps1"
 poll_for_updates = true
@@ -91,12 +91,16 @@ auto_update = true
 auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
-run_directory = "stacks/velocity-vps1"
+run_directory = "stacks/velocity"
+file_paths = [
+  "compose.base.yaml",
+  "compose.vps1.yaml"
+]
 config_files = [
   { path = "init-velocitywhitelist/Dockerfile", requires = "Redeploy" },
   { path = "init-velocitywhitelist/setup.sh", requires = "Redeploy" },
   { path = "secrets/vps1.enc.env", requires = "Redeploy" },
-  { path = "velocity-config/velocity.toml", requires = "Restart" },
+  { path = "velocity-config/vps1.toml", requires = "Restart" },
   { path = "velocity-image/Dockerfile", requires = "Redeploy" },
   { path = "velocity-image/welcome.sh", requires = "Redeploy" },
 ]

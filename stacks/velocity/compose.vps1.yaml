@@ -1,0 +1,8 @@
+# To be run, and merged, with the base file
+# Example command:
+# docker compose -f compose.base.yaml -f compose.vps1.yaml up
+
+services:
+  velocity:
+    volumes:
+      - ./velocity-config/vps1.toml:/config/velocity.toml:ro
