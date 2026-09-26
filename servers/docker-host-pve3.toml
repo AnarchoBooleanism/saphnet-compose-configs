@@ -22,6 +22,7 @@ config_files = [
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve3.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
+TIMEZONE = '[[TIMEZONE]]'
 """
 
 # docker-proxy
@@ -54,6 +55,9 @@ file_paths = [
   "compose.base.yaml",
   "compose.docker-host-pve3.yaml"
 ]
+environment = """
+TIMEZONE = '[[TIMEZONE]]'
+"""
 
 # foldingathome
 [[stack]]
@@ -76,6 +80,7 @@ config_files = [
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve3.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
+TIMEZONE = '[[TIMEZONE]]'
 """
 
 # glances
@@ -125,6 +130,7 @@ compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve3.enc.env '[[COMPOSE
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 TAILSCALE_IP = '[[TAILSCALE_IP_PVE3]]'
+TIMEZONE = '[[TIMEZONE]]'
 """
 
 # media-server
@@ -158,6 +164,7 @@ linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/media-server"
 environment = """
 TAILSCALE_IP = '[[TAILSCALE_IP_PVE3]]'
+TIMEZONE = '[[TIMEZONE]]'
 """
 
 # traefik

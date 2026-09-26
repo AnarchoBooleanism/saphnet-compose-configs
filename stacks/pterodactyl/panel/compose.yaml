@@ -13,10 +13,11 @@
 # - RUSTIC_S3_BUCKET
 # - RUSTIC_S3_ENDPOINT (include "https://"!)
 # - HASHIDS_SALT (should be 20 characters, to generate this, run "head -c20 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9/.' | head -c20")
+# - TIMEZONE
 
 # Common variables, declared here
 x-common:
-  TIMEZONE: &timezone "America/Los_Angeles"
+  TIMEZONE: &timezone "${TIMEZONE}"
   database: &db-environment
     MYSQL_PASSWORD: &db-password "basic_mysql_password"
     MYSQL_ROOT_PASSWORD: "basic_mysql_root_password"

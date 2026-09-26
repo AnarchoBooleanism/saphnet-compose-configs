@@ -2,9 +2,10 @@
 # - DB_PASSWORD
 # - REDIS_PASSWORD
 # - TAILSCALE_IP, if you want to restrict access to Immich port to just Tailscale only (for external Traefik)
+# - TIMEZONE
 
 x-common:
-  TIMEZONE: &timezone "America/Los_Angeles"
+  TIMEZONE: &timezone "${TIMEZONE}"
   DATABASE: &database
     DB_USERNAME: &db_username "postgres"
     DB_NAME: &db_name "immich"

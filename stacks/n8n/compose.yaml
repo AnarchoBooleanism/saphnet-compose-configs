@@ -5,9 +5,10 @@
 # - POSTGRES_NON_ROOT_PASSWORD
 # - ENCRYPTION_KEY, made with "openssl rand -hex 32"
 # - TAILSCALE_IP, if you want to restrict access to n8n port to just Tailscale only (for external Traefik)
+# - TIMEZONE
 
 x-common:
-  TIMEZONE: &timezone "America/Los_Angeles"
+  TIMEZONE: &timezone "${TIMEZONE}"
   POSTGRES: &postgres
     POSTGRES_USER: &postgres_user "postgres"
     POSTGRES_NON_ROOT_USER: &postgres_non_root_user "postgres_nonroot"

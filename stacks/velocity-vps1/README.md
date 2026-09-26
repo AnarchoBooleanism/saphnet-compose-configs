@@ -35,7 +35,7 @@ In this case, it uses the Dockerfile from the subdirectory, and is set up to run
 
 After adding the init service, you will want to add this to your Velocity service configuration:
 ```yaml
-services
+services:
   velocity:
     ... # Omitting for brevity
     depends_on:

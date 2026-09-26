@@ -35,6 +35,9 @@ file_paths = [
   "compose.base.yaml",
   "compose.docker-host-core.yaml"
 ]
+environment = """
+TIMEZONE = '[[TIMEZONE]]'
+"""
 
 # filestash
 [[stack]]
@@ -145,6 +148,7 @@ compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 MAIL_PASSWORD = '[[NAMECHEAP_MAIL_PASSWORD]]'
 TAILSCALE_IP = '[[TAILSCALE_IP_CORE]]'
+TIMEZONE = '[[TIMEZONE]]'
 """
 
 # netbootxyz
@@ -219,6 +223,7 @@ RUSTIC_S3_ACCESS_KEY_ID = '[[PTERODACTYL_BACKUP_S3_KEY_ID]]'
 RUSTIC_S3_SECRET_ACCESS_KEY = '[[PTERODACTYL_BACKUP_S3_ACCESS_KEY]]'
 RUSTIC_S3_BUCKET = '[[PTERODACTYL_BACKUP_S3_BUCKET_NAME]]'
 RUSTIC_S3_ENDPOINT = '[[SAPHNET_S3_SERVER_ENDPOINT]]'
+TIMEZONE = '[[TIMEZONE]]'
 """
 
 # traefik

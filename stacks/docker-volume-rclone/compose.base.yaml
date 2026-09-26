@@ -3,7 +3,7 @@
 # docker compose -f compose.base.yaml -f compose.control-server.yaml up
 
 x-common:
-  TIMEZONE: &timezone "America/Los_Angeles"
+  TIMEZONE: &timezone "${TIMEZONE}"
 
 services:
   docker-volume-rclone: &docker-volume-rclone # Is base service

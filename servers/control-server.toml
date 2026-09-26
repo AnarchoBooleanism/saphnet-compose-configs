@@ -30,4 +30,7 @@ file_paths = [
   "compose.base.yaml",
   "compose.control-server.yaml"
 ]
+environment = """
+TIMEZONE = '[[TIMEZONE]]'
+"""
 

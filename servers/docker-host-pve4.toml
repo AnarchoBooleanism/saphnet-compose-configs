@@ -31,6 +31,9 @@ file_paths = [
   "compose.base.yaml",
   "compose.docker-host-pve4.yaml"
 ]
+environment = """
+TIMEZONE = '[[TIMEZONE]]'
+"""
 
 # glances
 [[stack]]
@@ -79,6 +82,9 @@ config_files = [
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve4.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 ignore_services = ["init-config"]
+environment = """
+TIMEZONE = '[[TIMEZONE]]'
+"""
 
 # traefik
 [[stack]]

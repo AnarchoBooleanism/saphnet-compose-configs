@@ -1,6 +1,16 @@
 ## Pterodactyl
 A server management panel for games, e.g. Minecraft.
 
+For the panel, you will need to set these environment variables:
+- `MAIL_PASSWORD` - The password to use to log into the SMTP server
+- `RUSTIC_S3_REGION` - The region to use for the S3-compatible server (e.g. `garage`)
+- `RUSTIC_S3_ACCESS_KEY_ID` - The ID for the access key for the S3-compatible server
+- `RUSTIC_S3_SECRET_ACCESS_KEY` - The access key itself for the S3-compatible server
+- `RUSTIC_S3_BUCKET` - The name of the bucket (of the S3-compatible server) to use for data
+- `RUSTIC_S3_ENDPOINT` - The URL endpoint to use to connect to the S3-compatible server (include `https://`!)
+- `HASHIDS_SALT` - The salt to use when creating unique hash IDs for resource (should be 20 characters, to generate this, run `head -c20 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9/.' | head -c20`)
+- `TIMEZONE` - The name of a [tz time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) to use as the timezone (you can use the `TIMEZONE` Variable from Komodo)
+
 To create an account in the Pterodactyl panel (there will initially be no accounts), run this command in the Panel container: `php artisan p:user:make`
 
 The two locations that will be used in our instance are `homelab` and `vps1`.
@@ -109,3 +119,5 @@ services:
 ```
 
 When using this approach, you will need to provide these environment variables (as secrets via SOPS): `PTERODACTYL_TOKEN_ID` and `PTERODACTYL_TOKEN`. `PTERODACTYL_TOKEN` represents the secret token that the Pterodactyl Wing service will use to connect to the Pterodactyl Panel, and `PTERODACTYL_TOKEN_ID` is the token ID for that token. The values for these variables are usually provided in the auto-generated configuration file created by the Pterodactyl panel for a node (under `Configuration`).
+
+As well, in practice, you will want to set the `TIMEZONE` environment variable with the name of a [tz time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), to use as the timezone (you can use the `TIMEZONE` Variable from Komodo).
