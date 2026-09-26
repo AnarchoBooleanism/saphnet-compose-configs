@@ -113,5 +113,4 @@ volumes:
       type: "nfs"
       o: "addr=nas1.int-net.saphnet.xyz,nolock,soft,rw,nfsvers=4"
       device: ":/mnt/saphnet-nas1c/immich-data"
-  immich-db:
   immich-db-16:

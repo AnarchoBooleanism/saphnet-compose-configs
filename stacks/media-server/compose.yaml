@@ -349,7 +349,6 @@ networks:
     external: true
 
 volumes:
-  seedbox-files:
   jellyfin-config:
   jellyfin-cache:
   seerr-config:

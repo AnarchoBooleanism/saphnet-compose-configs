@@ -9,3 +9,4 @@ services:
       VOLUME_NAMES: >-
         pterodactyl-wing-pve4_wings-config
         pterodactyl-wing-pve4_wings-logs
+        velocity-pve4_velocity-data

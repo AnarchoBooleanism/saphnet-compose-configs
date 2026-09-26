@@ -76,7 +76,6 @@ networks:
     external: true
 
 volumes:
-  # tailscale-config:
   deluge-config:
   sftp-ssh-data:
   seedbox-files:
