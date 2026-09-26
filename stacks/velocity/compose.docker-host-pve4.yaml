@@ -9,6 +9,11 @@ services:
     networks:
       - pterodactyl_nw
 
+  velocity-sftp: 
+    ports: !override
+    # Since Pterodactyl is already taking 2022, make sure this file is listed after the base one
+      - "${TAILSCALE_IP:-0.0.0.0}:2023:22"
+
 networks:
   pterodactyl_nw: # Since we want to connect to the upstream server directly
     name: pterodactyl_nw
