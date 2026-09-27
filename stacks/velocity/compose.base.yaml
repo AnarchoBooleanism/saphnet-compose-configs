@@ -54,7 +54,7 @@ services:
   
   # Best to not have an instant backdoor while setting up
   init-velocitywhitelist:
-    build: ../../images/init-velocitywhitelist
+    build: ../../images/base-init
     volumes:
       - ./init-velocitywhitelist/setup.sh:/setup.sh:ro
       - velocity-data:/velocity-data
