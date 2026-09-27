@@ -118,7 +118,6 @@ file_paths = [
   "compose.vps1.yaml"
 ]
 config_files = [
-  { path = "init-velocitywhitelist/Dockerfile", requires = "Redeploy" },
   { path = "init-velocitywhitelist/setup.sh", requires = "Redeploy" },
   { path = "secrets/vps1.enc.env", requires = "Redeploy" },
   { path = "velocity-config/vps1.toml", requires = "Restart" },

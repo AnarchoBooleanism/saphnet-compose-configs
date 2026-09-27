@@ -65,9 +65,9 @@ services:
     tty: true
   
   init-config:
-    build: ./init-config
+    build: ../../../images/base-init
     volumes:
-      - ./init-config/config.yml.template:/config.yml.template
+      - ./config/config.yml.template:/config.yml.template
       - wings-config:/wings-config
     environment:
       PTERODACTYL_TOKEN_ID: "${PTERODACTYL_TOKEN_ID}"
