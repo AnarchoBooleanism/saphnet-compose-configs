@@ -1,0 +1,48 @@
+# Environment variables to set:
+# - `TIMEZONE`
+# - `GITHUB_TOKEN`
+# - `S3_ENDPOINT`
+# - `S3_REGION`
+# - `S3_ACCESS_KEY_ID`
+# - `S3_SECRET_ACCESS_KEY`
+
+x-common:
+  TIMEZONE: &timezone "${TIMEZONE}"
+  GITHUB_USER: &github_user "AnarchoBooleanism"
+  S3_BUCKET: &s3_bucket "gickup"
+
+services:
+  gickup:
+    image: buddyspencer/gickup:0.10.47@sha256:a0307e9c131b45b0d2039417f291b7ef44580d9d9e303bb5a6083aaf82691044
+    volumes:
+      - gickup-config:/config
+    command: ["/config/conf.yml"] # Changes the path of the internal bound config
+    environment:
+      TZ: *timezone
+
+  init-config:
+    build: ../../images/base-init
+    volumes:
+      - ./conf.yml.template:/conf.yml.template
+      - gickup-config:/gickup-config
+    environment:
+      GITHUB_TOKEN: "${GITHUB_TOKEN:?}"
+      GITHUB_USER: *github_user
+      S3_ENDPOINT: "${S3_ENDPOINT:?}"
+      S3_BUCKET: *s3_bucket
+      S3_ACCESS_KEY_ID: "${S3_ACCESS_KEY_ID:?}"
+      S3_SECRET_ACCESS_KEY: "${S3_SECRET_ACCESS_KEY:?}"
+      S3_REGION: "${S3_REGION:?}"
+    entrypoint:
+      - /bin/sh
+      - -c
+      - >
+        printf "Creating conf.yml file...\n";
+        envsubst
+          '$$GITHUB_TOKEN,$$GITHUB_USER,$$S3_ENDPOINT,$$S3_BUCKET,$$S3_ACCESS_KEY_ID,$$S3_SECRET_ACCESS_KEY,$$S3_REGION'
+          < /conf.yml.template
+          > /gickup-config/conf.yml;
+        printf "Created conf.yml file!\n";
+
+volumes:
+  gickup-config:
