@@ -75,8 +75,7 @@ linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/pterodactyl/wing"
 file_paths = ["compose.docker-host-pve4.yaml"]
 config_files = [
-  { path = "init-config/config.yml.template", requires = "Redeploy" },
-  { path = "init-config/Dockerfile", requires = "Redeploy" },
+  { path = "config/config.yml.template", requires = "Redeploy" },
   { path = "secrets/docker-host-pve4.enc.env", requires = "Redeploy" },
 ]
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-pve4.enc.env '[[COMPOSE_COMMAND]]'"
@@ -132,7 +131,6 @@ file_paths = [
   "compose.docker-host-pve4.yaml"
 ]
 config_files = [
-  { path = "init-velocitywhitelist/Dockerfile", requires = "Redeploy" },
   { path = "init-velocitywhitelist/setup.sh", requires = "Redeploy" },
   { path = "secrets/docker-host-pve4.enc.env", requires = "Redeploy" },
   { path = "velocity-config/docker-host-pve4.toml", requires = "Restart" },
