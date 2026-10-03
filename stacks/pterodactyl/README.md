@@ -6,7 +6,6 @@ For the panel, you will need to set these environment variables:
 - `RUSTIC_S3_REGION` - The region to use for the S3-compatible server (e.g. `garage`)
 - `RUSTIC_S3_ACCESS_KEY_ID` - The ID for the access key for the S3-compatible server
 - `RUSTIC_S3_SECRET_ACCESS_KEY` - The access key itself for the S3-compatible server
-- `RUSTIC_S3_BUCKET` - The name of the bucket (of the S3-compatible server) to use for data
 - `RUSTIC_S3_ENDPOINT` - The URL endpoint to use to connect to the S3-compatible server (include `https://`!)
 - `HASHIDS_SALT` - The salt to use when creating unique hash IDs for resource (should be 20 characters, to generate this, run `head -c20 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9/.' | head -c20`)
 - `TIMEZONE` - The name of a [tz time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) to use as the timezone (you can use the `TIMEZONE` Variable from Komodo)
