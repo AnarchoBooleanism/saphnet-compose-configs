@@ -9,7 +9,7 @@
 x-common:
   TIMEZONE: &timezone "${TIMEZONE}"
   GITHUB_USER: &github_user "AnarchoBooleanism"
-  S3_BUCKET: &s3_bucket "gickup"
+  S3_BUCKET: &s3_bucket "gickup-data"
 
 services:
   gickup:
