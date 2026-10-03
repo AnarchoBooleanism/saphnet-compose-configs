@@ -10,6 +10,8 @@ For the panel, you will need to set these environment variables:
 - `HASHIDS_SALT` - The salt to use when creating unique hash IDs for resource (should be 20 characters, to generate this, run `head -c20 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9/.' | head -c20`)
 - `TIMEZONE` - The name of a [tz time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) to use as the timezone (you can use the `TIMEZONE` Variable from Komodo)
 
+**NOTE ON RUSTIC S3 BACKUPS**: In a recent update, Hydrodactyl now seems to require that an S3 bucket be created in the portal (rather than the environment variables, which are still documented) before having a Node upload to that bucket. Be sure to add an S3 bucket in the `S3 Buckets` menu.
+
 To create an account in the Pterodactyl panel (there will initially be no accounts), run this command in the Panel container: `php artisan p:user:make`
 
 The two locations that will be used in our instance are `homelab` and `vps1`.
