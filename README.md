@@ -7,9 +7,11 @@ Furthermore, be aware of the requirements of each Compose stack! Depending on th
 
 ## Repository structure
 
-This repository has four main parts to it:
+This repository has five main parts to it:
 - `.github`: A directory containing the Renovate config and various GitHub Actions workflows (e.g. for validation)
   - The contents of this directory are mostly supplemental to the other parts of the repository, and won't need to be touched on a regular basis.
+- `images`: A directory containing configurations for various shared custom Docker images (with Dockerfiles)
+  - Each image has its own subdirectory. In each subdirectory is a `Dockerfile` file, as well as any other files that get used in the build process of the related Docker image.
 - `servers`: A directory containing Resource Sync files for all Komodo Servers
   - `SERVER-NAME.toml` (where `SERVER-NAME` stands in for the various Komodo servers hosting the stacks): A Komodo resource file describing the Stacks that a specific Server will run ("S" is capitalized in this case to represent that this is the Komodo resource, named as a "Stack", as opposed to the Compose configuration behind it, the stack) and the configurations for how Komodo will deploy the stacks
 - `stacks`: A directory containing all configurations for Compose stacks
@@ -31,6 +33,11 @@ Repository root (./.)
 │   │   ├─ compose-lint.yml
 │   │   └─ (Potentially, other workflows)
 │   └─ renovate.jsonc
+├─ images
+│   ├─ (A typical setup for a custom Docker image)
+│   │  ├─ Dockerfile (representing the Docker image)
+│   │  └─ (Potentially, other images used for the Dockerfile)
+│   └─ (Other setups for other images)
 ├─ servers
 │   ├─ SERVER-NAME.toml (SERVER-NAME stands in for a Server resource's name)
 │   └─ (Other files for other servers)
@@ -72,7 +79,7 @@ The default behavior is to create individual pull requests for each Docker image
 For example, you may have a Compose stack has multiple services that use multiple distinct images. In general, you will want to group together the updates for all of the images in that stack into one pull request, like this, for the `media-server` Compose stack:
 ```jsonc
 {
-  ... // Omitted for brevity
+  ... // Omitting for brevity
   // Package rules
   "packageRules": [
     ...
@@ -93,7 +100,7 @@ For example, if you have multiple Docker images across stack directories that ar
 Here is an example of such a group in `renovate.jsonc`, for the stacks for Pterodactyl:
 ```jsonc
 {
-  ... // Omitted for brevity
+  ... // Omitting for brevity
   // Package rules
   "packageRules": [
     ...
@@ -118,7 +125,7 @@ For certain Compose stacks, you may want to pin certain images to specific major
 Here is an example of this in action for the `postgres` image for the `n8n` Compose stack:
 ```jsonc
 {
-  ... // Omitted for brevity
+  ... // Omitting for brevity
   // Package rules
   "packageRules": [
     ...
@@ -1411,11 +1418,57 @@ Note that, unlike other types of services/containers, the init container service
 
 More importantly, the `init-helper` service has an entrypoint configured, that consists of a multi-line script being fed into the `/bin/bash` executable (of the image). For init containers, the `entrypoint` property is where its main purpose is defined; in this example, the entrypoint is for a Bash script that generates a file for a secret for the `example-service-data` volume, if it does not exist yet.
 
-Again, note that if the intended contents of the entrypoint script span more than a few lines (or are otherwise long), then it should be made into a separate script file and mounted to the init container, in the same process shown earlier in this section.
+Again, note that if the intended contents of the entrypoint script span more than a few lines (or are otherwise long), then it should be made into a separate script file and mounted to the init container, in the same process shown earlier in this section. As well, the images used for init service containers should be as lightweight as possible, only carrying the tools needed for the job; because of this, `busybox` and `alpine` images are recommended for init service containers.
 
 For an init container service to work as an init container service, the Compose service(s) that need it to run first must be configured to wait for the init container service to successfully exit (with the exit code 0). This is done by listing the name of the Compose service for the init container as a dictionary key under the `depends_on` property of the dependent Compose service(s); under the dictionary entry for the init container service, under `depends_on`, the `condition` property must be set to `service_completed_successfully`, to configure the dependent service(s) to start only after the init container has exited (as opposed to starting once the init container has started).
 
 As another note, when creating Stack resources for Komodo (which will be covered in further depth later in this guide), with Compose stacks that contain init container services, remember to configure the Stack to ignore the state of the init container service when determining the status of the Stack, as exited init containers may cause Komodo to incorrectly conclude that the Stack is unhealthy, when the init container has only done its job.
+
+#### Creating/using custom images for init (and other) services
+
+*For more information on writing Dockerfiles, please read the [official Dockerfile reference](https://docs.docker.com/reference/dockerfile/).*
+
+For certain Compose stacks, no Docker images available online may be suitable to be used as init service containers for the needs of the stack, or perhaps, the image for a certain main service container needs only a few more steps before becoming suitable for the needs of the stack. In such a case, a custom Docker image can be specified (as a Dockerfile) and created for the Compose stack. To do so, create a subdirectory under the stack's directory, dedicated for the image. Then, create a Dockerfile named `Dockerfile` that will be used to describe how the Docker image will be built. This file may look something like this:
+```dockerfile
+FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+RUN apk add --no-cache curl gettext
+```
+
+The above example is relatively simple. First, it starts with the `alpine` image (from the Docker hub), with a tag (`3.24.2`) and a digest; the digest (and the tag) should be automatically handled by Renovate; just make sure to pick a sensible version tag that closely represents the specificity of the versioning system of the image (or packaged software). Then, the other step is to run the command `apk add --no-cache curl gettext`, which installs the Alpine packages, `curl` and `gettext`.
+
+Dockerfiles can be as simple or as complex as needed. Since `Dockerfile` files are usually specified by the directory they belong to, and as base images can support multiple architectures, it is advised to stick to only one Dockerfile per subdirectory. As well, you are able to bundle other files within the same subdirectory into the image specified by the Dockerfile. It is best practice, however, to make sure those files are tied directly to the lifetime and purpose of the image; if otherwise, then they should be instead mounted to the container(s) using the image through the Compose stack configuration.
+
+To refer to an image from a Dockerfile in a Compose stack service, specify its subdirectory (relative to the stack's directory) as the build context, as the `build` attribute of the service, like this:
+```yaml
+services:
+  velocity:
+    build: ./velocity-image
+    ... # Omitting for brevity
+  ...
+```
+
+Note how `Dockerfile` is not specified in the `build` attribute, as it is implied that the Compose host will search for the file named `Dockerfile` right under the specified directory. However, if there is the need to have multiple Dockerfile in the directory, you can specify both the build context directory and the name of the Dockerfile as separate attributes under `build`, like this:
+```yaml
+services:
+  velocity:
+    build:
+      context: ./velocity-image
+      dockerfile: custom.Dockerfile
+    ... # Omitting for brevity
+  ...
+```
+
+In the above example, under the `build` attribute, the build context (`./velocity-image`) is specified in the `context` subattribute, and the name of the Dockerfile is specified in the `dockerfile` subattribute. For extra Dockerfiles not named `Dockerfile`, each Dockerfile should still end in `.Dockerfile`. For more information on the `build` attribute of Compose stack services, please refer to the [documentation on the Compose Build Specification](https://github.com/compose-spec/compose-spec/blob/main/build.md).
+
+In certain cases, specific custom Docker images may be reused or respecified across multiple Compose stacks. For this scenario, the directory (or directories) for the image(s) can be instead moved to be under the `images` directory. All previous instructions will still apply, but with numerous `..` symbols to move up parent directories before going to the `images` directory and then the subdirectory for the Docker images, for each relevant Compose stack service (in `build` or `build.context`), like in this example:
+```yaml
+services:
+  init-velocitywhitelist:
+    build: ../../images/base-init
+    ... # Omitting for brevity
+```
+
+Again, if the Dockerfile(s) is big enough to warrant its own project, then they should be moved to a separate repository with its own build infrastructure, which should push an image to a registry that can be referred to within a Compose stack service configuration.
 
 ### Writing stacks to be run across multiple servers
 A Compose stack is only a blueprint; turning a Compose stack (deploying a stack) into actively running containers requires Docker Compose to be run, with the stack's files, potentially with environment variables provided to Docker Compose when deploying; this stage of running and configuring Docker Compose is what Komodo focuses on when managing Stack resources. Like a regular blueprint, you could theoretically build (deploy) it as many times as you would like; in certain cases, using the same Compose stack file(s), as-is, across multiple servers may work sufficiently for the needs of the stack.
