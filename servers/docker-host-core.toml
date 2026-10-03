@@ -56,6 +56,32 @@ destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/filestash"
 
+# gickup
+[[stack]]
+name = "gickup"
+description = "A solution for backing up Git repositories."
+tags = ["iac"]
+[stack.config]
+server = "docker-host-core"
+poll_for_updates = true
+auto_update = true
+auto_update_all_services = true
+destroy_before_deploy = true
+linked_repo = "saphnet-compose-configs"
+run_directory = "stacks/gickup"
+config_files = [
+  { path = "secrets/docker-host-core.enc.env", requires = "Redeploy" },
+  { path = "conf.yml.template", requires = "Restart" },
+]
+compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]'"
+compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
+ignore_services = ["init-config"]
+environment = """
+TIMEZONE = '[[TIMEZONE]]'
+S3_ENDPOINT = '[[SAPHNET_S3_SERVER_ENDPOINT]]'
+S3_REGION = '[[SAPHNET_S3_SERVER_REGION]]'
+"""
+
 # glances
 [[stack]]
 name = "glances-core"
