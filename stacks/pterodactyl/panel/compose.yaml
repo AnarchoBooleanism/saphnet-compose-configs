@@ -30,7 +30,7 @@ x-common:
     APP_TIMEZONE: *timezone
     APP_SERVICE_AUTHOR: "homelab@saphnet.xyz"
     TRUSTED_PROXIES: "traefik"
-    HASHIDS_SALT: "${HASHIDS_SALT}"
+    HASHIDS_SALT: "${HASHIDS_SALT:?}"
     HASHIDS_LENGTH: "8"
   mail: &mail-environment
     MAIL_FROM: "homelab@saphnet.xyz"
@@ -38,18 +38,18 @@ x-common:
     MAIL_HOST: "mail.privateemail.com"
     MAIL_PORT: "465"
     MAIL_USERNAME: "homelab@saphnet.xyz"
-    MAIL_PASSWORD: "${MAIL_PASSWORD}"
+    MAIL_PASSWORD: "${MAIL_PASSWORD:?}"
     MAIL_ENCRYPTION: "true"
   # S3-based backup
   backup: &backup-environment
     APP_BACKUP_DRIVER: rustic_s3
     RUSTIC_S3_FORCE_PATH_STYLE: "true"
     RUSTIC_REPOSITORY_BASE_PATH: /var/lib/elytra/rustic-repos # For some reason, the default is /var/lib/pterodactyl...
-    RUSTIC_S3_REGION: "${RUSTIC_S3_REGION}"
-    RUSTIC_S3_ACCESS_KEY_ID: "${RUSTIC_S3_ACCESS_KEY_ID}"
-    RUSTIC_S3_SECRET_ACCESS_KEY: "${RUSTIC_S3_SECRET_ACCESS_KEY}"
-    RUSTIC_S3_BUCKET: "${RUSTIC_S3_BUCKET}"
-    RUSTIC_S3_ENDPOINT: "${RUSTIC_S3_ENDPOINT}"
+    RUSTIC_S3_REGION: "${RUSTIC_S3_REGION:?}"
+    RUSTIC_S3_ACCESS_KEY_ID: "${RUSTIC_S3_ACCESS_KEY_ID:?}"
+    RUSTIC_S3_SECRET_ACCESS_KEY: "${RUSTIC_S3_SECRET_ACCESS_KEY:?}"
+    RUSTIC_S3_BUCKET: "${RUSTIC_S3_BUCKET:?}"
+    RUSTIC_S3_ENDPOINT: "${RUSTIC_S3_ENDPOINT:?}"
 
 services:
   database:

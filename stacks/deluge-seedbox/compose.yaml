@@ -9,9 +9,9 @@ services:
       VPN_SERVICE_PROVIDER: nordvpn
       VPN_TYPE: openvpn
       # Get credentials from https://my.nordaccount.com/dashboard/nordvpn/manual-configuration/service-credentials/
-      OPENVPN_USER: "${OPENVPN_USER}"
-      OPENVPN_PASSWORD: "${OPENVPN_PASSWORD}"
-      SERVER_HOSTNAMES: "${CONNECT}.nordvpn.com"
+      OPENVPN_USER: "${OPENVPN_USER:?}"
+      OPENVPN_PASSWORD: "${OPENVPN_PASSWORD:?}"
+      SERVER_HOSTNAMES: "${CONNECT:?}.nordvpn.com"
     ports:
       # - "8112:8112"
       - "58846:58846"
@@ -65,7 +65,7 @@ services:
       - seedbox-files:/home/seedbox/sftp
     environment:
       SFTP_USERNAME: seedbox
-      SFTP_PASSWORD: "${SFTP_PASSWORD}"
+      SFTP_PASSWORD: "${SFTP_PASSWORD:?}"
     ports:
       - "2222:22"
     restart: unless-stopped

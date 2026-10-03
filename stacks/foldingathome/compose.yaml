@@ -14,7 +14,7 @@ services:
       MACHINE_NAME: docker-host-pve3
       CLI_ARGS:  #optional
       # Secrets to set in environment:
-      ACCOUNT_TOKEN: "$ACCOUNT_TOKEN"
+      ACCOUNT_TOKEN: "${ACCOUNT_TOKEN:?}"
     # ports:
     #   - "7396:7396"
     networks:

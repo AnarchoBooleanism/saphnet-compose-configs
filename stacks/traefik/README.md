@@ -24,7 +24,7 @@ traefik.http.routers.dashboard.tls.domains[0].main: "host1.example.com" # Reflec
 traefik.http.routers.dashboard.tls.domains[0].sans: "*.host1.example.com"
 
 # Basic‑auth middleware
-traefik.http.middlewares.dashboard-auth.basicauth.users: "${DASHBOARD_LOGIN}"
+traefik.http.middlewares.dashboard-auth.basicauth.users: "${DASHBOARD_LOGIN:?}"
 traefik.http.routers.dashboard.middlewares: dashboard-auth@docker
 ```
 
