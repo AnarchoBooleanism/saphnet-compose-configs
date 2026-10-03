@@ -30,7 +30,7 @@ services:
       # For secrets
       REPLACE_ENV_VARIABLES: "TRUE"
       ENV_VARIABLE_PREFIX: "CFG_"
-      VELOCITY_FORWARDING_SECRET: "${VELOCITY_FORWARDING_SECRET}" # We will handle this ourselves
+      VELOCITY_FORWARDING_SECRET: "${VELOCITY_FORWARDING_SECRET:?}" # We will handle this ourselves
       # Velocity configuration
       TYPE: VELOCITY
       MEMORY: "512m"
@@ -38,7 +38,7 @@ services:
       VELOCITY_BUILD_ID: latest
       ENABLE_RCON: "true"
       RCON_PORT: "25575"
-      RCON_PASSWORD: "${RCON_PASSWORD}"
+      RCON_PASSWORD: "${RCON_PASSWORD:?}"
     ports:
       - "25565:25565"
       - "${TAILSCALE_IP:-0.0.0.0}:25575:25575"
@@ -48,7 +48,7 @@ services:
       - /bin/sh
       - -c
       - |
-        printf '${VELOCITY_FORWARDING_SECRET}' > '/config/forwarding.secret'
+        printf '${VELOCITY_FORWARDING_SECRET:?}' > '/config/forwarding.secret'
         exec /usr/bin/run-bungeecord.sh
     restart: unless-stopped
   
@@ -71,7 +71,7 @@ services:
       - sftp-ssh-data:/etc/ssh # For persistence of keys
     environment:
       SFTP_USERNAME: velocity-user
-      SFTP_PASSWORD: "${SFTP_PASSWORD}"
+      SFTP_PASSWORD: "${SFTP_PASSWORD:?}"
     ports:
       - "${TAILSCALE_IP:-0.0.0.0}:2022:22"
     restart: unless-stopped

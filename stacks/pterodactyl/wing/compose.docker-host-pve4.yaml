@@ -70,8 +70,8 @@ services:
       - ./config/config.yml.template:/config.yml.template
       - wings-config:/wings-config
     environment:
-      PTERODACTYL_TOKEN_ID: "${PTERODACTYL_TOKEN_ID}"
-      PTERODACTYL_TOKEN: "${PTERODACTYL_TOKEN}"
+      PTERODACTYL_TOKEN_ID: "${PTERODACTYL_TOKEN_ID:?}"
+      PTERODACTYL_TOKEN: "${PTERODACTYL_TOKEN:?}"
     entrypoint:
       - /bin/sh
       - -c

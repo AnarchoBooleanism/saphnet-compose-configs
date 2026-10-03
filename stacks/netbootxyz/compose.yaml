@@ -37,7 +37,7 @@ services:
       traefik.http.services.netboot-svc.loadBalancer.server.port: "3000"
       # Basic‑auth middleware
       traefik.http.routers.netboot.middlewares: netboot-auth
-      traefik.http.middlewares.netboot-auth.basicauth.users: "${NETBOOT_LOGIN}"
+      traefik.http.middlewares.netboot-auth.basicauth.users: "${NETBOOT_LOGIN:?}"
 
 networks:
   web_bridge:

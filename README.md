@@ -550,6 +550,30 @@ services:
 
 In this file, if the environment variable, `PORT`, is not defined at deploy time, then the string, `${PORT:-3000}`, will be replaced with `3000` instead.
 
+You are also able to force Compose to error out when an environment variable is not set (or empty) when deploying a stack by adding `:?` after the variable name within the curly brackets, like in this example:
+```yaml
+services:
+  netbootxyz:
+    ... # Omitting for brevity
+    labels:
+      ...
+      traefik.http.middlewares.netboot-auth.basicauth.users: "${NETBOOT_LOGIN:?}"
+    ...
+```
+
+In the above example, what would normally be `${NETBOOT_LOGIN}` is `${NETBOOT_LOGIN:?}`. `:?` means that Compose will throw an error when `NETBOOT_LOGIN` is either not set or empty; alternatively, you can use `?` (as in `$NETBOOT_LOGIN?`) to only throw an error if the environment variable is not set. As well, you can attach a message for when errors happen, after the `:?` section within the curly brackets, like this:
+```yaml
+services:
+  netbootxyz:
+    ... # Omitting for brevity
+    labels:
+      ...
+      traefik.http.middlewares.netboot-auth.basicauth.users: "${NETBOOT_LOGIN:?Please set the NETBOOT_LOGIN variable}"
+    ...
+```
+
+This can be useful if the Compose stack requires a certain environment variable to be set to function, or if it not being set would result in a container failing anyway.
+
 For more information on interpolation, please refer to the [specific section on interpolation in the official Compose specification](https://github.com/compose-spec/compose-spec/blob/main/12-interpolation.md).
 
 Importantly, when using environment variables whose values may be interpreted as booleans, integers, or floats, to define attributes that may expect strings, you should use quotes around the environment variables to ensure that YAML interprets the value as a string, like in this Compose stack file example:
@@ -590,7 +614,7 @@ services:
     ...
     env_file:
       - ./.env
-      - ${SOPS_SECRETS_PATH:?Please set SOPS_SECRETS_PATH}
+      - ${SOPS_SECRETS_PATH:?}
     ...
 ```
 
@@ -697,7 +721,7 @@ x-common:
   ... # Omitting for brevity
   MAIL: &mail
     ...
-    N8N_SMTP_PASS: "${MAIL_PASSWORD}"
+    N8N_SMTP_PASS: "${MAIL_PASSWORD:?}"
     ...
 
 services:
@@ -708,7 +732,7 @@ services:
       ...
 ```
 
-In the above file, `${MAIL_PASSWORD}` will first be interpolated with the value of the `MAIL_PASSWORD` environment variable; the value of this will then be used to define the `N8N_SMTP_PASS` attribute of the `mail` fragment, which will be imported into the `environment` property of the `n8n` service. This allows for both the definition of reusable blocks and the ability to defer the value definition of certain properties to deploy time.
+In the above file, `${MAIL_PASSWORD:?}` will first be interpolated with the value of the `MAIL_PASSWORD` environment variable; the value of this will then be used to define the `N8N_SMTP_PASS` attribute of the `mail` fragment, which will be imported into the `environment` property of the `n8n` service. This allows for both the definition of reusable blocks and the ability to defer the value definition of certain properties to deploy time.
 
 Finally, it is possible for the values of fragments to reference other fragments; the parser will resolve all required anchors until there are none left (this does mean that you should avoid circular dependencies). Here is an example that utilizes this:
 ```yaml
@@ -877,7 +901,7 @@ services:
       ...
       # Basic‑auth middleware
       traefik.http.routers.netboot.middlewares: netboot-auth
-      traefik.http.middlewares.netboot-auth.basicauth.users: "${NETBOOT_LOGIN}"
+      traefik.http.middlewares.netboot-auth.basicauth.users: "${NETBOOT_LOGIN:?}"
     ...
 ```
 
@@ -901,7 +925,7 @@ services:
     ...
     env_file:
       - ./.env
-      - ${SOPS_SECRETS_PATH:?Please set SOPS_SECRETS_PATH}
+      - ${SOPS_SECRETS_PATH:?}
 ...
 ```
 
@@ -1056,9 +1080,9 @@ services:
       VPN_SERVICE_PROVIDER: nordvpn
       VPN_TYPE: openvpn
       ...
-      OPENVPN_USER: "${OPENVPN_USER}"
-      OPENVPN_PASSWORD: "${OPENVPN_PASSWORD}"
-      SERVER_HOSTNAMES: "${CONNECT}.nordvpn.com"
+      OPENVPN_USER: "${OPENVPN_USER:?}"
+      OPENVPN_PASSWORD: "${OPENVPN_PASSWORD:?}"
+      SERVER_HOSTNAMES: "${CONNECT:?}.nordvpn.com"
     ports:
       ...
       - "58846:58846"

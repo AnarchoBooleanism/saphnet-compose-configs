@@ -12,7 +12,7 @@ services:
       HOMEPAGE_ALLOWED_HOSTS: homepage.int.saphnet.xyz
     env_file:
       - ./.env
-      - ${SOPS_SECRETS_PATH:?Please set SOPS_SECRETS_PATH}
+      - ${SOPS_SECRETS_PATH:?}
     # ports:
     # - "3000:3000"
     networks:
