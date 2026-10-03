@@ -244,7 +244,7 @@ compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
 MAIL_PASSWORD = '[[NAMECHEAP_MAIL_PASSWORD]]'
-RUSTIC_S3_ENDPOINT = '[[SAPHNET_S3_SERVER_ENDPOINT]]'
+RUSTIC_S3_ENDPOINT = '[[SAPHNET_S3_SERVER_ENDPOINT_FULL]]'
 RUSTIC_S3_REGION = '[[SAPHNET_S3_SERVER_REGION]]'
 TIMEZONE = '[[TIMEZONE]]'
 """
