@@ -10,7 +10,6 @@
 # - RUSTIC_S3_REGION
 # - RUSTIC_S3_ACCESS_KEY_ID
 # - RUSTIC_S3_SECRET_ACCESS_KEY
-# - RUSTIC_S3_BUCKET
 # - RUSTIC_S3_ENDPOINT (include "https://"!)
 # - HASHIDS_SALT (should be 20 characters, to generate this, run "head -c20 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9/.' | head -c20")
 # - TIMEZONE
@@ -48,7 +47,7 @@ x-common:
     RUSTIC_S3_REGION: "${RUSTIC_S3_REGION:?}"
     RUSTIC_S3_ACCESS_KEY_ID: "${RUSTIC_S3_ACCESS_KEY_ID:?}"
     RUSTIC_S3_SECRET_ACCESS_KEY: "${RUSTIC_S3_SECRET_ACCESS_KEY:?}"
-    RUSTIC_S3_BUCKET: "${RUSTIC_S3_BUCKET:?}"
+    RUSTIC_S3_BUCKET: "pterodactyl-backup"
     RUSTIC_S3_ENDPOINT: "${RUSTIC_S3_ENDPOINT:?}"
 
 services:
