@@ -4,7 +4,7 @@
 [[stack]]
 name = "deluge-seedbox"
 description = "A torrent client for file sharing, behind a VPN, and an SFTP server for accessing these files."
-tags = ["iac"]
+tags = ["iac", "nas1"]
 [stack.config]
 server = "docker-host-pve3"
 links = [
@@ -42,7 +42,7 @@ run_directory = "stacks/docker-proxy"
 [[stack]]
 name = "docker-volume-rclone-pve3"
 description = "A solution for regularly cloning Docker volumes to a remote NFS location."
-tags = ["docker-volume-rclone", "iac"]
+tags = ["docker-volume-rclone", "iac", "nas1"]
 [stack.config]
 server = "docker-host-pve3"
 poll_for_updates = true
@@ -108,7 +108,7 @@ file_paths = [
 [[stack]]
 name = "immich"
 description = "A self-hosted photo and video management solution."
-tags = ["iac", "gpu"]
+tags = ["iac", "gpu", "nas1"]
 [stack.config]
 server = "docker-host-pve3"
 links = [
@@ -137,7 +137,7 @@ TIMEZONE = '[[TIMEZONE]]'
 [[stack]]
 name = "media-server"
 description = "A media server designed to integrate with the Deluge Seedbox, using Jellyfin, Seerr, Prowlarr (suported with Flaresolverr), Radarr & Sonarr (supported with Recyclarr), and Bazarr. Note that there are two groups of Radarr/Sonarr-related containers, for anime and non-anime media."
-tags = ["iac", "gpu"]
+tags = ["iac", "gpu", "nas1"]
 [stack.config]
 server = "docker-host-pve3"
 links = [

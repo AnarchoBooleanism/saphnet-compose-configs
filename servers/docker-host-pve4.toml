@@ -18,7 +18,7 @@ run_directory = "stacks/docker-proxy"
 [[stack]]
 name = "docker-volume-rclone-pve4"
 description = "A solution for regularly cloning Docker volumes to a remote NFS location."
-tags = ["docker-volume-rclone", "iac"]
+tags = ["docker-volume-rclone", "iac", "nas1"]
 [stack.config]
 server = "docker-host-pve4"
 poll_for_updates = true

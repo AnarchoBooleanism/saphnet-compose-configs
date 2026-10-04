@@ -21,7 +21,7 @@ HOST_IP = '[[TAILSCALE_IP_VPS1]]'
 [[stack]]
 name = "docker-volume-rclone-vps1"
 description = "A solution for regularly cloning Docker volumes to a remote NFS location."
-tags = ["docker-volume-rclone", "iac"]
+tags = ["docker-volume-rclone", "iac", "nas1"]
 [stack.config]
 server = "vps1"
 poll_for_updates = true

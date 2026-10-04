@@ -1838,7 +1838,7 @@ tags = ["iac", "gpu"]
 ...
 ```
 
-Commonly used tags for needs/preferences include `gpu` (for GPU acceleration ability) and `high-availability` (for the host having high availability functionality, like on Proxmox).
+Commonly used tags for needs/preferences include `gpu` (for GPU acceleration ability) and `high-availability` (for the host having high availability functionality, like on Proxmox). As well, there are tag named after specific NASes (e.g. `nas1`), for where a Stack uses an NFS mount to a specific NAS server or are otherwise deeply tied to the availability of that server (e.g. for a NAS's S3-compatible servers).
 
 ### On non-Compose config files
 If a Stack's Compose stack file(s) references other files in the repository (e.g. other Compose files through `extends` or other config files), or if there is a secrets file that Komodo uses for the Stack, it must be added to its list of extra config files; this will allow Komodo to be able to track any changes to these files and take the right action (e.g. redeploy) when the Stack is brought up to date, depending on the file(s) changed. Here is an example of this being used for a Stack resource:
