@@ -22,7 +22,7 @@ file_paths = [
 [[stack]]
 name = "docker-volume-rclone-core"
 description = "A solution for regularly cloning Docker volumes to a remote NFS location."
-tags = ["docker-volume-rclone", "iac"]
+tags = ["docker-volume-rclone", "iac", "nas1"]
 [stack.config]
 server = "docker-host-core"
 poll_for_updates = true
@@ -60,7 +60,7 @@ run_directory = "stacks/filestash"
 [[stack]]
 name = "gickup"
 description = "A solution for backing up Git repositories."
-tags = ["iac"]
+tags = ["iac", "nas1"]
 [stack.config]
 server = "docker-host-core"
 poll_for_updates = true
@@ -181,7 +181,7 @@ TIMEZONE = '[[TIMEZONE]]'
 [[stack]]
 name = "netbootxyz"
 description = "A host for providing network access to different operating systems via PXE and HTTP."
-tags = ["iac", "high-availability"]
+tags = ["iac", "nas1", "high-availability"]
 [stack.config]
 server = "docker-host-core"
 links = [
