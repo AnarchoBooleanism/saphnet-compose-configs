@@ -1,10 +1,14 @@
 # Environment variables to set:
 # - N8N_RUNNER_TOKEN, can be anything
-# - MAIL_PASSWORD
 # - POSTGRES_PASSWORD
 # - POSTGRES_NON_ROOT_PASSWORD
 # - ENCRYPTION_KEY, made with "openssl rand -hex 32"
 # - TAILSCALE_IP, if you want to restrict access to n8n port to just Tailscale only (for external Traefik)
+# - SMTP_FROM_EMAIL
+# - SMTP_SERVER_HOSTNAME
+# - SMTP_SERVER_PORT
+# - SMTP_USERNAME
+# - SMTP_PASSWORD
 # - TIMEZONE
 
 x-common:
@@ -14,12 +18,12 @@ x-common:
     POSTGRES_NON_ROOT_USER: &postgres_non_root_user "postgres_nonroot"
     POSTGRES_DB: &postgres_db "n8n"
   MAIL: &mail
-    N8N_SMTP_SENDER: "n8n <homelab@saphnet.xyz>"
+    N8N_SMTP_SENDER: "n8n <${SMTP_FROM_EMAIL:?}>"
     N8N_EMAIL_MODE: "smtp"
-    N8N_SMTP_HOST: "mail.privateemail.com"
-    N8N_SMTP_PORT: "465"
-    N8N_SMTP_USER: "homelab@saphnet.xyz"
-    N8N_SMTP_PASS: "${MAIL_PASSWORD:?}"
+    N8N_SMTP_HOST: "${SMTP_SERVER_HOSTNAME:?}"
+    N8N_SMTP_PORT: "${SMTP_SERVER_PORT:?}"
+    N8N_SMTP_USER: "${SMTP_USERNAME:?}"
+    N8N_SMTP_PASS: "${SMTP_PASSWORD:?}"
     N8N_SMTP_SSL: "true"
 
 x-services: # Base instances of services to customize

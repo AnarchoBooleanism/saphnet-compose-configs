@@ -590,12 +590,16 @@ When `${TARGET_PORT}` is interpolated (e.g. as `3000`), the quotes around it wil
 When using environment variables within a Compose stack file, it is generally good practice to have comments specifying all of the environment variables that need (or may need) to be set, as well as any instructions for (or important notes) on their values, within the first lines of the file, like this: 
 ```yaml
 # Environment variables to set:
-# - MAIL_PASSWORD
 # - RUSTIC_S3_REGION
 # - RUSTIC_S3_ACCESS_KEY_ID
 # - RUSTIC_S3_SECRET_ACCESS_KEY
 # - RUSTIC_S3_BUCKET
 # - RUSTIC_S3_ENDPOINT (include "https://"!)
+# - SMTP_FROM_EMAIL
+# - SMTP_SERVER_HOSTNAME
+# - SMTP_SERVER_PORT
+# - SMTP_USERNAME
+# - SMTP_PASSWORD
 # - HASHIDS_SALT (should be 20 characters, to generate this, run "head -c20 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9/.' | head -c20")
 # - TIMEZONE
 ```
@@ -721,7 +725,7 @@ x-common:
   ... # Omitting for brevity
   MAIL: &mail
     ...
-    N8N_SMTP_PASS: "${MAIL_PASSWORD:?}"
+    N8N_SMTP_PASS: "${SMTP_PASSWORD:?}"
     ...
 
 services:
@@ -732,7 +736,7 @@ services:
       ...
 ```
 
-In the above file, `${MAIL_PASSWORD:?}` will first be interpolated with the value of the `MAIL_PASSWORD` environment variable; the value of this will then be used to define the `N8N_SMTP_PASS` attribute of the `mail` fragment, which will be imported into the `environment` property of the `n8n` service. This allows for both the definition of reusable blocks and the ability to defer the value definition of certain properties to deploy time.
+In the above file, `${SMTP_PASSWORD:?}` will first be interpolated with the value of the `SMTP_PASSWORD` environment variable; the value of this will then be used to define the `N8N_SMTP_PASS` attribute of the `mail` fragment, which will be imported into the `environment` property of the `n8n` service. This allows for both the definition of reusable blocks and the ability to defer the value definition of certain properties to deploy time.
 
 Finally, it is possible for the values of fragments to reference other fragments; the parser will resolve all required anchors until there are none left (this does mean that you should avoid circular dependencies). Here is an example that utilizes this:
 ```yaml
@@ -743,7 +747,7 @@ x-common:
     POSTGRES_NON_ROOT_USER: &postgres_non_root_user "postgres_nonroot"
     POSTGRES_DB: &postgres_db "n8n"
   MAIL: &mail
-    N8N_SMTP_SENDER: "n8n <homelab@saphnet.xyz>"
+    N8N_SMTP_SENDER: "n8n <${SMTP_FROM_EMAIL:?}>"
     ...
 
 x-services: # Base instances of services to customize

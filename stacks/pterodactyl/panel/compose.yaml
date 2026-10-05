@@ -6,12 +6,16 @@
 #                         https://docs.agamersgrind.com/guides/pterodactyl/creating-a-new-wings-node
 
 # Environment variables to set:
-# - MAIL_PASSWORD
 # - RUSTIC_S3_REGION
 # - RUSTIC_S3_ACCESS_KEY_ID
 # - RUSTIC_S3_SECRET_ACCESS_KEY
 # - RUSTIC_S3_ENDPOINT (include "https://"!)
 # - HASHIDS_SALT (should be 20 characters, to generate this, run "head -c20 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9/.' | head -c20")
+# - SMTP_FROM_EMAIL
+# - SMTP_SERVER_HOSTNAME
+# - SMTP_SERVER_PORT
+# - SMTP_USERNAME
+# - SMTP_PASSWORD
 # - TIMEZONE
 
 # Common variables, declared here
@@ -32,12 +36,12 @@ x-common:
     HASHIDS_SALT: "${HASHIDS_SALT:?}"
     HASHIDS_LENGTH: "8"
   mail: &mail-environment
-    MAIL_FROM: "homelab@saphnet.xyz"
+    MAIL_FROM: "${SMTP_FROM_EMAIL:?}"
     MAIL_DRIVER: "smtp"
-    MAIL_HOST: "mail.privateemail.com"
-    MAIL_PORT: "465"
-    MAIL_USERNAME: "homelab@saphnet.xyz"
-    MAIL_PASSWORD: "${MAIL_PASSWORD:?}"
+    MAIL_HOST: "${SMTP_SERVER_HOSTNAME:?}"
+    MAIL_PORT: "${SMTP_SERVER_PORT:?}"
+    MAIL_USERNAME: "${SMTP_USERNAME:?}"
+    MAIL_PASSWORD: "${SMTP_PASSWORD:?}"
     MAIL_ENCRYPTION: "true"
   # S3-based backup
   backup: &backup-environment # NOTE: Hydrodactyl now has you handle S3 in the portal itself.
