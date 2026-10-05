@@ -172,7 +172,11 @@ config_files = [
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
-MAIL_PASSWORD = '[[NAMECHEAP_MAIL_PASSWORD]]'
+SMTP_FROM_EMAIL = '[[NAMECHEAP_SMTP_FROM_EMAIL]]'
+SMTP_SERVER_HOSTNAME = '[[NAMECHEAP_SMTP_SERVER_HOSTNAME]]'
+SMTP_SERVER_PORT = '[[NAMECHEAP_SMTP_SERVER_PORT]]'
+SMTP_USERNAME = '[[NAMECHEAP_SMTP_USERNAME]]'
+SMTP_PASSWORD = '[[NAMECHEAP_SMTP_PASSWORD]]'
 TAILSCALE_IP = '[[TAILSCALE_IP_CORE]]'
 TIMEZONE = '[[TIMEZONE]]'
 """
@@ -243,9 +247,13 @@ registry_account = "AnarchoBooleanism"
 compose_cmd_wrapper = "sops exec-env secrets/docker-host-core.enc.env '[[COMPOSE_COMMAND]]'"
 compose_cmd_wrapper_include = ["up", "config", "build", "pull", "run"]
 environment = """
-MAIL_PASSWORD = '[[NAMECHEAP_MAIL_PASSWORD]]'
 RUSTIC_S3_ENDPOINT = '[[SAPHNET_S3_SERVER_ENDPOINT_FULL]]'
 RUSTIC_S3_REGION = '[[SAPHNET_S3_SERVER_REGION]]'
+SMTP_FROM_EMAIL = '[[NAMECHEAP_SMTP_FROM_EMAIL]]'
+SMTP_SERVER_HOSTNAME = '[[NAMECHEAP_SMTP_SERVER_HOSTNAME]]'
+SMTP_SERVER_PORT = '[[NAMECHEAP_SMTP_SERVER_PORT]]'
+SMTP_USERNAME = '[[NAMECHEAP_SMTP_USERNAME]]'
+SMTP_PASSWORD = '[[NAMECHEAP_SMTP_PASSWORD]]'
 TIMEZONE = '[[TIMEZONE]]'
 """
 

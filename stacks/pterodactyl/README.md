@@ -2,12 +2,16 @@
 A server management panel for games, e.g. Minecraft.
 
 For the panel, you will need to set these environment variables:
-- `MAIL_PASSWORD` - The password to use to log into the SMTP server
 - `RUSTIC_S3_REGION` - The region to use for the S3-compatible server (e.g. `garage`)
 - `RUSTIC_S3_ACCESS_KEY_ID` - The ID for the access key for the S3-compatible server
 - `RUSTIC_S3_SECRET_ACCESS_KEY` - The access key itself for the S3-compatible server
 - `RUSTIC_S3_ENDPOINT` - The URL endpoint to use to connect to the S3-compatible server (include `https://`!)
 - `HASHIDS_SALT` - The salt to use when creating unique hash IDs for resource (should be 20 characters, to generate this, run `head -c20 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9/.' | head -c20`)
+- `SMTP_FROM_EMAIL` - Email address to display as the from address
+- `SMTP_SERVER_HOSTNAME` - Hostname of SMTP server
+- `SMTP_SERVER_PORT` - Port of SMTP server
+- `SMTP_USERNAME` - Username to use for SMTP server
+- `SMTP_PASSWORD` - Password to use for SMTP server
 - `TIMEZONE` - The name of a [tz time zone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) to use as the timezone (you can use the `TIMEZONE` Variable from Komodo)
 
 **NOTE ON RUSTIC S3 BACKUPS**: In a recent update, Hydrodactyl now seems to require that an S3 bucket be created in the portal (rather than the environment variables, which are still documented) before having a Node upload to that bucket. Be sure to add an S3 bucket in the `S3 Buckets` menu.
