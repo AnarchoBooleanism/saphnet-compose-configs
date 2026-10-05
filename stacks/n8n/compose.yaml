@@ -50,14 +50,15 @@ x-services: # Base instances of services to customize
       N8N_HOST: n8n.int.saphnet.xyz
       N8N_PORT: "5678"
       N8N_PROTOCOL: https
+      N8N_PROXY_HOPS: "1"
       OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS: "true"
-      N8N_RUNNERS_ENABLED: "true"
       N8N_RUNNERS_MODE: external
       N8N_RUNNERS_BROKER_LISTEN_ADDRESS: "0.0.0.0"
       N8N_RUNNERS_AUTH_TOKEN: "${N8N_RUNNER_TOKEN:?}"
+      N8N_RUNNERS_TASK_TIMEOUT: "300"
       N8N_NATIVE_PYTHON_RUNNER: "true"
+      N8N_WEBHOOK_URL: https://n8n.int.saphnet.xyz/
       NODE_ENV: production
-      WEBHOOK_URL: https://n8n.int.saphnet.xyz/
       GENERIC_TIMEZONE: *timezone
       TZ: *timezone
     networks: # When having more networks when merging this, be sure to include n8n_internal in the list too!
