@@ -3,7 +3,7 @@ x-common:
 
 services:
   vpn:
-    image: qmcgaw/gluetun:latest@sha256:12df8b20528d4cd5e9b6e827d40f2886cf78e53e7e9afc750050648c31183793
+    image: qmcgaw/gluetun:latest@sha256:2733bb22b27e3efa7a9f2cef9057ec12791b8b225793fcd3dbfd0508404dfc25
     container_name: deluge-vpn
     environment:
       VPN_SERVICE_PROVIDER: nordvpn
@@ -37,7 +37,7 @@ services:
       - net.ipv6.conf.all.disable_ipv6=1 # Recomended if using ipv4 only
 
   deluge:
-    image: ghcr.io/linuxserver/deluge:2.2.0@sha256:9505c64720afa9e5f0ac1576e660dd6d1e9d4a6733b791f4821e8f496f19f41f # To only update intentionally
+    image: ghcr.io/linuxserver/deluge:2.2.0@sha256:bf306ddd5e6d4a85d3d05ce1b947ab6e344e7fca1b7740b77c58ce170118c7ff # To only update intentionally
     container_name: deluge
     depends_on:
       vpn:
