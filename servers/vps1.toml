@@ -7,9 +7,6 @@ description = "Used as a way to access the internal Docker socket from outside (
 tags = ["docker-proxy", "iac"]
 [stack.config]
 server = "vps1"
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-proxy"
@@ -24,9 +21,6 @@ description = "A solution for regularly cloning Docker volumes to a remote NFS l
 tags = ["docker-volume-rclone", "iac", "nas1"]
 [stack.config]
 server = "vps1"
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-volume-rclone"
@@ -48,9 +42,6 @@ server = "vps1"
 links = [
   "https://glances-vps1.saphnet.xyz"
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/glances"
@@ -78,8 +69,6 @@ links = [
   "https://anubis.thevoidpact.xyz",
   "https://anubis.saphnet.xyz",
 ]
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/traefik"
@@ -107,9 +96,6 @@ description = "A modern reverse proxy for Minecraft servers, intended for public
 tags = ["velocity", "iac"]
 [stack.config]
 server = "vps1"
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/velocity"

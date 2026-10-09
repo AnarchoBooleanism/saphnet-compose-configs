@@ -10,9 +10,6 @@ server = "docker-host-pve3"
 links = [
   "https://seedbox.int.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/deluge-seedbox"
@@ -32,8 +29,6 @@ description = "Used as a way to access the internal Docker socket from outside (
 tags = ["docker-proxy", "iac"]
 [stack.config]
 server = "docker-host-pve3"
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-proxy"
@@ -45,9 +40,6 @@ description = "A solution for regularly cloning Docker volumes to a remote NFS l
 tags = ["docker-volume-rclone", "iac", "nas1"]
 [stack.config]
 server = "docker-host-pve3"
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-volume-rclone"
@@ -69,8 +61,6 @@ server = "docker-host-pve3"
 links = [
   "https://fah.int.saphnet.xyz",
 ]
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/foldingathome"
@@ -93,9 +83,6 @@ server = "docker-host-pve3"
 links = [
   "https://glances.docker-host-pve3.int.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/glances"
@@ -116,8 +103,6 @@ links = [
   # External
   "https://immich.saphnet.xyz",
 ]
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/immich"
@@ -156,9 +141,6 @@ links = [
   "https://media.int.saphnet.xyz",
   "https://seerr.media.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/media-server"
@@ -177,9 +159,6 @@ server = "docker-host-pve3"
 links = [
   "https://docker-host-pve3.int.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/traefik"
@@ -205,8 +184,6 @@ server = "docker-host-pve3"
 links = [
   "https://vertd.int.saphnet.xyz",
 ]
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/vertd"
