@@ -7,8 +7,6 @@ description = "Used as a way to access the internal Docker socket from outside (
 tags = ["docker-proxy", "iac"]
 [stack.config]
 server = "control-server"
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-proxy"
@@ -20,9 +18,6 @@ description = "A solution for regularly cloning Docker volumes to a remote NFS l
 tags = ["docker-volume-rclone", "iac", "nas1"]
 [stack.config]
 server = "control-server"
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-volume-rclone"

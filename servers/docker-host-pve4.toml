@@ -7,9 +7,6 @@ description = "Used as a way to access the internal Docker socket from outside (
 tags = ["docker-proxy", "iac"]
 [stack.config]
 server = "docker-host-pve4"
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-proxy"
@@ -21,9 +18,6 @@ description = "A solution for regularly cloning Docker volumes to a remote NFS l
 tags = ["docker-volume-rclone", "iac", "nas1"]
 [stack.config]
 server = "docker-host-pve4"
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-volume-rclone"
@@ -45,9 +39,6 @@ server = "docker-host-pve4"
 links = [
   "https://glances.docker-host-pve4.int.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/glances"
@@ -67,9 +58,6 @@ links = [
   "https://pterodactyl-node-main.int-net.saphnet.xyz",
   "https://map-int.thevoidpact.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/pterodactyl/wing"
@@ -95,9 +83,6 @@ server = "docker-host-pve4"
 links = [
   "https://docker-host-pve4.int.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/traefik"
@@ -120,9 +105,6 @@ description = "A modern reverse proxy for Minecraft servers, intended for local-
 tags = ["velocity", "iac"]
 [stack.config]
 server = "docker-host-pve4"
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/velocity"

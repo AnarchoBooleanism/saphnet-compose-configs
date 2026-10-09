@@ -7,9 +7,6 @@ description = "A solution for regularly cloning Docker volumes to a remote NFS l
 tags = ["docker-proxy", "iac"]
 [stack.config]
 server = "docker-host-core"
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-proxy"
@@ -25,9 +22,6 @@ description = "A solution for regularly cloning Docker volumes to a remote NFS l
 tags = ["docker-volume-rclone", "iac", "nas1"]
 [stack.config]
 server = "docker-host-core"
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/docker-volume-rclone"
@@ -49,9 +43,6 @@ server = "docker-host-core"
 links = [
   "https://filestash.int.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/filestash"
@@ -63,9 +54,6 @@ description = "A solution for backing up Git repositories."
 tags = ["iac", "nas1"]
 [stack.config]
 server = "docker-host-core"
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/gickup"
@@ -92,9 +80,6 @@ server = "docker-host-core"
 links = [
   "https://glances.docker-host-core.int.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/glances"
@@ -113,9 +98,6 @@ server = "docker-host-core"
 links = [
   "https://guacamole.int.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/guacamole"
@@ -131,9 +113,6 @@ links = [
   "https://homepage.int.saphnet.xyz",
   "https://int.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/homepage"
@@ -160,8 +139,6 @@ server = "docker-host-core"
 links = [
   "https://n8n.int.saphnet.xyz",
 ]
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/n8n"
@@ -191,9 +168,6 @@ server = "docker-host-core"
 links = [
   "https://netboot.int.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/netbootxyz"
@@ -216,9 +190,6 @@ server = "docker-host-core"
 links = [
   "https://speedtest.int.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/openspeedtest"
@@ -233,9 +204,6 @@ server = "docker-host-core"
 links = [
   "https://pterodactyl.int.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/pterodactyl/panel"
@@ -281,9 +249,6 @@ links = [
   "https://router.int.saphnet.xyz",
   "https://switch1.int.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/traefik"
@@ -309,9 +274,6 @@ server = "docker-host-core"
 links = [
   "https://vert.int.saphnet.xyz",
 ]
-poll_for_updates = true
-auto_update = true
-auto_update_all_services = true
 destroy_before_deploy = true
 linked_repo = "saphnet-compose-configs"
 run_directory = "stacks/vert-sh"
