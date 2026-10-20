@@ -63,6 +63,7 @@ enable-player-address-logging = true
 	# main = "pterodactyl-node-main.int-net.saphnet.xyz:25565"
 	# main = "192.168.8.243:25567"
 	main = "cf94f67d-180b-4eb2-883b-f96b266be7bb:25567"
+	alt = "dac5229e-104a-403e-b29e-b78a0942e3eb:25566"
 	# In what order we should try servers when a player logs in or is kicked from a server.
 	try = ["main"]
 

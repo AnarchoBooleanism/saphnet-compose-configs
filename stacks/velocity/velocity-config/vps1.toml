@@ -62,6 +62,7 @@ enable-player-address-logging = true
 	# represents the IP address of the server to connect to.
 	# main = "pterodactyl-node-main.int-net.saphnet.xyz:25567"
 	main = "docker-host-pve4:25567"
+	alt = "docker-host-pve4:25566"
 	# In what order we should try servers when a player logs in or is kicked from a server.
 	try = ["main"]
 [forced-hosts]
