@@ -64,9 +64,11 @@ enable-player-address-logging = true
 	main = "docker-host-pve4:25567"
 	alt = "docker-host-pve4:25566"
 	# In what order we should try servers when a player logs in or is kicked from a server.
-	try = ["main"]
+	try = ["main", "alt"]
 [forced-hosts]
 	"smp.thevoidpact.xyz" = ["main"]
+	"main.mc.thevoidpact.xyz" = ["main"]
+	"alt.mc.thevoidpact.xyz" = ["alt"]
 [advanced]
 	# Specify a read timeout for connections here. The default is 30 seconds.
 	read-timeout = 30000
