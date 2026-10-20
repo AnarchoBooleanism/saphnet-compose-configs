@@ -48,7 +48,7 @@ services:
       - /bin/sh
       - -c
       - |
-        printf '%s' '${VELOCITY_FORWARDING_SECRET:?}' > '/config/forwarding.secret'
+        printf '%s' "$$VELOCITY_FORWARDING_SECRET" > '/config/forwarding.secret'
         exec /usr/bin/run-bungeecord.sh
     restart: unless-stopped
   
