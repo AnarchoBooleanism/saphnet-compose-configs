@@ -56,7 +56,7 @@ x-common:
 
 services:
   database:
-    image: mariadb:12@sha256:2bdff1534a7e569fecaf4b10b66ad0d410806e382d9db29ba305448addda97c4
+    image: mariadb:12@sha256:99c125f103f5d081ebbc9ffe064e63daf7f688ac33a5f7f29af2d7260a96debf
     volumes:
       - database-data:/var/lib/mysql
     environment:
@@ -69,13 +69,13 @@ services:
     restart: unless-stopped
   
   cache:
-    image: redis:8@sha256:2c2dff791878316e3b083188be0d578423b24813cdda5de0e80ea4f7b3e6bfd6
+    image: redis:8@sha256:5c02d7c0f8d75af45958c0294a8004f2e14b42df98a1103e3a669aa7ec787be6
     networks:
       - pterodactyl_panel_internal
     restart: unless-stopped
   
   panel:
-    image: ghcr.io/blueprintframework/hydrodactyl:v6.4.1@sha256:447fad9a4c9ea39e2faa6bcba985274346ea06e6eb1dbcd664d7c3dd1f1903f7
+    image: ghcr.io/blueprintframework/hydrodactyl:v6.4.2@sha256:2c1c9c32ebd95865753cf73400327625e864857e09cca5fce49652672f8d754d
     container_name: pterodactyl-panel # Refer to the panel container this way
     volumes:
       - panel-data:/app/var/
