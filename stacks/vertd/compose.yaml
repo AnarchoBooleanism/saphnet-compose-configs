@@ -1,6 +1,6 @@
 services:
   vertd:
-    image: ghcr.io/vert-sh/vertd:latest@sha256:6f098789bdaca7ae449816fc5457dbbc39ad15d35e232e28476ee789b3e4d39f
+    image: ghcr.io/vert-sh/vertd:latest@sha256:40df09f0a103ace50c1852cfee71ef72375908f7f49c9f386b4696092e98a5c9
     container_name: vertd
     environment:
       WEBHOOK_URL: "${WEBHOOK_URL}"
