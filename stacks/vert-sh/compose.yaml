@@ -1,6 +1,6 @@
 services:
   vert:
-    image: ghcr.io/vert-sh/vert:latest@sha256:7bc5ab4864c9a2fd760f63c4057f5d287055f33c6d29a040faaedb5b424863c0
+    image: ghcr.io/vert-sh/vert:latest@sha256:51edb89e7c57197b0281ba8427fb27eea63730a3683b10d422061afab2708a49
     container_name: vert
     environment:
       PUB_HOSTNAME: "${PUB_HOSTNAME:-vert.int.saphnet.xyz}"
