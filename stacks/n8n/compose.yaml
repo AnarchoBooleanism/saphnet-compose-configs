@@ -71,7 +71,7 @@ x-services: # Base instances of services to customize
 
 services:
   postgres:
-    image: postgres:16@sha256:ca0bd484cb98bf4b24eb1010e73fb3fcbd6714d240fbc1a10eea5b7dbecb641d
+    image: postgres:16@sha256:9e2cf6287f25c3151f4c9421ccce2b17f3e60061c111a29165e0d2cdd9ff0a97
     container_name: n8n-postgres
     volumes:
       - db-storage:/var/lib/postgresql/data
@@ -92,7 +92,7 @@ services:
       retries: 10
 
   redis:
-    image: redis:8-alpine@sha256:3811787313eba226a2ef38658c6ccb91cd5e110edc89c37767de373120a0e5a0
+    image: redis:8-alpine@sha256:0bf6577d7774e592b29d093e3ac9390eb91e13d72c21e506afce736de5e0eeb0
     container_name: n8n-redis
     volumes:
       - redis-storage:/data
@@ -139,7 +139,7 @@ services:
     <<: *n8n_common
 
   n8n-runner:
-    image: n8nio/runners:2.44.2@sha256:befe43595356630f609fcf47c0cb4a76990115b4a125a260753e30e8c7098354
+    image: n8nio/runners:2.45.2@sha256:69ce15f20e878f18e59f5678f07dd12be717966ae0dfda7473b271cb81ec8620
     container_name: n8n-runner
     depends_on:
       - n8n
