@@ -20,9 +20,9 @@ services:
         condition: service_completed_successfully
     volumes:
       - gickup-config:/config
-    command: ["/config/conf.yml"] # Changes the path of the internal bound config
     environment:
       TZ: *timezone
+    command: ["/config/conf.yml"] # Changes the path of the internal bound config
     restart: unless-stopped
 
   init-config:
