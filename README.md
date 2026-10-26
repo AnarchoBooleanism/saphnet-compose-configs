@@ -738,6 +738,44 @@ services:
 
 In the above file, `${SMTP_PASSWORD:?}` will first be interpolated with the value of the `SMTP_PASSWORD` environment variable; the value of this will then be used to define the `N8N_SMTP_PASS` attribute of the `mail` fragment, which will be imported into the `environment` property of the `n8n` service. This allows for both the definition of reusable blocks and the ability to defer the value definition of certain properties to deploy time.
 
+When defining multiple services with common values and configurations (e.g. Docker images), fragments can be used as base templates for each individual service. To do this, create a dictionary as a top-level attribute named `x-service-<SERVICE_NAME>`, with the same structure as a service definition (an individual entry under the `services` attribute). Creating a fragment for a service as a top-level attribute (as opposed to the child of one) will allow Renovate to scan these shared definitions for images to update. Here is an example of a fragment being used for this:
+```yaml
+x-service-anubis: &anubis
+  image: ghcr.io/techarohq/anubis:latest@sha256:4bdf6ddd1a8dc8bfe7a33d823a1cb72157885ca4fd3ee749654b21cba732e439
+  ...
+  networks:
+    - web_bridge
+  restart: unless-stopped
+  ... # Omitting for brevity
+
+services:
+  anubis-thevoidpact:
+    container_name: anubis-main
+    environment:
+      ...
+      COOKIE_DOMAIN: "thevoidpact.xyz"
+      ...
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.anubis-thevoidpact.rule: Host(`anubis.thevoidpact.xyz`)
+      ...
+    <<: *anubis
+
+  anubis-saphnet:
+    container_name: anubis-saphnet
+    environment:
+      ...
+      COOKIE_DOMAIN: "saphnet.xyz"
+      ...
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.anubis-saphnet.rule: Host(`anubis.saphnet.xyz`)
+      ...
+    <<: *anubis
+```
+
+In the above example, the base definition for Anubis services is created, named `x-service-anubis`, with the `anubis` anchor. It names certain values that will be used by services that use the anchor, such as `image`, `networks`, and `restart`, allowing for common values to not be redefined multiple times. Each Anubis service (under `services`) imports the `anubis` anchor, further defining values that are specific to each individual service (e.g. `container_name`).
+
 Finally, it is possible for the values of fragments to reference other fragments; the parser will resolve all required anchors until there are none left (this does mean that you should avoid circular dependencies). Here is an example that utilizes this:
 ```yaml
 x-common:
@@ -750,15 +788,14 @@ x-common:
     N8N_SMTP_SENDER: "n8n <${SMTP_FROM_EMAIL:?}>"
     ...
 
-x-services: # Base instances of services to customize
-  N8N_COMMON: &n8n_common
+x-service-n8n: &n8n_common
+  ...
+  environment:
+    <<: [*mail]
     ...
-    environment:
-      <<: [*mail]
-      ...
-      DB_POSTGRESDB_DATABASE: *postgres_db
-      DB_POSTGRESDB_USER: *postgres_non_root_user
-      ...
+    DB_POSTGRESDB_DATABASE: *postgres_db
+    DB_POSTGRESDB_USER: *postgres_non_root_user
+    ...
     ...
 ```
 
