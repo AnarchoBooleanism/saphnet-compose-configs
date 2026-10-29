@@ -12,7 +12,7 @@
 # Variables you'll want to frequently change
 x-common:
   # renovate: datasource=custom.papermc depName=velocity
-  VELOCITY_VERSION: &velocity-version "4.3.0"
+  VELOCITY_VERSION: &velocity-version "4.3.1"
   # renovate: datasource=github-releases depName=TISUnion/VelocityWhitelist
   VELOCITYWHITELIST_VERSION: &velocitywhitelist-version "v0.3.0"
 
