@@ -14,7 +14,7 @@ x-common:
 
 # Base instances of services to customize
 x-service-radarr: &radarr # For movies
-  image: ghcr.io/linuxserver/radarr:6.3.0@sha256:95ba0801df4d9d1d79d0d9a3849f656542497dab061d91b87ad4f53a71aff3ef
+  image: ghcr.io/linuxserver/radarr:6.4.4@sha256:084b3b2ab1d0ef930660727259546a241f2bdf67c9ed085d54bf1486a6887c9b
   # Set a unique container_name here
   # For volumes, have volume mounted to /config, volume mounted to media folder (e.g. /movies),
   # and volume mounted to /downloads (for Deluge downloads)
@@ -29,7 +29,7 @@ x-service-radarr: &radarr # For movies
   restart: unless-stopped
 
 x-service-sonarr: &sonarr # For shows
-  image: ghcr.io/linuxserver/sonarr:4.0.19@sha256:4d9df314875e1249ab7d6170c2b9b3dc1d8e6383f168ceb10dc9a5ad9b324739
+  image: ghcr.io/linuxserver/sonarr:4.0.20@sha256:48e36b608b461273b9dae857725cd0561a127f2c694b687318f6d0c5ce63e5c9
   # Set a unique container_name here
   # For volumes, have volume mounted to /config, volume mounted to media folder (e.g. /tv),
   # and volume mounted to /downloads (for Deluge downloads)
@@ -44,7 +44,7 @@ x-service-sonarr: &sonarr # For shows
   restart: unless-stopped
 
 x-service-bazarr: &bazarr # For subtitles
-  image: ghcr.io/linuxserver/bazarr:1.6.0@sha256:84b6f05a7a4194fafe5a0bec062d32f6ae9ea74db33d43d678cb9a3191f31c24
+  image: ghcr.io/linuxserver/bazarr:1.6.2@sha256:9a625883f054e722795affe5e3ca71057e6ed817ecdf99f4a99624346fcc509c
   # Set a unique container_name here
   # For volumes, have volume mounted to /config, volume mounted to /movies, and volume
   # mounted to /tv
@@ -183,7 +183,7 @@ services:
     restart: unless-stopped
   
   prowlarr: # Handles trackers
-    image: ghcr.io/linuxserver/prowlarr:2.6.5@sha256:b3b00047ed20f6ce2b16780145cb6a0acb51c9e28ea6aa6f5dcd33c7034f1797
+    image: ghcr.io/linuxserver/prowlarr:2.7.0@sha256:04be30163fbaf48d6aeee7b5893c9f6614ffbad6d853971df0d6dcdf01c7f104
     container_name: prowlarr
     volumes:
       - prowlarr-config:/config
@@ -209,7 +209,7 @@ services:
       traefik.http.services.prowlarr-svc.loadBalancer.server.port: "9696"
 
   recyclarr:
-    image: ghcr.io/recyclarr/recyclarr:8.8.0@sha256:b1fbb929ba718fdbdac2c1fc25b32b0ae916d7a5a0892c2068c9bfae6f1a9209
+    image: ghcr.io/recyclarr/recyclarr:8.8.1@sha256:3e9c41b9ec29bbf65fe846864058730d321a21f7695d8c0d9437b73e34d50ad9
     container_name: recyclarr
     volumes:
       - recyclarr-config:/config
