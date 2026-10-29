@@ -175,7 +175,7 @@ services:
       traefik.http.services.seerr-svc.loadbalancer.server.url: http://docker-host-pve3:5055
 
   under-construction: # Serving "under construction" pages
-    image: ghcr.io/palmergw/under-construction-page:latest@sha256:2fd2eab189cb8bef5ba7c1b6bc76f86c46dbbe68644bf1ae99e2b3c1f47389e7
+    image: ghcr.io/palmergw/under-construction-page:latest@sha256:591b0fa532f9cb4c350a40e5551c03d633493627dbce6ca34a8b45f4a9de8059
     container_name: under-construction
     networks:
       - web_bridge
