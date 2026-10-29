@@ -1,6 +1,6 @@
 services:
   guacdb:
-    image: mariadb:12@sha256:99c125f103f5d081ebbc9ffe064e63daf7f688ac33a5f7f29af2d7260a96debf
+    image: mariadb:12@sha256:d46e102fa8b9b72bfcdeb56f9dd538742092119dc8b11f31fe662605cd234cd9
     container_name: guacamoledb
     volumes:
       - guac-db-data:/var/lib/mysql
@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
 
   guacamole:
-    image: guacamole/guacamole:latest@sha256:42ff186489ce1abfdffafc43d55e99560c0ac71cd52b859d2f3c17411c145f8a
+    image: guacamole/guacamole:latest@sha256:b6688fc76189478bf386cca92e9c7ee552992dec098a5e4a0fb14db75a5dda1a
     container_name: guacamole
     depends_on:
       - guacd
