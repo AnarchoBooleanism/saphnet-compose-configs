@@ -4,7 +4,7 @@ services:
   # This expects to be given a path to a secrets file (by the "docker compose up" command)
   # to use for secrets as environment variables
   homepage:
-    image: ghcr.io/anarchobooleanism/saphnet-homepage:edge@sha256:5c811852e7c78710acca5c1b3ef9bb293d78e75e5e89454e06664576480ecbeb
+    image: ghcr.io/anarchobooleanism/saphnet-homepage:edge@sha256:9e694cfd95f4d9a8198a4e0df50ebf22c38902066e3502015df2d6794bcf8c13
     container_name: homepage
     # volumes:
     #   - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
