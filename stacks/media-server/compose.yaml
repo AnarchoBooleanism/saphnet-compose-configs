@@ -14,7 +14,7 @@ x-common:
 
 # Base instances of services to customize
 x-service-radarr: &radarr # For movies
-  image: ghcr.io/linuxserver/radarr:6.4.4@sha256:084b3b2ab1d0ef930660727259546a241f2bdf67c9ed085d54bf1486a6887c9b
+  image: ghcr.io/linuxserver/radarr:6.4.4@sha256:ade5937813c6ae415b29db729386e53fea3ecf067a019849bafbe2d2a6ec02ba
   # Set a unique container_name here
   # For volumes, have volume mounted to /config, volume mounted to media folder (e.g. /movies),
   # and volume mounted to /downloads (for Deluge downloads)
@@ -29,7 +29,7 @@ x-service-radarr: &radarr # For movies
   restart: unless-stopped
 
 x-service-sonarr: &sonarr # For shows
-  image: ghcr.io/linuxserver/sonarr:4.0.20@sha256:48e36b608b461273b9dae857725cd0561a127f2c694b687318f6d0c5ce63e5c9
+  image: ghcr.io/linuxserver/sonarr:4.0.20@sha256:386c962ee6e260e3a5656b25df2ed056bcc9b6410e197d075f9547fd14c23bca
   # Set a unique container_name here
   # For volumes, have volume mounted to /config, volume mounted to media folder (e.g. /tv),
   # and volume mounted to /downloads (for Deluge downloads)
@@ -44,7 +44,7 @@ x-service-sonarr: &sonarr # For shows
   restart: unless-stopped
 
 x-service-bazarr: &bazarr # For subtitles
-  image: ghcr.io/linuxserver/bazarr:1.6.2@sha256:9a625883f054e722795affe5e3ca71057e6ed817ecdf99f4a99624346fcc509c
+  image: ghcr.io/linuxserver/bazarr:1.6.2@sha256:7ef0e58216900dbce30b123e0eb65f5cb30e36f126de9474acdd2022fb069c54
   # Set a unique container_name here
   # For volumes, have volume mounted to /config, volume mounted to /movies, and volume
   # mounted to /tv
@@ -183,7 +183,7 @@ services:
     restart: unless-stopped
   
   prowlarr: # Handles trackers
-    image: ghcr.io/linuxserver/prowlarr:2.7.0@sha256:04be30163fbaf48d6aeee7b5893c9f6614ffbad6d853971df0d6dcdf01c7f104
+    image: ghcr.io/linuxserver/prowlarr:2.7.0@sha256:431d7efebcef466e56adaa40a7a2fa2b0e85159a037b8bf465eaadbf0cf5bedf
     container_name: prowlarr
     volumes:
       - prowlarr-config:/config
