@@ -14,14 +14,14 @@ services:
     restart: unless-stopped
 
   guacd:
-    image: guacamole/guacd:latest@sha256:2d266a525a72ad55d8ea7cd4ca8342a1b44075759b03660d8684821b3636a922
+    image: guacamole/guacd:latest@sha256:d975a3464920f99484de6b4cc06ae0b56d6e27273f483bc6a2461d20ba92680b
     container_name: guacd
     networks:
       - web_bridge
     restart: unless-stopped
 
   guacamole:
-    image: guacamole/guacamole:latest@sha256:b6688fc76189478bf386cca92e9c7ee552992dec098a5e4a0fb14db75a5dda1a
+    image: guacamole/guacamole:latest@sha256:9bf64cc44e39d22eba2721abd5a5b797e295dee8f7d790c076d5c119c23e9cb4
     container_name: guacamole
     depends_on:
       - guacd
