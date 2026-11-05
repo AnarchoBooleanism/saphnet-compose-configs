@@ -1,4 +1,4 @@
-FROM itzg/mc-proxy:java25@sha256:c764cfe4efaf2e9df13e2d71f1c6537a38ec19e12c52092f2c565ebd79019346
+FROM itzg/mc-proxy:java25@sha256:acb44a5cbe1c32896cf4671d8cf5c5252f57831eb779eb0a924dc663f653b34e
 
 # Create welcome messages
 ENV ENV="/etc/profile"
