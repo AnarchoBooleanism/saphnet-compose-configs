@@ -56,7 +56,7 @@ x-common:
 
 services:
   database:
-    image: mariadb:12@sha256:d46e102fa8b9b72bfcdeb56f9dd538742092119dc8b11f31fe662605cd234cd9
+    image: mariadb:12@sha256:4ebbcf100a3ba320766dfa0e1af008df12261301db6ef72798c7650f70794aed
     volumes:
       - database-data:/var/lib/mysql
     environment:
@@ -69,7 +69,7 @@ services:
     restart: unless-stopped
   
   cache:
-    image: redis:8@sha256:de1068af6f552240dfab67bcc9bfef99bfc60f776bb4580ef077ea4c8c97e848
+    image: redis:8@sha256:1f88291b4c57bdf249f02eb085a8669889b2d2954e91d4de5118a5da6b78dd53
     networks:
       - pterodactyl_panel_internal
     restart: unless-stopped
