@@ -3,7 +3,7 @@ x-common:
 
 services:
   vpn:
-    image: qmcgaw/gluetun:latest@sha256:cbafe0945d0fe5a3c55ca64d43a85c5db270458f4c645ee65797b527f6f57a64
+    image: qmcgaw/gluetun:latest@sha256:b68e26d63c1cb352b53518e4f96fbb12eb9ae8412ec0c2bc5c47bca2c1338b9e
     container_name: deluge-vpn
     environment:
       VPN_SERVICE_PROVIDER: nordvpn
